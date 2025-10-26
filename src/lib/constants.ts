@@ -13,6 +13,7 @@ export const SESSION_STATUS = {
 export const ROUTES = {
   HOME: '/',
   CREATE: '/create',
+  FEATURES: '/features',
   SESSION: (id: string) => `/session/${id}`,
   LOBBY: (id: string) => `/session/${id}/lobby`,
   VOTE: (id: string) => `/session/${id}/vote`,

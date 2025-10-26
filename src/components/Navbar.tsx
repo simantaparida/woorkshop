@@ -191,7 +191,7 @@ export function Navbar() {
           <div className="hidden lg:flex items-center space-x-1">
             {/* Features */}
             <Link
-              href="/#features"
+              href={ROUTES.FEATURES}
               className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
             >
               Features
@@ -357,7 +357,7 @@ export function Navbar() {
             <div className="px-4 py-4 space-y-1">
               {/* Features */}
               <Link
-                href="/#features"
+                href={ROUTES.FEATURES}
                 className="block px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
