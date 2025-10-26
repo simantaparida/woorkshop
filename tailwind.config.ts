@@ -8,6 +8,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        comfortaa: ['var(--font-comfortaa)', 'sans-serif'],
+      },
       colors: {
         primary: {
           DEFAULT: '#2563eb',

@@ -1,9 +1,14 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Comfortaa } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
+export const comfortaa = Comfortaa({
+  subsets: ['latin'],
+  weight: ['700'],
+  variable: '--font-comfortaa',
+});
 
 const siteUrl = 'https://uxworks.app';
 const siteTitle = 'UX Works — Decide what to build next, in 10 minutes';
@@ -127,7 +132,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en">
+    <html lang="en" className={comfortaa.variable}>
       <head>
         <link rel="preload" as="image" href="/og.png" />
       </head>

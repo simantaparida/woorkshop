@@ -13,7 +13,8 @@
       "Bash(git commit:*)",
       "Bash(lsof:*)",
       "Bash(xargs kill -9)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
