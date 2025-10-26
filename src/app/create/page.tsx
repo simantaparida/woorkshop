@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { TEMPLATES } from '@/lib/constants/templates';
 import { getActiveSessions, type ActiveSession } from '@/lib/utils/helpers';
+import { formatTimeRemaining, isSessionExpired } from '@/lib/constants/session-durations';
 import type { Session } from '@/types';
 import { supabase } from '@/lib/supabase/client';
 
@@ -13,12 +15,16 @@ interface ActiveSessionWithData extends ActiveSession {
   projectName?: string;
   hostName?: string;
   status?: string;
+  expiresAt?: string | null;
 }
 
 export default function CreateLandingPage() {
   const router = useRouter();
   const [recentSessions, setRecentSessions] = useState<ActiveSessionWithData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [sessionToDelete, setSessionToDelete] = useState<ActiveSessionWithData | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     // Load active sessions from localStorage and fetch session data
@@ -31,7 +37,7 @@ export default function CreateLandingPage() {
           try {
             const { data, error } = await supabase
               .from('sessions')
-              .select('project_name, host_name, status')
+              .select('project_name, host_name, status, expires_at')
               .eq('id', session.sessionId)
               .single();
 
@@ -42,6 +48,7 @@ export default function CreateLandingPage() {
               projectName: data.project_name,
               hostName: data.host_name,
               status: data.status,
+              expiresAt: data.expires_at,
             };
           } catch (error) {
             console.error(`Failed to load session ${session.sessionId}:`, error);
@@ -67,6 +74,46 @@ export default function CreateLandingPage() {
 
   const handleOpenSession = (sessionId: string) => {
     router.push(`/session/${sessionId}/lobby`);
+  };
+
+  const handleDeleteClick = (session: ActiveSessionWithData, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSessionToDelete(session);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!sessionToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/session/${sessionToDelete.sessionId}/delete`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hostToken: sessionToDelete.hostToken }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to delete session');
+      }
+
+      // Remove from localStorage
+      localStorage.removeItem(`host_token_${sessionToDelete.sessionId}`);
+      localStorage.removeItem(`player_id_${sessionToDelete.sessionId}`);
+
+      // Remove from recentSessions
+      setRecentSessions(prev => prev.filter(s => s.sessionId !== sessionToDelete.sessionId));
+
+      // Close modal
+      setIsDeleteModalOpen(false);
+      setSessionToDelete(null);
+    } catch (error) {
+      console.error('Delete error:', error);
+      alert(error instanceof Error ? error.message : 'Failed to delete session');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -166,6 +213,9 @@ export default function CreateLandingPage() {
                       <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">
                         Status
                       </th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                        Expires
+                      </th>
                       <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wide">
                         Action
                       </th>
@@ -220,18 +270,45 @@ export default function CreateLandingPage() {
                             </span>
                           )}
                         </td>
+                        <td className="px-4 py-4">
+                          {session.expiresAt ? (
+                            <span className={`inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full font-medium ${
+                              isSessionExpired(session.expiresAt)
+                                ? 'bg-red-100 text-red-700'
+                                : 'bg-amber-100 text-amber-700'
+                            }`}>
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              {formatTimeRemaining(session.expiresAt)}
+                            </span>
+                          ) : (
+                            <span className="text-xs text-gray-500">No limit</span>
+                          )}
+                        </td>
                         <td className="px-4 py-4 text-right">
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleOpenSession(session.sessionId);
-                            }}
-                            className="transition-opacity"
-                          >
-                            {session.status === 'results' ? 'View Results →' : 'Resume →'}
-                          </Button>
+                          <div className="flex items-center justify-end gap-2">
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleOpenSession(session.sessionId);
+                              }}
+                              className="transition-opacity"
+                            >
+                              {session.status === 'results' ? 'View Results' : 'Resume'}
+                            </Button>
+                            <button
+                              onClick={(e) => handleDeleteClick(session, e)}
+                              className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                              title="Delete session"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
+                          </div>
                         </td>
                       </motion.tr>
                     ))}
@@ -254,6 +331,26 @@ export default function CreateLandingPage() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setSessionToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        title="Delete Session?"
+        message={
+          sessionToDelete
+            ? `This will permanently delete "${sessionToDelete.projectName || 'this session'}" and all related data. This action cannot be undone.`
+            : ''
+        }
+        confirmText="Delete"
+        cancelText="Cancel"
+        isLoading={isDeleting}
+        type="danger"
+      />
     </div>
   );
 }

@@ -1,5 +1,14 @@
 // Database types matching Supabase schema
 export type SessionStatus = 'open' | 'playing' | 'results';
+export type WorkshopPhase = 'introduction' | 'discussion' | 'voting' | 'results';
+
+// Reference link type
+export interface ReferenceLink {
+  url: string;
+  title: string;
+  favicon: string;
+  type: string;
+}
 
 export interface Database {
   public: {
@@ -10,7 +19,16 @@ export interface Database {
           host_name: string;
           host_token: string;
           project_name: string;
+          session_goal: string | null;
+          scoring_mode: string;
+          duration_hours: number | null;
+          expires_at: string | null;
           status: SessionStatus;
+          workshop_mode: boolean;
+          workshop_phase: WorkshopPhase | null;
+          discussion_time_minutes: number | null;
+          voting_time_minutes: number | null;
+          phase_started_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -19,7 +37,16 @@ export interface Database {
           host_name: string;
           host_token: string;
           project_name: string;
+          session_goal?: string | null;
+          scoring_mode?: string;
+          duration_hours?: number | null;
+          expires_at?: string | null;
           status?: SessionStatus;
+          workshop_mode?: boolean;
+          workshop_phase?: WorkshopPhase | null;
+          discussion_time_minutes?: number | null;
+          voting_time_minutes?: number | null;
+          phase_started_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -28,7 +55,16 @@ export interface Database {
           host_name?: string;
           host_token?: string;
           project_name?: string;
+          session_goal?: string | null;
+          scoring_mode?: string;
+          duration_hours?: number | null;
+          expires_at?: string | null;
           status?: SessionStatus;
+          workshop_mode?: boolean;
+          workshop_phase?: WorkshopPhase | null;
+          discussion_time_minutes?: number | null;
+          voting_time_minutes?: number | null;
+          phase_started_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -39,8 +75,17 @@ export interface Database {
           session_id: string;
           title: string;
           description: string | null;
+          category: string | null;
           effort: number | null;
           impact: number | null;
+          reach: number | null;
+          confidence: number | null;
+          moscow_priority: string | null;
+          user_business_value: number | null;
+          time_criticality: number | null;
+          risk_reduction: number | null;
+          job_size: number | null;
+          reference_links: ReferenceLink[];
           created_at: string;
         };
         Insert: {
@@ -48,8 +93,17 @@ export interface Database {
           session_id: string;
           title: string;
           description?: string | null;
+          category?: string | null;
           effort?: number | null;
           impact?: number | null;
+          reach?: number | null;
+          confidence?: number | null;
+          moscow_priority?: string | null;
+          user_business_value?: number | null;
+          time_criticality?: number | null;
+          risk_reduction?: number | null;
+          job_size?: number | null;
+          reference_links?: ReferenceLink[];
           created_at?: string;
         };
         Update: {
@@ -57,8 +111,17 @@ export interface Database {
           session_id?: string;
           title?: string;
           description?: string | null;
+          category?: string | null;
           effort?: number | null;
           impact?: number | null;
+          reach?: number | null;
+          confidence?: number | null;
+          moscow_priority?: string | null;
+          user_business_value?: number | null;
+          time_criticality?: number | null;
+          risk_reduction?: number | null;
+          job_size?: number | null;
+          reference_links?: ReferenceLink[];
           created_at?: string;
         };
       };
@@ -67,21 +130,27 @@ export interface Database {
           id: string;
           session_id: string;
           name: string;
+          role: string | null;
           is_host: boolean;
+          is_ready: boolean;
           joined_at: string;
         };
         Insert: {
           id?: string;
           session_id: string;
           name: string;
+          role?: string | null;
           is_host?: boolean;
+          is_ready?: boolean;
           joined_at?: string;
         };
         Update: {
           id?: string;
           session_id?: string;
           name?: string;
+          role?: string | null;
           is_host?: boolean;
+          is_ready?: boolean;
           joined_at?: string;
         };
       };
@@ -92,6 +161,7 @@ export interface Database {
           player_id: string;
           feature_id: string;
           points_allocated: number;
+          note: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -101,6 +171,7 @@ export interface Database {
           player_id: string;
           feature_id: string;
           points_allocated: number;
+          note?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -110,6 +181,7 @@ export interface Database {
           player_id?: string;
           feature_id?: string;
           points_allocated?: number;
+          note?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -139,11 +211,16 @@ export interface PlayerProgress {
 export interface CreateSessionInput {
   hostName: string;
   projectName: string;
+  sessionGoal?: string | null;
+  durationHours?: number | null;
+  expiresAt?: string | null;
   features: {
     title: string;
     description?: string;
+    category?: string;
     effort?: number;
     impact?: number;
+    referenceLinks?: ReferenceLink[];
   }[];
 }
 
@@ -158,6 +235,7 @@ export interface VoteInput {
   votes: {
     featureId: string;
     points: number;
+    note?: string;
   }[];
 }
 

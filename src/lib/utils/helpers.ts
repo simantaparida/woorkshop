@@ -90,6 +90,7 @@ export interface ActiveSession {
   sessionId: string;
   isHost: boolean;
   playerId: string;
+  hostToken?: string;
 }
 
 export function getActiveSessions(): ActiveSession[] {
@@ -111,6 +112,7 @@ export function getActiveSessions(): ActiveSession[] {
         sessionId,
         isHost: hostToken !== null,
         playerId,
+        hostToken: hostToken || undefined,
       });
     }
   });

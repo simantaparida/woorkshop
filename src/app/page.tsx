@@ -1,18 +1,28 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 import { APP_NAME, APP_DESCRIPTION, ROUTES } from '@/lib/constants';
 import { useAnalytics } from '@/lib/hooks/useAnalytics';
 
 export default function HomePage() {
   const router = useRouter();
   const { trackEvent } = useAnalytics();
+  const [showJoinModal, setShowJoinModal] = useState(false);
+  const [sessionCode, setSessionCode] = useState('');
 
   const handleStartGame = () => {
     trackEvent('start_game_clicked');
     router.push(ROUTES.CREATE);
+  };
+
+  const handleJoinSession = () => {
+    if (sessionCode.trim()) {
+      router.push(`/session/${sessionCode.trim()}/lobby`);
+    }
   };
 
   const containerVariants = {
@@ -65,15 +75,23 @@ export default function HomePage() {
               </a>
             </nav>
 
-            {/* CTA Button */}
-            <div className="flex items-center gap-4">
+            {/* CTA Buttons */}
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowJoinModal(true)}
+                className="hidden sm:flex"
+              >
+                Join Session
+              </Button>
               <Button
                 variant="primary"
                 size="sm"
                 onClick={handleStartGame}
                 className="shadow-sm"
               >
-                Start session
+                Start New Session
               </Button>
             </div>
           </div>
@@ -524,6 +542,68 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+
+      {/* Join Session Modal */}
+      <AnimatePresence>
+        {showJoinModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-xl p-6 max-w-md w-full shadow-xl"
+            >
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    Join Session
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Enter the session code shared by your host to join the prioritization workshop.
+                  </p>
+                  <Input
+                    value={sessionCode}
+                    onChange={(e) => setSessionCode(e.target.value)}
+                    placeholder="Enter session code"
+                    className="mb-4"
+                    autoFocus
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && sessionCode.trim()) {
+                        handleJoinSession();
+                      }
+                    }}
+                  />
+                  <div className="flex gap-3">
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        setShowJoinModal(false);
+                        setSessionCode('');
+                      }}
+                      className="flex-1"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="primary"
+                      onClick={handleJoinSession}
+                      disabled={!sessionCode.trim()}
+                      className="flex-1"
+                    >
+                      Join Session
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

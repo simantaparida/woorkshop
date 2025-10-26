@@ -8,9 +8,13 @@ import { ResultsChart } from '@/components/ResultsChart';
 import { SessionHeader } from '@/components/SessionHeader';
 import { useToast } from '@/components/ui/Toast';
 import { Tooltip } from '@/components/ui/Tooltip';
+import { VotingBiasAnalysis } from '@/components/VotingBiasAnalysis';
+import { EffortImpactScatter } from '@/components/EffortImpactScatter';
+import { RoleFilter } from '@/components/RoleFilter';
 import { copyToClipboard, getSessionLink } from '@/lib/utils/helpers';
 import { calculateConsensusMetrics, type ConsensusMetrics } from '@/lib/utils/consensus';
 import { ROUTES } from '@/lib/constants';
+import { getSessionGoalById } from '@/lib/constants/session-goals';
 import type { FeatureWithVotes, Session } from '@/types';
 
 export default function ResultsPage() {
@@ -21,10 +25,13 @@ export default function ResultsPage() {
 
   const [session, setSession] = useState<Session | null>(null);
   const [results, setResults] = useState<FeatureWithVotes[]>([]);
+  const [filteredResults, setFilteredResults] = useState<FeatureWithVotes[]>([]);
   const [consensus, setConsensus] = useState<ConsensusMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<string>('all');
+  const [availableRoles, setAvailableRoles] = useState<string[]>([]);
 
   useEffect(() => {
     if (sessionId) {
@@ -43,14 +50,75 @@ export default function ResultsPage() {
 
       setSession(data.session);
       setResults(data.results);
+      setFilteredResults(data.results);
       // Calculate consensus metrics
       const metrics = calculateConsensusMetrics(data.results);
       setConsensus(metrics);
+
+      // Fetch available roles
+      fetchAvailableRoles();
     } catch (error) {
       console.error('Error fetching results:', error);
       showToast('Failed to load results', 'error');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAvailableRoles = async () => {
+    try {
+      const response = await fetch(`/api/session/${sessionId}/voting-analysis`);
+      if (response.ok) {
+        const data = await response.json();
+        const roles = data.roleProfiles.map((profile: any) => profile.role).filter((r: string) => r !== 'Unknown');
+        setAvailableRoles(roles);
+      }
+    } catch (error) {
+      console.error('Error fetching roles:', error);
+    }
+  };
+
+  const handleRoleChange = async (role: string) => {
+    setSelectedRole(role);
+
+    if (role === 'all') {
+      setFilteredResults(results);
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/session/${sessionId}/results-by-role?role=${encodeURIComponent(role)}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch filtered results');
+      }
+      const data = await response.json();
+
+      // Convert to FeatureWithVotes format
+      const filtered: FeatureWithVotes[] = data.results.map((r: any) => ({
+        id: r.featureId,
+        session_id: sessionId,
+        title: r.featureTitle,
+        description: null,
+        category: null,
+        effort: r.featureEffort,
+        impact: r.featureImpact,
+        reach: null,
+        confidence: null,
+        moscow_priority: null,
+        user_business_value: null,
+        time_criticality: null,
+        risk_reduction: null,
+        job_size: null,
+        reference_links: [],
+        created_at: '',
+        total_points: r.totalPoints,
+        vote_count: r.voteCount,
+      }));
+
+      setFilteredResults(filtered);
+    } catch (error) {
+      console.error('Error fetching filtered results:', error);
+      showToast('Failed to filter results by role', 'error');
     }
   };
 
@@ -200,6 +268,8 @@ export default function ResultsPage() {
       <SessionHeader
         sessionId={sessionId}
         sessionName={session.project_name}
+        sessionGoal={session.session_goal}
+        expiresAt={session.expires_at}
         showBackButton={false}
       />
       <div className="py-12 px-4">
@@ -223,6 +293,20 @@ export default function ResultsPage() {
                 Results
               </h1>
               <p className="text-gray-600">Prioritization complete!</p>
+
+              {/* Session Goal Display */}
+              {session.session_goal && (() => {
+                const goal = getSessionGoalById(session.session_goal);
+                return goal ? (
+                  <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg">
+                    <span className="text-2xl">{goal.icon}</span>
+                    <div className="text-left">
+                      <p className="text-xs text-gray-500">Session Focus</p>
+                      <p className="text-sm font-semibold text-gray-900">{goal.label}</p>
+                    </div>
+                  </div>
+                ) : null;
+              })()}
             </div>
 
           {/* Actions */}
@@ -331,12 +415,48 @@ export default function ResultsPage() {
             </Button>
           </div>
 
+          {/* Role Filter */}
+          {availableRoles.length > 0 && results.length > 0 && (
+            <RoleFilter
+              selectedRole={selectedRole}
+              availableRoles={availableRoles}
+              onRoleChange={handleRoleChange}
+            />
+          )}
+
           {/* Results Visualization */}
           {results.length > 0 ? (
-            <ResultsChart results={results} />
+            <ResultsChart results={filteredResults} />
           ) : (
             <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
               <p className="text-gray-600">No votes have been submitted yet.</p>
+            </div>
+          )}
+
+          {/* Voting Bias Analysis - Role-based voting patterns */}
+          {results.length > 0 && (
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <span className="text-xl">👥</span>
+                Voting Patterns by Role
+              </h2>
+              <VotingBiasAnalysis sessionId={sessionId} />
+            </div>
+          )}
+
+          {/* Effort vs Impact Scatter Plot */}
+          {results.length > 0 && (
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <span className="text-xl">📊</span>
+                Multi-Dimensional Analysis
+                {selectedRole !== 'all' && (
+                  <span className="text-sm font-normal text-gray-600">
+                    (filtered by {selectedRole})
+                  </span>
+                )}
+              </h2>
+              <EffortImpactScatter results={filteredResults} />
             </div>
           )}
 

@@ -8,7 +8,7 @@ export async function POST(
 ) {
   try {
     const { id: sessionId } = params;
-    const { playerName } = await request.json();
+    const { playerName, role } = await request.json();
 
     // Validate input
     const nameError = validatePlayerName(playerName);
@@ -57,6 +57,7 @@ export async function POST(
       .insert({
         session_id: sessionId,
         name: sanitizeString(playerName),
+        role: role || null,
         is_host: false,
       })
       .select()

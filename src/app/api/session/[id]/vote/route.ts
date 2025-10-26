@@ -91,6 +91,7 @@ export async function POST(
         player_id: playerId,
         feature_id: vote.featureId,
         points_allocated: vote.points,
+        note: vote.note || null,
       }));
 
     if (voteInserts.length > 0) {

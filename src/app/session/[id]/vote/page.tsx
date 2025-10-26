@@ -8,6 +8,7 @@ import { FeatureCard } from '@/components/FeatureCard';
 import { PlayerList } from '@/components/PlayerList';
 import { ProgressIndicator } from '@/components/ProgressIndicator';
 import { SessionHeader } from '@/components/SessionHeader';
+import { ImpactEffortGrid } from '@/components/ImpactEffortGrid';
 import { useToast } from '@/components/ui/Toast';
 import { Tooltip } from '@/components/ui/Tooltip';
 import { useSession } from '@/lib/hooks/useSession';
@@ -34,6 +35,7 @@ export default function VotePage() {
   const [currentPlayerId, setCurrentPlayerId] = useState<string | null>(null);
   const [showUndoOption, setShowUndoOption] = useState(false);
   const [undoTimeoutId, setUndoTimeoutId] = useState<NodeJS.Timeout | null>(null);
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
 
   const remainingPoints = calculateRemainingPoints(TOTAL_POINTS, votes);
   const votedPlayerIds = new Set(progress.filter(p => p.has_voted).map(p => p.player.id));
@@ -261,6 +263,8 @@ export default function VotePage() {
       <SessionHeader
         sessionId={sessionId}
         sessionName={session?.project_name}
+        sessionGoal={session?.session_goal}
+        expiresAt={session?.expires_at}
         playerName={currentPlayer?.name}
         isHost={currentPlayer?.is_host}
       />
@@ -279,6 +283,42 @@ export default function VotePage() {
               <p className="text-gray-600">
                 Allocate your {TOTAL_POINTS} points across the features
               </p>
+            </div>
+
+            {/* View Toggle */}
+            <div className="flex justify-center">
+              <div className="inline-flex rounded-lg border border-gray-200 bg-white p-1">
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
+                    viewMode === 'list'
+                      ? 'bg-primary text-white shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                    List View
+                  </div>
+                </button>
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
+                    viewMode === 'grid'
+                      ? 'bg-primary text-white shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Impact vs Effort Grid
+                  </div>
+                </button>
+              </div>
             </div>
 
           {/* Points Remaining */}
@@ -412,16 +452,22 @@ export default function VotePage() {
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Features */}
             <div className="lg:col-span-2 space-y-4">
-              {features.map((feature) => (
-                <FeatureCard
-                  key={feature.id}
-                  feature={feature}
-                  points={votes[feature.id] || 0}
-                  remainingPoints={remainingPoints}
-                  onPointsChange={handlePointsChange}
-                  disabled={hasSubmitted}
-                />
-              ))}
+              {viewMode === 'grid' ? (
+                <ImpactEffortGrid features={features} votes={votes} />
+              ) : (
+                <>
+                  {features.map((feature) => (
+                    <FeatureCard
+                      key={feature.id}
+                      feature={feature}
+                      points={votes[feature.id] || 0}
+                      remainingPoints={remainingPoints}
+                      onPointsChange={handlePointsChange}
+                      disabled={hasSubmitted}
+                    />
+                  ))}
+                </>
+              )}
 
               {/* Submit Button */}
               <div className="sticky bottom-4 space-y-3">

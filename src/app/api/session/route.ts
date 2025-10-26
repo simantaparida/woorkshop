@@ -7,7 +7,7 @@ import type { CreateSessionInput } from '@/types';
 export async function POST(request: NextRequest) {
   try {
     const body: CreateSessionInput = await request.json();
-    const { hostName, projectName, features } = body;
+    const { hostName, projectName, sessionGoal, durationHours, expiresAt, features } = body;
 
     // Validate input
     const sessionNameError = validateSessionName(projectName);
@@ -34,6 +34,9 @@ export async function POST(request: NextRequest) {
         host_name: sanitizeString(hostName),
         host_token: hostToken,
         project_name: sanitizeString(projectName),
+        session_goal: sessionGoal || null,
+        duration_hours: durationHours ?? null,
+        expires_at: expiresAt || null,
         status: 'open',
       })
       .select()
@@ -73,8 +76,10 @@ export async function POST(request: NextRequest) {
       session_id: session.id,
       title: sanitizeString(feature.title),
       description: feature.description ? sanitizeString(feature.description) : null,
+      category: feature.category || null,
       effort: feature.effort ?? null,
       impact: feature.impact ?? null,
+      reference_links: feature.referenceLinks || [],
     }));
 
     const { error: featuresInsertError } = await supabase
