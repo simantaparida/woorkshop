@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ROUTES } from '@/lib/constants';
 
@@ -101,6 +101,7 @@ const resourcesItems: DropdownItem[] = [
 
 export function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -192,7 +193,11 @@ export function Navbar() {
             {/* Features */}
             <Link
               href={ROUTES.FEATURES}
-              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 ${
+                pathname === '/features'
+                  ? 'text-blue-600 bg-blue-50'
+                  : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+              }`}
             >
               Features
             </Link>
@@ -358,7 +363,11 @@ export function Navbar() {
               {/* Features */}
               <Link
                 href={ROUTES.FEATURES}
-                className="block px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors"
+                className={`block px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+                  pathname === '/features'
+                    ? 'text-blue-600 bg-blue-50'
+                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                }`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Features

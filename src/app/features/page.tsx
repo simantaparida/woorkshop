@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Navbar } from '@/components/Navbar';
-import { ROUTES } from '@/lib/constants';
+import { ROUTES, APP_NAME } from '@/lib/constants';
 import { useAnalytics } from '@/lib/hooks/useAnalytics';
 
 export default function FeaturesPage() {
@@ -451,6 +451,49 @@ export default function FeaturesPage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-gray-400 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
+            <div>
+              <h3 className="text-white font-semibold mb-4">{APP_NAME}</h3>
+              <p className="text-sm leading-relaxed">
+                A lightweight prioritization workshop for product and UX teams.
+              </p>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">Product</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href={ROUTES.FEATURES} className="hover:text-white transition-colors">Features</a></li>
+                <li><a href={ROUTES.CREATE} className="hover:text-white transition-colors">Start session</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">Resources</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="https://github.com" className="hover:text-white transition-colors" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                <li><a href="https://twitter.com/uxworks_app" className="hover:text-white transition-colors" target="_blank" rel="noopener noreferrer">Twitter</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">Contact</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="mailto:hello@uxworks.app" className="hover:text-white transition-colors">hello@uxworks.app</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-gray-800 pt-8 flex flex-col sm:flex-row justify-between items-center">
+            <p className="text-sm mb-4 sm:mb-0">
+              © {new Date().getFullYear()} UX Works. All rights reserved.
+            </p>
+            <div className="flex gap-6 text-sm">
+              <a href="#" className="hover:text-white transition-colors">Privacy</a>
+              <a href="#" className="hover:text-white transition-colors">Terms</a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
