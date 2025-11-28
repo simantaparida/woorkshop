@@ -21,7 +21,7 @@ export default function HomePage() {
 
   const handleStartGame = () => {
     trackEvent('start_game_clicked');
-    router.push(ROUTES.CREATE);
+    router.push('/home');
   };
 
   const handleJoinSession = () => {

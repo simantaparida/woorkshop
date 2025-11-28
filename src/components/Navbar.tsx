@@ -179,7 +179,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-[72px]">
           {/* Left: Logo */}
           <Link
-            href={ROUTES.HOME}
+            href="/"
             className="flex items-center focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded-lg"
             aria-label="Padool home"
           >
@@ -279,7 +279,7 @@ export function Navbar() {
           <div className="flex items-center gap-3">
             {/* Start Free Session Button - Always Visible */}
             <Link
-              href={ROUTES.CREATE}
+              href="/home"
               className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 shadow-sm"
             >
               Start Free Session

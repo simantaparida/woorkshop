@@ -19,7 +19,7 @@ interface ActiveSessionWithData extends ActiveSession {
   expiresAt?: string | null;
 }
 
-export default function CreateLandingPage() {
+export default function HomePage() {
   const router = useRouter();
   const [recentSessions, setRecentSessions] = useState<ActiveSessionWithData[]>([]);
   const [loading, setLoading] = useState(true);

@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { FeatureForm } from '@/components/FeatureForm';
+import { AppLayout } from '@/components/AppLayout';
 import { useToast } from '@/components/ui/Toast';
 import { validateSessionName, validateFeatures, sanitizeString } from '@/lib/utils/validation';
 import { copyToClipboard, getSessionLink } from '@/lib/utils/helpers';
@@ -140,119 +141,61 @@ export default function CreateSessionPage() {
   };
 
   return (
-    <>
+    <AppLayout>
       {ToastContainer}
 
-      {/* Header Navigation */}
-      <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Back Button */}
-            <button
-              onClick={() => router.push(ROUTES.CREATE)}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              <span className="font-medium">Back</span>
-            </button>
-
-            {/* Logo */}
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary to-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">U</span>
+      <div className="p-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+        >
+          {/* Page Header with Actions */}
+          <div className="flex items-start justify-between mb-8">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <button
+                  onClick={() => router.push(ROUTES.CREATE)}
+                  className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                  Back to Projects
+                </button>
               </div>
-              <span className="font-semibold text-lg text-gray-900">UX Works</span>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Create New Session
+              </h1>
+              <p className="text-gray-600">
+                Set up your prioritization session in a few simple steps
+              </p>
             </div>
 
-            {/* Progress Indicator */}
-            <div className="hidden md:flex items-center gap-2 text-sm">
-              <div className="flex items-center gap-2 text-primary font-medium">
-                <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs">1</div>
-                <span>Setup</span>
-              </div>
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-              <div className="flex items-center gap-2 text-gray-400">
-                <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs">2</div>
-                <span>Share</span>
-              </div>
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-              <div className="flex items-center gap-2 text-gray-400">
-                <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs">3</div>
-                <span>Vote</span>
-              </div>
+            {/* Action Buttons - Top Right */}
+            <div className="flex gap-3">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => router.push(ROUTES.CREATE)}
+                disabled={loading}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                isLoading={loading}
+                onClick={handleSubmit}
+              >
+                Create Session →
+              </Button>
             </div>
-
-            {/* Cancel Button */}
-            <button
-              onClick={() => router.push(ROUTES.HOME)}
-              className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              Cancel
-            </button>
           </div>
-        </div>
-      </header>
 
-      {/* Main Content */}
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-          >
-            {/* Back Button */}
-            <button
-              onClick={() => router.push(ROUTES.HOME)}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              <span className="text-sm font-medium">Back</span>
-            </button>
-
-            {/* Page Header with Actions */}
-            <div className="flex items-start justify-between mb-8">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                  Create Session
-                </h1>
-                <p className="text-gray-600">
-                  Set up your prioritization session in a few simple steps
-                </p>
-              </div>
-
-              {/* Action Buttons - Top Right */}
-              <div className="flex gap-3">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => router.push(ROUTES.HOME)}
-                  disabled={loading}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  isLoading={loading}
-                  onClick={handleSubmit}
-                >
-                  Create Session →
-                </Button>
-              </div>
-            </div>
-
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Session Details - Full Width, Side by Side Fields */}
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Session Details - Full Width, Side by Side Fields */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -260,8 +203,8 @@ export default function CreateSessionPage() {
               className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm"
             >
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                  <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
@@ -341,11 +284,9 @@ export default function CreateSessionPage() {
                 </motion.div>
               )}
             </motion.div>
-
-            </form>
-          </motion.div>
-        </div>
+          </form>
+        </motion.div>
       </div>
-    </>
+    </AppLayout>
   );
 }
