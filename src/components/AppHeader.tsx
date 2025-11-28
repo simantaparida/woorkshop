@@ -25,7 +25,7 @@ export function AppHeader() {
   }, []);
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 z-40">
+    <header className="sticky top-0 h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 z-40">
       {/* Left - Padool Logo */}
       <div className="flex items-center gap-4">
         <Link

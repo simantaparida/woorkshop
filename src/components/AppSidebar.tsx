@@ -73,22 +73,6 @@ export function AppSidebar() {
       transition={{ duration: 0.3, ease: 'easeInOut' }}
       className="bg-white border-r border-gray-200 flex flex-col relative"
     >
-      {/* Collapse Toggle Button - Top */}
-      <div className="p-3 border-b border-gray-200 flex items-center justify-center">
-        <button
-          onClick={toggleCollapse}
-          className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600 hover:text-gray-900"
-          title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          {isCollapsed ? (
-            <PanelLeftOpen className="w-5 h-5" />
-          ) : (
-            <PanelLeftClose className="w-5 h-5" />
-          )}
-        </button>
-      </div>
-
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 overflow-y-auto">
         <ul className="space-y-1">
@@ -99,11 +83,10 @@ export function AppSidebar() {
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all relative ${
-                    active
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all relative ${active
                       ? 'text-blue-600 bg-blue-50'
                       : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
-                  }`}
+                    }`}
                   title={isCollapsed ? item.label : undefined}
                 >
                   {active && (
@@ -122,6 +105,22 @@ export function AppSidebar() {
           })}
         </ul>
       </nav>
+
+      {/* Collapse Toggle Button - Bottom */}
+      <div className="p-3 border-t border-gray-200 flex items-center justify-end">
+        <button
+          onClick={toggleCollapse}
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600 hover:text-gray-900"
+          title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          {isCollapsed ? (
+            <PanelLeftOpen className="w-5 h-5" />
+          ) : (
+            <PanelLeftClose className="w-5 h-5" />
+          )}
+        </button>
+      </div>
     </motion.aside>
   );
 }

@@ -1,10 +1,11 @@
 import { ButtonHTMLAttributes, forwardRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, HTMLMotionProps } from 'framer-motion';
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'ghost';
+interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
+  variant?: 'primary' | 'secondary' | 'ghost' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
+  children?: React.ReactNode;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -15,6 +16,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       primary: 'bg-primary text-white hover:bg-primary-700 hover:shadow-md active:bg-primary-800 active:shadow-sm',
       secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200 hover:shadow active:bg-gray-300',
       ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 active:bg-gray-200 shadow-none',
+      outline: 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900 active:bg-gray-100',
     };
 
     const sizeStyles = {
