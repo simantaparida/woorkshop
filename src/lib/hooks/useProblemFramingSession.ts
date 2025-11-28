@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 import { getPFSessionData } from '@/lib/api/problem-framing';
 import type { PFSessionData } from '@/types';
 
@@ -50,8 +50,6 @@ export function useProblemFramingSession(sessionId: string): UseProblemFramingSe
       setLoading(false);
       return;
     }
-
-    const supabase = createClient();
 
     // Initial fetch
     fetchData();

@@ -14,18 +14,15 @@ export default function NewProblemFramingPage() {
     setLoading(true);
 
     try {
-      // Get or create facilitator ID
-      let facilitatorId = localStorage.getItem('pf_facilitator_id');
-      if (!facilitatorId) {
-        facilitatorId = crypto.randomUUID();
-        localStorage.setItem('pf_facilitator_id', facilitatorId);
-      }
+      // Get or create participant ID (used for both facilitator and participants)
+      let participantId = localStorage.getItem('pf_participant_id');
+      let participantName = localStorage.getItem('pf_participant_name');
 
-      // Get facilitator name (prompt if not set)
-      let facilitatorName = localStorage.getItem('pf_facilitator_name');
-      if (!facilitatorName) {
-        facilitatorName = prompt('Enter your name:') || 'Facilitator';
-        localStorage.setItem('pf_facilitator_name', facilitatorName);
+      if (!participantId || !participantName) {
+        participantId = crypto.randomUUID();
+        participantName = prompt('Enter your name:') || 'Facilitator';
+        localStorage.setItem('pf_participant_id', participantId);
+        localStorage.setItem('pf_participant_name', participantName);
       }
 
       // Create session via API
@@ -35,8 +32,8 @@ export default function NewProblemFramingPage() {
         body: JSON.stringify({
           title: data.title,
           description: data.description,
-          facilitatorId,
-          facilitatorName,
+          facilitatorId: participantId,
+          facilitatorName: participantName,
         }),
       });
 

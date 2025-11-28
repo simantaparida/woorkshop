@@ -4,9 +4,17 @@ interface ToolProgressProps {
   currentStep: number;
   totalSteps: number;
   stepLabels?: string[]; // optional custom labels
+  onStepClick?: (step: number) => void; // callback for clicking steps
+  canNavigate?: boolean; // whether navigation is enabled (for facilitators)
 }
 
-export function ToolProgress({ currentStep, totalSteps, stepLabels }: ToolProgressProps) {
+export function ToolProgress({
+  currentStep,
+  totalSteps,
+  stepLabels,
+  onStepClick,
+  canNavigate = false
+}: ToolProgressProps) {
   // Default labels if not provided
   const defaultLabels = Array.from({ length: totalSteps }, (_, i) => `Step ${i + 1}`);
   const labels = stepLabels || defaultLabels;
@@ -38,10 +46,16 @@ export function ToolProgress({ currentStep, totalSteps, stepLabels }: ToolProgre
             const stepNumber = index + 1;
             const isActive = stepNumber === currentStep;
             const isCompleted = stepNumber < currentStep;
+            const isClickable = canNavigate && onStepClick && (isCompleted || isActive);
 
             return (
               <div key={step} className="flex items-center">
-                <div className="flex flex-col items-center">
+                <div
+                  className={`flex flex-col items-center ${
+                    isClickable ? 'cursor-pointer group' : ''
+                  }`}
+                  onClick={() => isClickable && onStepClick(stepNumber)}
+                >
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
                       isCompleted
@@ -49,14 +63,14 @@ export function ToolProgress({ currentStep, totalSteps, stepLabels }: ToolProgre
                         : isActive
                         ? 'bg-blue-600 text-white'
                         : 'bg-gray-200 text-gray-500'
-                    }`}
+                    } ${isClickable ? 'group-hover:ring-2 group-hover:ring-blue-300' : ''}`}
                   >
                     {isCompleted ? '✓' : stepNumber}
                   </div>
                   <span
                     className={`text-xs mt-1 ${
                       isActive ? 'text-blue-600 font-medium' : 'text-gray-500'
-                    }`}
+                    } ${isClickable ? 'group-hover:text-blue-600' : ''}`}
                   >
                     {step}
                   </span>

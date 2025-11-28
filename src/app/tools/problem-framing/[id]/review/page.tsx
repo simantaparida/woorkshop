@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ToolLayout } from '@/components/ToolLayout';
 import { StatementCard } from '@/components/problem-framing/StatementCard';
+import { ShareLink } from '@/components/problem-framing/ShareLink';
 import { Button } from '@/components/ui/Button';
 import { useProblemFramingSession } from '@/lib/hooks/useProblemFramingSession';
 import { ArrowRight, Eye } from 'lucide-react';
@@ -67,9 +68,29 @@ export default function TeamReviewPage() {
     }
   }
 
+  function handleStepClick(step: number) {
+    const routes = [
+      `/tools/problem-framing/${sessionId}/join`,
+      `/tools/problem-framing/${sessionId}/input`,
+      `/tools/problem-framing/${sessionId}/review`,
+      `/tools/problem-framing/${sessionId}/finalize`,
+      `/tools/problem-framing/${sessionId}/summary`,
+    ];
+
+    if (step >= 1 && step <= routes.length) {
+      router.push(routes[step - 1]);
+    }
+  }
+
   if (loading) {
     return (
-      <ToolLayout toolSlug="problem-framing" currentStep={3} totalSteps={5}>
+      <ToolLayout
+        toolSlug="problem-framing"
+        currentStep={3}
+        totalSteps={5}
+        onStepClick={handleStepClick}
+        canNavigate={isFacilitator}
+      >
         <div className="max-w-5xl mx-auto px-4 py-8 text-center">
           <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto" />
           <p className="mt-4 text-gray-600">Loading session...</p>
@@ -80,7 +101,13 @@ export default function TeamReviewPage() {
 
   if (!data) {
     return (
-      <ToolLayout toolSlug="problem-framing" currentStep={3} totalSteps={5}>
+      <ToolLayout
+        toolSlug="problem-framing"
+        currentStep={3}
+        totalSteps={5}
+        onStepClick={handleStepClick}
+        canNavigate={isFacilitator}
+      >
         <div className="max-w-5xl mx-auto px-4 py-8 text-center">
           <p className="text-gray-600">Session not found</p>
         </div>
@@ -91,7 +118,13 @@ export default function TeamReviewPage() {
   const statements = data.individual_statements || [];
 
   return (
-    <ToolLayout toolSlug="problem-framing" currentStep={3} totalSteps={5}>
+    <ToolLayout
+      toolSlug="problem-framing"
+      currentStep={3}
+      totalSteps={5}
+      onStepClick={handleStepClick}
+      canNavigate={isFacilitator}
+    >
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
@@ -174,6 +207,9 @@ export default function TeamReviewPage() {
             </p>
           </div>
         )}
+
+        {/* Share Link - Show for facilitators */}
+        {isFacilitator && <ShareLink sessionId={sessionId} className="mt-6" />}
       </div>
     </ToolLayout>
   );

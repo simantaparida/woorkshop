@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ToolLayout } from '@/components/ToolLayout';
 import { JoinForm } from '@/components/problem-framing/JoinForm';
+import { ShareLink } from '@/components/problem-framing/ShareLink';
 import { Button } from '@/components/ui/Button';
 import { useProblemFramingSession } from '@/lib/hooks/useProblemFramingSession';
 import { Users, ArrowRight } from 'lucide-react';
@@ -22,8 +23,30 @@ export default function JoinPage() {
     if (participantId && data?.participants) {
       const isParticipant = data.participants.some((p) => p.participant_id === participantId);
       setHasJoined(isParticipant);
+
+      // Auto-advance regular participants to current step
+      if (isParticipant) {
+        const currentParticipant = data.participants.find((p) => p.participant_id === participantId);
+        const isFacilitator = currentParticipant?.is_facilitator || false;
+
+        // If not facilitator and session status has advanced, redirect them
+        if (!isFacilitator && data.session.status !== 'setup') {
+          const statusToRoute: Record<string, string> = {
+            'input': `/tools/problem-framing/${sessionId}/input`,
+            'review': `/tools/problem-framing/${sessionId}/review`,
+            'finalize': `/tools/problem-framing/${sessionId}/finalize`,
+            'summary': `/tools/problem-framing/${sessionId}/summary`,
+            'completed': `/tools/problem-framing/${sessionId}/summary`,
+          };
+
+          const nextRoute = statusToRoute[data.session.status];
+          if (nextRoute) {
+            router.push(nextRoute);
+          }
+        }
+      }
     }
-  }, [data?.participants]);
+  }, [data?.participants, data?.session, router, sessionId]);
 
   async function handleJoin(name: string) {
     setJoiningLoading(true);
@@ -58,6 +81,20 @@ export default function JoinPage() {
     router.push(`/tools/problem-framing/${sessionId}/input`);
   }
 
+  function handleStepClick(step: number) {
+    const routes = [
+      `/tools/problem-framing/${sessionId}/join`,
+      `/tools/problem-framing/${sessionId}/input`,
+      `/tools/problem-framing/${sessionId}/review`,
+      `/tools/problem-framing/${sessionId}/finalize`,
+      `/tools/problem-framing/${sessionId}/summary`,
+    ];
+
+    if (step >= 1 && step <= routes.length) {
+      router.push(routes[step - 1]);
+    }
+  }
+
   const currentParticipant = data?.participants.find(
     (p) => p.participant_id === localStorage.getItem('pf_participant_id')
   );
@@ -75,7 +112,13 @@ export default function JoinPage() {
   }
 
   return (
-    <ToolLayout toolSlug="problem-framing" currentStep={1} totalSteps={5}>
+    <ToolLayout
+      toolSlug="problem-framing"
+      currentStep={1}
+      totalSteps={5}
+      onStepClick={handleStepClick}
+      canNavigate={isFacilitator}
+    >
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Topic Display */}
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
@@ -146,29 +189,7 @@ export default function JoinPage() {
         </div>
 
         {/* Share Link */}
-        {hasJoined && (
-          <div className="mt-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
-            <p className="text-sm text-gray-700 mb-2 font-medium">Share this link with participants:</p>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                readOnly
-                value={typeof window !== 'undefined' ? window.location.href : ''}
-                className="flex-1 px-3 py-2 bg-white border border-gray-300 rounded text-sm"
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  alert('Link copied to clipboard!');
-                }}
-              >
-                Copy
-              </Button>
-            </div>
-          </div>
-        )}
+        {hasJoined && <ShareLink sessionId={sessionId} className="mt-6" />}
       </div>
     </ToolLayout>
   );

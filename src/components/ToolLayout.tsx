@@ -9,6 +9,8 @@ interface ToolLayoutProps {
   currentStep?: number;
   totalSteps?: number;
   stepLabels?: string[];
+  onStepClick?: (step: number) => void;
+  canNavigate?: boolean;
   children: ReactNode;
 }
 
@@ -17,6 +19,8 @@ export function ToolLayout({
   currentStep,
   totalSteps,
   stepLabels,
+  onStepClick,
+  canNavigate,
   children
 }: ToolLayoutProps) {
   return (
@@ -26,6 +30,8 @@ export function ToolLayout({
           currentStep={currentStep}
           totalSteps={totalSteps}
           stepLabels={stepLabels}
+          onStepClick={onStepClick}
+          canNavigate={canNavigate}
         />
       )}
       {children}

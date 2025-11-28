@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 import type {
   PFSessionData,
   PFIndividualStatement,
@@ -16,8 +16,6 @@ import type {
  * Create a new Problem Framing session
  */
 export async function createPFSession(data: CreatePFSessionInput): Promise<{ sessionId: string }> {
-  const supabase = createClient();
-
   // Create tool_session record
   const { data: session, error: sessionError } = await supabase
     .from('tool_sessions')
@@ -54,8 +52,6 @@ export async function createPFSession(data: CreatePFSessionInput): Promise<{ ses
  * Join an existing Problem Framing session
  */
 export async function joinPFSession(input: JoinPFSessionInput): Promise<PFSessionParticipant> {
-  const supabase = createClient();
-
   const { data, error } = await supabase
     .from('pf_session_participants')
     .insert({
@@ -78,8 +74,6 @@ export async function joinPFSession(input: JoinPFSessionInput): Promise<PFSessio
  * Submit individual problem statement
  */
 export async function submitStatement(input: SubmitPFStatementInput): Promise<PFIndividualStatement> {
-  const supabase = createClient();
-
   // Insert statement
   const { data: statement, error: statementError } = await supabase
     .from('pf_individual_statements')
@@ -111,8 +105,6 @@ export async function submitStatement(input: SubmitPFStatementInput): Promise<PF
  * Toggle pin on a statement
  */
 export async function togglePin(input: TogglePFPinInput): Promise<void> {
-  const supabase = createClient();
-
   // Check if pin exists
   const { data: existingPin } = await supabase
     .from('pf_statement_pins')
@@ -147,8 +139,6 @@ export async function togglePin(input: TogglePFPinInput): Promise<void> {
  * Finalize the final problem statement
  */
 export async function finalizePFStatement(input: FinalizePFStatementInput): Promise<PFFinalStatement> {
-  const supabase = createClient();
-
   // Insert or update final statement
   const { data, error } = await supabase
     .from('pf_final_statement')
@@ -179,8 +169,6 @@ export async function finalizePFStatement(input: FinalizePFStatementInput): Prom
  * Get complete Problem Framing session data
  */
 export async function getPFSessionData(sessionId: string): Promise<PFSessionData> {
-  const supabase = createClient();
-
   // Fetch session
   const { data: session, error: sessionError } = await supabase
     .from('tool_sessions')
@@ -256,8 +244,6 @@ export async function getPFSessionData(sessionId: string): Promise<PFSessionData
  * Advance to next step (facilitator only)
  */
 export async function advanceStep(sessionId: string, nextStep: number): Promise<void> {
-  const supabase = createClient();
-
   // Map step to status
   const statusMap: Record<number, string> = {
     2: 'input',
