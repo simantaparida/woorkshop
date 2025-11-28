@@ -38,7 +38,7 @@ export default function HomePage() {
               onClick={() => router.push('/projects/new')}
             >
               <Plus className="w-4 h-4" />
-              New Workshop
+              New Session
             </Button>
           </div>
         </div>

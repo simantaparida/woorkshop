@@ -8,7 +8,7 @@ import { useRef, useState } from 'react';
 const templates = [
     {
         id: 'blank',
-        title: 'Blank Workshop',
+        title: 'Blank Session',
         description: 'Start with an empty canvas.',
         icon: Plus,
         color: 'text-gray-600',
@@ -121,7 +121,7 @@ export function TemplateRecommendations() {
                     <motion.div
                         key={template.id}
                         whileHover={{ y: -2 }}
-                        onClick={() => router.push(template.id === 'blank' ? '/projects/new' : `/projects/new?template=${template.id}`)}
+                        onClick={() => router.push(template.id === 'blank' ? '/session/new' : `/projects/new?template=${template.id}`)}
                         className="min-w-[240px] w-[240px] h-[160px] p-4 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col"
                     >
                         <div className={`w-10 h-10 ${template.bgColor} rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
