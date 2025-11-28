@@ -6,10 +6,8 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { AppLayout } from '@/components/AppLayout';
-import { TEMPLATES } from '@/lib/constants/templates';
 import { getActiveSessions, type ActiveSession } from '@/lib/utils/helpers';
 import { formatTimeRemaining, isSessionExpired } from '@/lib/constants/session-durations';
-import type { Session } from '@/types';
 import { supabase } from '@/lib/supabase/client';
 
 interface ActiveSessionWithData extends ActiveSession {
@@ -19,7 +17,7 @@ interface ActiveSessionWithData extends ActiveSession {
   expiresAt?: string | null;
 }
 
-export default function CreateLandingPage() {
+export default function ProjectsPage() {
   const router = useRouter();
   const [recentSessions, setRecentSessions] = useState<ActiveSessionWithData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,14 +62,6 @@ export default function CreateLandingPage() {
 
     loadSessions();
   }, []);
-
-  const handleCreateBlank = () => {
-    router.push('/create/new');
-  };
-
-  const handleSelectTemplate = (templateId: string) => {
-    router.push(`/create/new?template=${templateId}`);
-  };
 
   const handleOpenSession = (sessionId: string) => {
     router.push(`/session/${sessionId}/lobby`);
@@ -123,46 +113,11 @@ export default function CreateLandingPage() {
         {/* Page Title */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Start a new session
+            Your Projects
           </h2>
           <p className="text-gray-600">
-            Choose a template or start from scratch
+            Manage your active and recent workshop sessions
           </p>
-        </div>
-
-        {/* Cards Grid - Smaller cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-12">
-          {/* Blank Session Card */}
-          <motion.button
-            onClick={handleCreateBlank}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="bg-white border-2 border-gray-200 rounded-lg p-5 hover:border-blue-600 hover:shadow-md transition-all text-left group"
-          >
-            <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center mb-3 group-hover:from-blue-50 group-hover:to-blue-100 transition-all">
-              <svg className="w-6 h-6 text-gray-400 group-hover:text-blue-600 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-            </div>
-            <h3 className="font-semibold text-sm text-gray-900 mb-0.5">Blank session</h3>
-            <p className="text-xs text-gray-500">Start from scratch</p>
-          </motion.button>
-
-          {/* Template Cards */}
-          {TEMPLATES.map((template) => (
-            <motion.button
-              key={template.id}
-              onClick={() => handleSelectTemplate(template.id)}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="bg-white border-2 border-gray-200 rounded-lg p-5 hover:border-blue-600 hover:shadow-md transition-all text-left group"
-            >
-              <div className="text-3xl mb-3">{template.icon}</div>
-              <h3 className="font-semibold text-sm text-gray-900 mb-0.5">{template.name}</h3>
-              <p className="text-xs text-gray-500 line-clamp-2 mb-2">{template.description}</p>
-              <p className="text-xs text-gray-400">{template.features.length} features</p>
-            </motion.button>
-          ))}
         </div>
 
         {/* Active Sessions */}
@@ -247,11 +202,10 @@ export default function CreateLandingPage() {
                         </td>
                         <td className="px-6 py-4">
                           {session.expiresAt ? (
-                            <span className={`inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full font-medium ${
-                              isSessionExpired(session.expiresAt)
-                                ? 'bg-red-100 text-red-700'
-                                : 'bg-amber-100 text-amber-700'
-                            }`}>
+                            <span className={`inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full font-medium ${isSessionExpired(session.expiresAt)
+                              ? 'bg-red-100 text-red-700'
+                              : 'bg-amber-100 text-amber-700'
+                              }`}>
                               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                               </svg>

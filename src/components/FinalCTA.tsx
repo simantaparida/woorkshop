@@ -46,7 +46,7 @@ export function FinalCTA() {
 
           {/* CTA Button */}
           <Link
-            href="/create"
+            href="/projects"
             onClick={handleCTAClick}
             aria-label="Start a free Padool session"
             className="group relative inline-flex items-center gap-2 px-8 py-3.5 bg-blue-600 text-white text-base font-semibold rounded-lg transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 overflow-hidden"

@@ -35,7 +35,7 @@ export default function HomePage() {
               variant="primary"
               size="sm"
               className="flex items-center gap-2"
-              onClick={() => router.push('/create')}
+              onClick={() => router.push('/projects/new')}
             >
               <Plus className="w-4 h-4" />
               New Workshop

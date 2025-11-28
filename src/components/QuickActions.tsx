@@ -12,7 +12,7 @@ export function QuickActions() {
       title: 'New Workshop',
       description: 'Start a new prioritization session',
       icon: Plus,
-      onClick: () => router.push('/create'),
+      onClick: () => router.push('/projects'),
       primary: true,
       color: 'bg-blue-600',
       hoverColor: 'hover:bg-blue-700',
@@ -21,7 +21,7 @@ export function QuickActions() {
       title: 'Join Session',
       description: 'Enter a code to join an existing session',
       icon: Users,
-      onClick: () => {}, // This will need to trigger the join modal, passing a prop or using context might be needed later. For now, we can just redirect to a join page or open a modal if we move state up.
+      onClick: () => { }, // This will need to trigger the join modal, passing a prop or using context might be needed later. For now, we can just redirect to a join page or open a modal if we move state up.
       // Actually, looking at the plan, the Join Modal was in page.tsx. I should probably keep the state in page.tsx and pass a handler, or just link to a join page if one exists.
       // The previous page.tsx had a modal. I'll make this accept an onJoinClick prop or just handle it internally if I move the modal here?
       // Simpler: Just make it a button that does something. The user said "Don't implement anything" initially, but now I AM implementing.
@@ -41,7 +41,7 @@ export function QuickActions() {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          onClick={() => router.push('/create')}
+          onClick={() => router.push('/projects')}
           className="flex items-center p-6 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl shadow-lg text-white text-left group"
         >
           <div className="p-3 bg-white/10 rounded-lg mr-4 backdrop-blur-sm">

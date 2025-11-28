@@ -48,7 +48,7 @@ export function Pricing() {
         'Community support',
       ],
       ctaText: 'Start Free Session →',
-      ctaLink: '/create',
+      ctaLink: '/projects',
     },
     {
       name: 'Pro',
@@ -114,9 +114,8 @@ export function Pricing() {
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               transition={{ duration: 0.6, delay: index * 0.15 }}
-              className={`relative bg-white rounded-2xl shadow-md p-6 flex flex-col ${
-                plan.isPopular ? 'ring-2 ring-blue-600' : 'border border-gray-200'
-              }`}
+              className={`relative bg-white rounded-2xl shadow-md p-6 flex flex-col ${plan.isPopular ? 'ring-2 ring-blue-600' : 'border border-gray-200'
+                }`}
             >
               {/* Popular Badge */}
               {plan.isPopular && (
@@ -194,11 +193,10 @@ export function Pricing() {
                   href={plan.ctaLink || '#'}
                   onClick={() => handleCTAClick(plan.name.toLowerCase())}
                   aria-label={`${plan.ctaText} for ${plan.name} plan`}
-                  className={`w-full group relative inline-flex items-center justify-center gap-2 px-7 py-3.5 text-base font-semibold rounded-lg transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 overflow-hidden mt-auto ${
-                    plan.isPopular || plan.name === 'Free'
+                  className={`w-full group relative inline-flex items-center justify-center gap-2 px-7 py-3.5 text-base font-semibold rounded-lg transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 overflow-hidden mt-auto ${plan.isPopular || plan.name === 'Free'
                       ? 'bg-blue-600 text-white focus:ring-blue-600'
                       : 'bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-400'
-                  }`}
+                    }`}
                 >
                   {(plan.isPopular || plan.name === 'Free') && (
                     <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>

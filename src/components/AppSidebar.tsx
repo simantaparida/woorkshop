@@ -20,7 +20,7 @@ const navItems: NavItem[] = [
   },
   {
     label: 'Projects',
-    href: '/create',
+    href: '/projects',
     icon: FolderKanban,
   },
   {
@@ -84,8 +84,8 @@ export function AppSidebar() {
                 <Link
                   href={item.href}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all relative ${active
-                      ? 'text-blue-600 bg-blue-50'
-                      : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
+                    ? 'text-blue-600 bg-blue-50'
+                    : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
                     }`}
                   title={isCollapsed ? item.label : undefined}
                 >
