@@ -12,7 +12,6 @@ import { validateSessionName, validateFeatures, sanitizeString } from '@/lib/uti
 import { copyToClipboard, getSessionLink } from '@/lib/utils/helpers';
 import { ROUTES } from '@/lib/constants';
 import { useAnalytics } from '@/lib/hooks/useAnalytics';
-import { TEMPLATES } from '@/lib/constants/templates';
 
 interface FeatureInput {
   id: string;
@@ -36,23 +35,8 @@ export default function CreateSessionPage() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Load template if template parameter is present
-  useEffect(() => {
-    const templateId = searchParams.get('template');
-    if (templateId) {
-      const template = TEMPLATES.find(t => t.id === templateId);
-      if (template) {
-        setProjectName(template.name);
-        setFeatures(template.features.map((f, index) => ({
-          id: String(index + 1),
-          title: f.title,
-          description: f.description || '',
-          effort: f.effort ? String(f.effort) : '',
-          impact: f.impact ? String(f.impact) : '',
-        })));
-      }
-    }
-  }, [searchParams]);
+  // Templates have been removed - this page is now for creating blank sessions only
+  // Users should use the dedicated tools at /tools instead
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};

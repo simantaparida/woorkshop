@@ -481,3 +481,89 @@ export interface AddToolItemInput {
   description?: string;
   tag: ItemTag;
 }
+
+// Problem Framing Tool Types
+export interface PFIndividualStatement {
+  id: string;
+  tool_session_id: string;
+  participant_id: string;
+  participant_name: string;
+  statement: string;
+  submitted_at: string;
+  created_at: string;
+  pins?: PFStatementPin[];
+  pin_count?: number;
+}
+
+export interface PFStatementPin {
+  id: string;
+  statement_id: string;
+  pinned_by_participant_id: string;
+  pinned_by_participant_name: string;
+  created_at: string;
+}
+
+export interface PFFinalStatement {
+  id: string;
+  tool_session_id: string;
+  statement: string;
+  finalized_by_participant_id: string;
+  finalized_by_participant_name: string;
+  finalized_at: string;
+  created_at: string;
+}
+
+export interface PFSessionParticipant {
+  id: string;
+  tool_session_id: string;
+  participant_id: string;
+  participant_name: string;
+  is_facilitator: boolean;
+  has_submitted: boolean;
+  joined_at: string;
+}
+
+export interface PFSessionData {
+  session: ToolSession;
+  topic_title: string;
+  topic_description: string | null;
+  participants: PFSessionParticipant[];
+  individual_statements: PFIndividualStatement[];
+  final_statement: PFFinalStatement | null;
+  current_step: 1 | 2 | 3 | 4 | 5;
+  current_participant?: PFSessionParticipant;
+}
+
+// Problem Framing input types
+export interface CreatePFSessionInput {
+  title: string;
+  description?: string;
+  facilitatorId: string;
+  facilitatorName: string;
+}
+
+export interface JoinPFSessionInput {
+  sessionId: string;
+  participantId: string;
+  participantName: string;
+}
+
+export interface SubmitPFStatementInput {
+  sessionId: string;
+  participantId: string;
+  participantName: string;
+  statement: string;
+}
+
+export interface TogglePFPinInput {
+  statementId: string;
+  participantId: string;
+  participantName: string;
+}
+
+export interface FinalizePFStatementInput {
+  sessionId: string;
+  statement: string;
+  participantId: string;
+  participantName: string;
+}
