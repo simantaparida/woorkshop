@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ToolLayout } from '@/components/ToolLayout';
+import { AppLayout } from '@/components/AppLayout';
+import { SessionTimeline } from '@/components/problem-framing/SessionTimeline';
 import { StatementInput } from '@/components/problem-framing/StatementInput';
 import { ShareLink } from '@/components/problem-framing/ShareLink';
 import { Button } from '@/components/ui/Button';
 import { useProblemFramingSession } from '@/lib/hooks/useProblemFramingSession';
-import { ArrowRight, Users, CheckCircle2, Clock } from 'lucide-react';
+import { ArrowRight, Users, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
 
 export default function IndividualInputPage() {
   const params = useParams();
@@ -81,132 +82,112 @@ export default function IndividualInputPage() {
     }
   }
 
-  function handleStepClick(step: number) {
-    const routes = [
-      `/tools/problem-framing/${sessionId}/join`,
-      `/tools/problem-framing/${sessionId}/input`,
-      `/tools/problem-framing/${sessionId}/review`,
-      `/tools/problem-framing/${sessionId}/finalize`,
-      `/tools/problem-framing/${sessionId}/summary`,
-    ];
-
-    if (step >= 1 && step <= routes.length) {
-      router.push(routes[step - 1]);
-    }
-  }
-
   if (loading) {
     return (
-      <ToolLayout
-        toolSlug="problem-framing"
-        currentStep={2}
-        totalSteps={5}
-        onStepClick={handleStepClick}
-        canNavigate={isFacilitator}
-      >
-        <div className="max-w-3xl mx-auto px-4 py-8 text-center">
+      <AppLayout>
+        <div className="max-w-4xl mx-auto px-4 py-12 text-center">
           <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto" />
           <p className="mt-4 text-gray-600">Loading session...</p>
         </div>
-      </ToolLayout>
+      </AppLayout>
     );
   }
 
   if (!data) {
     return (
-      <ToolLayout
-        toolSlug="problem-framing"
-        currentStep={2}
-        totalSteps={5}
-        onStepClick={handleStepClick}
-        canNavigate={isFacilitator}
-      >
-        <div className="max-w-3xl mx-auto px-4 py-8 text-center">
-          <p className="text-gray-600">Session not found</p>
+      <AppLayout>
+        <div className="max-w-4xl mx-auto px-4 py-12 text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <AlertCircle className="w-8 h-8 text-red-600" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Session Not Found</h2>
+          <p className="text-gray-600">The session you are looking for does not exist or has ended.</p>
         </div>
-      </ToolLayout>
+      </AppLayout>
     );
   }
 
   return (
-    <ToolLayout
-      toolSlug="problem-framing"
-      currentStep={2}
-      totalSteps={5}
-      onStepClick={handleStepClick}
-      canNavigate={isFacilitator}
-    >
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <AppLayout>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        {/* Timeline */}
+        <SessionTimeline currentStep={2} />
+
+        {/* Header */}
+        <div className="text-center mb-10">
+          <h1 className="text-3xl font-bold text-gray-900 mb-3">
+            {isFacilitator ? 'Individual Input Phase' : 'Define the Problem'}
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            {isFacilitator
+              ? 'Monitor participant submissions and advance when ready.'
+              : 'Describe the problem from your perspective. Be specific and focus on the "what" and "why".'}
+          </p>
+        </div>
+
         {/* FACILITATOR VIEW */}
         {isFacilitator ? (
-          <>
-            <div className="mb-6">
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                Individual Input - Facilitator View
-              </h1>
-              <p className="text-gray-600">
-                Monitor participant submissions and advance when ready. You can optionally submit your own input below.
-              </p>
-            </div>
+          <div className="space-y-8">
 
             {/* Facilitator's Own Input (Optional) */}
-            {!hasSubmitted && (
-              <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 mb-6">
-                <div className="mb-4">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-2">
-                    Your Input (Optional)
-                  </h2>
-                  <p className="text-sm text-gray-600">
-                    As facilitator, you can optionally add your own perspective.
-                  </p>
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-blue-100/50 p-8">
+              {!hasSubmitted ? (
+                <div>
+                  <div className="mb-6">
+                    <h2 className="text-xl font-bold text-gray-900 mb-2">
+                      Your Input (Optional)
+                    </h2>
+                    <p className="text-gray-600">
+                      As facilitator, you can optionally add your own perspective.
+                    </p>
+                  </div>
+                  <StatementInput
+                    topicTitle={data.topic_title}
+                    topicDescription={data.topic_description || undefined}
+                    onSubmit={handleSubmit}
+                    loading={submitting}
+                  />
                 </div>
-                <StatementInput
-                  topicTitle={data.topic_title}
-                  topicDescription={data.topic_description || undefined}
-                  onSubmit={handleSubmit}
-                  loading={submitting}
-                />
-              </div>
-            )}
-
-            {hasSubmitted && (
-              <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-6">
-                <div className="flex items-center gap-3 text-green-600">
-                  <CheckCircle2 className="w-6 h-6" />
+              ) : (
+                <div className="flex items-center gap-4 text-green-600 bg-green-50 p-4 rounded-xl border border-green-100">
+                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <CheckCircle2 className="w-6 h-6" />
+                  </div>
                   <div>
-                    <p className="font-semibold">You've submitted your input</p>
-                    <p className="text-sm text-gray-600">Your perspective has been added to the session</p>
+                    <p className="font-bold">You've submitted your input</p>
+                    <p className="text-sm text-green-700">Your perspective has been added to the session</p>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
 
             {/* Participant Status Card */}
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 mb-6">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                    <Users className="w-6 h-6 text-blue-600" />
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                    <Users className="w-6 h-6" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900">
-                      Participant Submissions
+                    <h2 className="text-xl font-bold text-gray-900">
+                      Participant Progress
                     </h2>
-                    <p className="text-sm text-gray-600">
-                      {submittedCount} of {totalRegularParticipants} participants have submitted
+                    <p className="text-gray-600">
+                      {submittedCount} of {totalRegularParticipants} submitted
                     </p>
                   </div>
                 </div>
-                <div className="text-3xl font-bold text-blue-600">
+                <div className="text-4xl font-bold text-blue-600">
                   {totalRegularParticipants > 0 ? Math.round((submittedCount / totalRegularParticipants) * 100) : 0}%
                 </div>
               </div>
 
               {/* Progress Bar */}
-              <div className="mb-6">
-                <div className="w-full bg-gray-200 rounded-full h-3">
+              <div className="mb-8">
+                <div className="w-full bg-gray-100 rounded-full h-4 overflow-hidden">
                   <div
-                    className="bg-blue-600 h-3 rounded-full transition-all duration-300"
+                    className="bg-blue-600 h-4 rounded-full transition-all duration-500 ease-out"
                     style={{
                       width: `${totalRegularParticipants > 0 ? (submittedCount / totalRegularParticipants) * 100 : 0}%`
                     }}
@@ -215,30 +196,30 @@ export default function IndividualInputPage() {
               </div>
 
               {/* Participant List */}
-              <div className="space-y-2">
+              <div className="space-y-3 mb-8">
                 {regularParticipants.length === 0 ? (
-                  <div className="text-center py-6 text-gray-500">
-                    <p>No participants have joined yet.</p>
-                    <p className="text-sm mt-2">Share the session link to invite participants.</p>
+                  <div className="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                    <p className="text-gray-500 font-medium">No participants yet</p>
+                    <p className="text-sm text-gray-400 mt-1">Share the link to invite others</p>
                   </div>
                 ) : (
                   regularParticipants.map((participant) => (
                     <div
                       key={participant.id}
-                      className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-lg"
+                      className="flex items-center justify-between px-5 py-4 bg-gray-50 rounded-xl border border-gray-100 transition-colors hover:bg-gray-100"
                     >
                       <span className="text-gray-900 font-medium">
                         {participant.participant_name}
                       </span>
                       {participant.has_submitted ? (
-                        <div className="flex items-center gap-2 text-green-600">
+                        <div className="flex items-center gap-2 text-green-600 bg-green-100 px-3 py-1 rounded-full">
                           <CheckCircle2 className="w-4 h-4" />
-                          <span className="text-sm font-medium">Submitted</span>
+                          <span className="text-sm font-bold">Submitted</span>
                         </div>
                       ) : (
-                        <div className="flex items-center gap-2 text-amber-600">
+                        <div className="flex items-center gap-2 text-amber-600 bg-amber-100 px-3 py-1 rounded-full">
                           <Clock className="w-4 h-4" />
-                          <span className="text-sm font-medium">Waiting</span>
+                          <span className="text-sm font-bold">Thinking...</span>
                         </div>
                       )}
                     </div>
@@ -247,48 +228,43 @@ export default function IndividualInputPage() {
               </div>
 
               {/* Facilitator Actions */}
-              <div className="mt-8 pt-6 border-t border-gray-200">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                  <p className="text-sm text-blue-900">
-                    <strong>Facilitator:</strong> You can advance to team review when you're ready.
-                    {submittedCount < totalRegularParticipants && (
-                      <> Waiting for {totalRegularParticipants - submittedCount} more {totalRegularParticipants - submittedCount === 1 ? 'participant' : 'participants'}.</>
-                    )}
+              <div className="pt-6 border-t border-gray-100">
+                <div className="bg-blue-50 border border-blue-100 rounded-xl p-5 mb-6">
+                  <p className="text-blue-800 flex gap-2">
+                    <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                    <span>
+                      <strong>Facilitator Note:</strong> Advance to the next step when you feel enough inputs have been gathered. You don't need to wait for everyone.
+                    </span>
                   </p>
                 </div>
+
                 <Button
                   onClick={handleAdvanceToReview}
                   variant="primary"
                   size="lg"
-                  className="w-full"
+                  className="w-full py-4 text-lg font-bold shadow-lg shadow-blue-200/50"
                   disabled={submittedCount === 0}
                 >
-                  Proceed to Team Review ({data.individual_statements?.length || 0} statements)
-                  <ArrowRight className="w-4 h-4 ml-2" />
+                  Proceed to Team Review
+                  <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
+
                 {submittedCount === 0 && (
-                  <p className="text-sm text-center text-gray-500 mt-2">
-                    At least one participant must submit before advancing
+                  <p className="text-sm text-center text-gray-500 mt-3">
+                    Waiting for at least one submission...
                   </p>
                 )}
               </div>
             </div>
 
-            <ShareLink sessionId={sessionId} />
-          </>
+            <div className="flex justify-center">
+              <ShareLink sessionId={sessionId} />
+            </div>
+          </div>
         ) : (
           /* PARTICIPANT VIEW */
-          <>
-            <div className="mb-6">
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                Individual Input
-              </h1>
-              <p className="text-gray-600">
-                Share your perspective on the problem. Your response will remain private until the review step.
-              </p>
-            </div>
-
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-blue-100/50 p-8">
               {!hasSubmitted ? (
                 <>
                   <StatementInput
@@ -297,38 +273,48 @@ export default function IndividualInputPage() {
                     onSubmit={handleSubmit}
                     loading={submitting}
                   />
-                  <div className="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
-                    <p className="text-sm text-amber-900">
-                      <strong>Privacy Note:</strong> Your statement will not be visible to other participants
-                      until the facilitator advances to the team review step. This prevents anchoring bias.
-                    </p>
+                  <div className="mt-8 bg-amber-50 border border-amber-100 rounded-xl p-5 flex gap-3">
+                    <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0 text-amber-600">
+                      <AlertCircle className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-amber-900 mb-1">Privacy Mode Active</h3>
+                      <p className="text-sm text-amber-800">
+                        Your statement will be hidden from others until the review step to prevent groupthink.
+                      </p>
+                    </div>
                   </div>
                 </>
               ) : (
-                <>
-                  <div className="text-center py-8">
-                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <CheckCircle2 className="w-8 h-8 text-green-600" />
-                    </div>
-                    <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                      Statement Submitted!
-                    </h2>
-                    <p className="text-gray-600 mb-4">
-                      Thank you for your input. Waiting for the facilitator to start the team review.
-                    </p>
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm">
-                      <Clock className="w-4 h-4" />
-                      <span>
-                        {submittedCount} of {totalRegularParticipants} participants have submitted
-                      </span>
-                    </div>
+                <div className="text-center py-12">
+                  <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
+                    <CheckCircle2 className="w-10 h-10 text-green-600" />
                   </div>
-                </>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                    Input Submitted!
+                  </h2>
+                  <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto">
+                    Great job! Sit tight while the rest of the team finishes up.
+                  </p>
+
+                  <div className="inline-flex items-center gap-3 px-6 py-3 bg-gray-50 border border-gray-200 rounded-full">
+                    <div className="flex -space-x-2">
+                      {[...Array(Math.min(3, submittedCount))].map((_, i) => (
+                        <div key={i} className="w-8 h-8 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center text-xs font-bold text-blue-600">
+                          {i + 1}
+                        </div>
+                      ))}
+                    </div>
+                    <span className="font-medium text-gray-700">
+                      {submittedCount} of {totalRegularParticipants} ready
+                    </span>
+                  </div>
+                </div>
               )}
             </div>
-          </>
+          </div>
         )}
       </div>
-    </ToolLayout>
+    </AppLayout>
   );
 }

@@ -1,11 +1,11 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { ToolLayout } from '@/components/ToolLayout';
+import { AppLayout } from '@/components/AppLayout';
 import { SessionSummary } from '@/components/problem-framing/SessionSummary';
 import { Button } from '@/components/ui/Button';
 import { useProblemFramingSession } from '@/lib/hooks/useProblemFramingSession';
-import { Home } from 'lucide-react';
+import { Home, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function SummaryPage() {
   const params = useParams();
@@ -17,22 +17,6 @@ export default function SummaryPage() {
     // PDF export implementation
     // For now, show a message that this feature is coming soon
     alert('PDF export will be available soon! For now, please use the "Copy as Markdown" option.');
-
-    // Future implementation could use jspdf + html2canvas:
-    // import jsPDF from 'jspdf';
-    // import html2canvas from 'html2canvas';
-    //
-    // const element = document.getElementById('pf-summary-content');
-    // if (!element) return;
-    //
-    // html2canvas(element).then(canvas => {
-    //   const imgData = canvas.toDataURL('image/png');
-    //   const pdf = new jsPDF('p', 'mm', 'a4');
-    //   const pdfWidth = pdf.internal.pageSize.getWidth();
-    //   const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-    //   pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    //   pdf.save(`problem-framing-${sessionId}.pdf`);
-    // });
   }
 
   function handleCopyMarkdown() {
@@ -99,48 +83,47 @@ export default function SummaryPage() {
 
   if (loading) {
     return (
-      <ToolLayout toolSlug="problem-framing" currentStep={5} totalSteps={5}>
-        <div className="max-w-5xl mx-auto px-4 py-8 text-center">
+      <AppLayout>
+        <div className="max-w-5xl mx-auto px-4 py-12 text-center">
           <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto" />
           <p className="mt-4 text-gray-600">Loading session...</p>
         </div>
-      </ToolLayout>
+      </AppLayout>
     );
   }
 
   if (!data) {
     return (
-      <ToolLayout toolSlug="problem-framing" currentStep={5} totalSteps={5}>
-        <div className="max-w-5xl mx-auto px-4 py-8 text-center">
-          <p className="text-gray-600">Session not found</p>
+      <AppLayout>
+        <div className="max-w-5xl mx-auto px-4 py-12 text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <AlertCircle className="w-8 h-8 text-red-600" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Session Not Found</h2>
+          <p className="text-gray-600">The session you are looking for does not exist or has ended.</p>
         </div>
-      </ToolLayout>
+      </AppLayout>
     );
   }
 
   return (
-    <ToolLayout toolSlug="problem-framing" currentStep={5} totalSteps={5}>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Session Summary
-            </h1>
-            <p className="text-gray-600">
-              Review and export the complete problem framing session results
-            </p>
+    <AppLayout>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        {/* Header */}
+        <div className="text-center mb-10">
+          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
+            <CheckCircle2 className="w-10 h-10 text-green-600" />
           </div>
-          <Button
-            onClick={handleFinish}
-            variant="outline"
-            size="md"
-          >
-            <Home className="w-4 h-4 mr-2" />
-            Back to Home
-          </Button>
+          <h1 className="text-3xl font-bold text-gray-900 mb-3">
+            Session Complete!
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Your team has successfully framed the problem. Here is a summary of what you achieved.
+          </p>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-blue-100/50 p-8 mb-8">
           <SessionSummary
             data={data}
             onExportPDF={handleExportPDF}
@@ -148,21 +131,18 @@ export default function SummaryPage() {
           />
         </div>
 
-        {/* Completion Message */}
-        <div className="mt-6 bg-green-50 border border-green-200 rounded-xl p-6 text-center">
-          <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-            <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            Session Complete!
-          </h3>
-          <p className="text-gray-600">
-            Your team has successfully framed the problem. Use the final statement to guide your next steps.
-          </p>
+        <div className="flex justify-center">
+          <Button
+            onClick={handleFinish}
+            variant="outline"
+            size="lg"
+            className="px-8 py-3"
+          >
+            <Home className="w-5 h-5 mr-2" />
+            Back to Dashboard
+          </Button>
         </div>
       </div>
-    </ToolLayout>
+    </AppLayout>
   );
 }

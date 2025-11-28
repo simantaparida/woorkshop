@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ToolLayout } from '@/components/ToolLayout';
+import { AppLayout } from '@/components/AppLayout';
 import { JoinForm } from '@/components/problem-framing/JoinForm';
 import { ShareLink } from '@/components/problem-framing/ShareLink';
 import { Button } from '@/components/ui/Button';
 import { useProblemFramingSession } from '@/lib/hooks/useProblemFramingSession';
-import { Users, ArrowRight } from 'lucide-react';
+import { Users, ArrowRight, FileText } from 'lucide-react';
 
 export default function JoinPage() {
   const params = useParams();
@@ -97,20 +97,6 @@ export default function JoinPage() {
     }
   }
 
-  function handleStepClick(step: number) {
-    const routes = [
-      `/tools/problem-framing/${sessionId}/join`,
-      `/tools/problem-framing/${sessionId}/input`,
-      `/tools/problem-framing/${sessionId}/review`,
-      `/tools/problem-framing/${sessionId}/finalize`,
-      `/tools/problem-framing/${sessionId}/summary`,
-    ];
-
-    if (step >= 1 && step <= routes.length) {
-      router.push(routes[step - 1]);
-    }
-  }
-
   const currentParticipant = data?.participants.find(
     (p) => p.participant_id === localStorage.getItem('pf_participant_id')
   );
@@ -118,66 +104,75 @@ export default function JoinPage() {
 
   if (loading) {
     return (
-      <ToolLayout toolSlug="problem-framing" currentStep={1} totalSteps={5}>
-        <div className="max-w-3xl mx-auto px-4 py-8 text-center">
+      <AppLayout>
+        <div className="max-w-2xl mx-auto px-4 py-12 text-center">
           <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto" />
           <p className="mt-4 text-gray-600">Loading session...</p>
         </div>
-      </ToolLayout>
+      </AppLayout>
     );
   }
 
   return (
-    <ToolLayout
-      toolSlug="problem-framing"
-      currentStep={1}
-      totalSteps={5}
-      onStepClick={handleStepClick}
-      canNavigate={isFacilitator}
-    >
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Topic Display */}
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">{data?.topic_title}</h1>
+    <AppLayout>
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        {/* Header */}
+        <div className="text-center mb-10">
+          <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6 text-blue-600 transform rotate-3">
+            <FileText className="w-8 h-8" />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-3">
+            {data?.topic_title || 'Problem Framing Session'}
+          </h1>
           {data?.topic_description && (
-            <p className="text-gray-700">{data.topic_description}</p>
+            <p className="text-lg text-gray-600 max-w-lg mx-auto">
+              {data.topic_description}
+            </p>
           )}
         </div>
 
-        {/* Join Form or Participants List */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
+        {/* Main Card */}
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-blue-100/50 p-8">
           {!hasJoined ? (
-            <JoinForm onJoin={handleJoin} loading={joiningLoading} />
-          ) : (
             <div className="space-y-6">
+              <div className="text-center mb-6">
+                <h2 className="text-xl font-bold text-gray-900">Join the Session</h2>
+                <p className="text-gray-500">Enter your name to join the team</p>
+              </div>
+              <JoinForm onJoin={handleJoin} loading={joiningLoading} />
+            </div>
+          ) : (
+            <div className="space-y-8">
               <div className="text-center">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
                   <Users className="w-8 h-8 text-green-600" />
                 </div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                  You've joined the session!
+                <h2 className="text-xl font-bold text-gray-900 mb-2">
+                  You're in!
                 </h2>
                 <p className="text-gray-600">
-                  Waiting for the facilitator to start the session
+                  Waiting for the facilitator to start the session...
                 </p>
               </div>
 
               {/* Participants List */}
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-3">
+              <div className="bg-gray-50 rounded-xl p-6">
+                <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <Users className="w-4 h-4 text-gray-500" />
                   Participants ({data?.participants.length})
                 </h3>
-                <div className="space-y-2">
+                <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
                   {data?.participants.map((participant) => (
                     <div
                       key={participant.id}
-                      className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-lg"
+                      className="flex items-center justify-between px-4 py-3 bg-white border border-gray-100 rounded-lg shadow-sm"
                     >
                       <span className="text-gray-900 font-medium">
                         {participant.participant_name}
                       </span>
                       {participant.is_facilitator && (
-                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                        <span className="text-xs bg-blue-100 text-blue-700 px-2.5 py-1 rounded-full font-medium">
                           Facilitator
                         </span>
                       )}
@@ -188,15 +183,15 @@ export default function JoinPage() {
 
               {/* Facilitator Controls */}
               {isFacilitator && (
-                <div className="border-t border-gray-200 pt-6">
+                <div className="pt-4">
                   <Button
                     onClick={handleStart}
                     variant="primary"
                     size="lg"
-                    className="w-full"
+                    className="w-full py-4 text-lg font-semibold shadow-lg shadow-blue-200/50"
                   >
-                    Start Individual Inputs
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                    Start Session
+                    <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </div>
               )}
@@ -205,8 +200,12 @@ export default function JoinPage() {
         </div>
 
         {/* Share Link */}
-        {hasJoined && <ShareLink sessionId={sessionId} className="mt-6" />}
+        {hasJoined && (
+          <div className="mt-8 flex justify-center">
+            <ShareLink sessionId={sessionId} />
+          </div>
+        )}
       </div>
-    </ToolLayout>
+    </AppLayout>
   );
 }

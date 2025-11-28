@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ToolLayout } from '@/components/ToolLayout';
+import { AppLayout } from '@/components/AppLayout';
+import { SessionTimeline } from '@/components/problem-framing/SessionTimeline';
 import { StatementCard } from '@/components/problem-framing/StatementCard';
 import { ShareLink } from '@/components/problem-framing/ShareLink';
 import { Button } from '@/components/ui/Button';
 import { useProblemFramingSession } from '@/lib/hooks/useProblemFramingSession';
-import { ArrowRight, Eye } from 'lucide-react';
+import { ArrowRight, Eye, AlertCircle } from 'lucide-react';
 
 export default function TeamReviewPage() {
   const params = useParams();
@@ -68,81 +69,60 @@ export default function TeamReviewPage() {
     }
   }
 
-  function handleStepClick(step: number) {
-    const routes = [
-      `/tools/problem-framing/${sessionId}/join`,
-      `/tools/problem-framing/${sessionId}/input`,
-      `/tools/problem-framing/${sessionId}/review`,
-      `/tools/problem-framing/${sessionId}/finalize`,
-      `/tools/problem-framing/${sessionId}/summary`,
-    ];
-
-    if (step >= 1 && step <= routes.length) {
-      router.push(routes[step - 1]);
-    }
-  }
-
   if (loading) {
     return (
-      <ToolLayout
-        toolSlug="problem-framing"
-        currentStep={3}
-        totalSteps={5}
-        onStepClick={handleStepClick}
-        canNavigate={isFacilitator}
-      >
-        <div className="max-w-5xl mx-auto px-4 py-8 text-center">
+      <AppLayout>
+        <div className="max-w-5xl mx-auto px-4 py-12 text-center">
           <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto" />
           <p className="mt-4 text-gray-600">Loading session...</p>
         </div>
-      </ToolLayout>
+      </AppLayout>
     );
   }
 
   if (!data) {
     return (
-      <ToolLayout
-        toolSlug="problem-framing"
-        currentStep={3}
-        totalSteps={5}
-        onStepClick={handleStepClick}
-        canNavigate={isFacilitator}
-      >
-        <div className="max-w-5xl mx-auto px-4 py-8 text-center">
-          <p className="text-gray-600">Session not found</p>
+      <AppLayout>
+        <div className="max-w-5xl mx-auto px-4 py-12 text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <AlertCircle className="w-8 h-8 text-red-600" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Session Not Found</h2>
+          <p className="text-gray-600">The session you are looking for does not exist or has ended.</p>
         </div>
-      </ToolLayout>
+      </AppLayout>
     );
   }
 
   const statements = data.individual_statements || [];
 
   return (
-    <ToolLayout
-      toolSlug="problem-framing"
-      currentStep={3}
-      totalSteps={5}
-      onStepClick={handleStepClick}
-      canNavigate={isFacilitator}
-    >
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+    <AppLayout>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        {/* Timeline */}
+        <SessionTimeline currentStep={3} />
+
+        {/* Header */}
+        <div className="text-center mb-10">
+          <h1 className="text-3xl font-bold text-gray-900 mb-3">
             Team Review
           </h1>
-          <p className="text-gray-600">
-            Review all problem statements submitted by the team. You can pin important insights.
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Review all problem statements submitted by the team. Read through different perspectives and pin the ones that resonate most.
           </p>
         </div>
 
         {/* Topic Display */}
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
-          <div className="flex items-start gap-3">
-            <Eye className="w-6 h-6 text-blue-600 mt-0.5" />
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-8">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 text-blue-600 mt-1">
+              <Eye className="w-6 h-6" />
+            </div>
             <div>
               <h2 className="text-xl font-bold text-gray-900 mb-1">{data.topic_title}</h2>
               {data.topic_description && (
-                <p className="text-gray-700">{data.topic_description}</p>
+                <p className="text-gray-600">{data.topic_description}</p>
               )}
             </div>
           </div>
@@ -150,17 +130,17 @@ export default function TeamReviewPage() {
 
         {/* Statements Grid */}
         {statements.length > 0 ? (
-          <div className="space-y-6 mb-8">
+          <div className="space-y-6 mb-12">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 className="text-lg font-bold text-gray-900">
                 Individual Perspectives ({statements.length})
               </h3>
-              <p className="text-sm text-gray-500">
-                Click the star to pin important statements
-              </p>
+              <div className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                Click the star to pin important insights
+              </div>
             </div>
 
-            <div className="grid gap-4">
+            <div className="grid md:grid-cols-2 gap-6">
               {statements.map((statement) => (
                 <StatementCard
                   key={statement.id}
@@ -173,44 +153,53 @@ export default function TeamReviewPage() {
             </div>
           </div>
         ) : (
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-12 text-center mb-8">
-            <p className="text-gray-600">No statements submitted yet</p>
+          <div className="bg-gray-50 border border-dashed border-gray-200 rounded-2xl p-12 text-center mb-8">
+            <p className="text-gray-500 font-medium">No statements submitted yet</p>
           </div>
         )}
 
         {/* Facilitator Controls */}
-        {isFacilitator && (
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-              <p className="text-sm text-blue-900">
-                <strong>Facilitator:</strong> Once the team has reviewed all perspectives,
-                proceed to create the final agreed problem statement.
-              </p>
+        {isFacilitator ? (
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-blue-100/50 p-8 sticky bottom-8">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex gap-4">
+                <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 flex-shrink-0">
+                  <AlertCircle className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900">Facilitator Actions</h3>
+                  <p className="text-sm text-gray-600">
+                    Once the team has reviewed all perspectives, proceed to create the final agreed problem statement.
+                  </p>
+                </div>
+              </div>
+              <Button
+                onClick={handleAdvanceToFinalize}
+                variant="primary"
+                size="lg"
+                className="w-full md:w-auto px-8 py-4 text-lg font-bold shadow-lg shadow-blue-200/50"
+              >
+                Create Final Statement
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
             </div>
-            <Button
-              onClick={handleAdvanceToFinalize}
-              variant="primary"
-              size="lg"
-              className="w-full"
-            >
-              Create Final Statement
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
           </div>
-        )}
-
-        {/* Info Box */}
-        {!isFacilitator && (
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
-            <p className="text-sm text-gray-600">
-              Waiting for facilitator to advance to the next step
+        ) : (
+          /* Info Box for Participants */
+          <div className="bg-blue-50 border border-blue-100 rounded-xl p-6 text-center">
+            <p className="text-blue-800 font-medium">
+              Waiting for facilitator to advance to the final consensus step...
             </p>
           </div>
         )}
 
         {/* Share Link - Show for facilitators */}
-        {isFacilitator && <ShareLink sessionId={sessionId} className="mt-6" />}
+        {isFacilitator && (
+          <div className="mt-12 flex justify-center">
+            <ShareLink sessionId={sessionId} />
+          </div>
+        )}
       </div>
-    </ToolLayout>
+    </AppLayout>
   );
 }

@@ -2,28 +2,30 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ToolLayout } from '@/components/ToolLayout';
+import { AppLayout } from '@/components/AppLayout';
 import { TopicForm } from '@/components/problem-framing/TopicForm';
-import { FileText } from 'lucide-react';
+import { SessionTimeline } from '@/components/problem-framing/SessionTimeline';
+import { FileText, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 export default function NewProblemFramingPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  async function handleCreateSession(data: { title: string; description?: string }) {
+  async function handleCreateSession(data: { title: string; description?: string; facilitatorName: string }) {
     setLoading(true);
 
     try {
-      // Get or create participant ID (used for both facilitator and participants)
+      // Get or create participant ID
       let participantId = localStorage.getItem('pf_participant_id');
-      let participantName = localStorage.getItem('pf_participant_name');
 
-      if (!participantId || !participantName) {
+      if (!participantId) {
         participantId = crypto.randomUUID();
-        participantName = prompt('Enter your name:') || 'Facilitator';
         localStorage.setItem('pf_participant_id', participantId);
-        localStorage.setItem('pf_participant_name', participantName);
       }
+
+      // Save name to localStorage
+      localStorage.setItem('pf_participant_name', data.facilitatorName);
 
       // Create session via API
       const response = await fetch('/api/tools/problem-framing', {
@@ -33,7 +35,7 @@ export default function NewProblemFramingPage() {
           title: data.title,
           description: data.description,
           facilitatorId: participantId,
-          facilitatorName: participantName,
+          facilitatorName: data.facilitatorName,
         }),
       });
 
@@ -57,53 +59,40 @@ export default function NewProblemFramingPage() {
   }
 
   return (
-    <ToolLayout toolSlug="problem-framing" currentStep={1} totalSteps={5}>
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8 text-center">
-          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <FileText className="w-8 h-8 text-blue-600" />
+    <AppLayout>
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <div className="mb-8">
+          <Link
+            href="/tools"
+            className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 mb-6 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4 mr-1" />
+            Back to Tools
+          </Link>
+
+          {/* Minimalistic Timeline */}
+          <SessionTimeline currentStep={1} />
+
+          <div className="flex items-center gap-4 mb-4 mt-8">
+            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+              <FileText className="w-6 h-6" />
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              New Problem Framing Session
+            </h1>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-3">
-            Problem Framing Session
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Define and understand problems before jumping to solutions. Create a collaborative session where your team can share perspectives and build a common understanding.
+
+          <p className="text-gray-600">
+            Create a collaborative space for your team to define and understand the problem before jumping to solutions.
           </p>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">
-            Define Your Topic
-          </h2>
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 sm:p-8">
           <TopicForm onSubmit={handleCreateSession} loading={loading} />
         </div>
 
-        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-6">
-          <h3 className="font-semibold text-gray-900 mb-2">How it works:</h3>
-          <ol className="space-y-2 text-sm text-gray-700">
-            <li className="flex gap-3">
-              <span className="font-semibold text-blue-600">1.</span>
-              <span>Define the topic you want to frame</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="font-semibold text-blue-600">2.</span>
-              <span>Participants join and individually describe the problem (hidden from others)</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="font-semibold text-blue-600">3.</span>
-              <span>Review all problem statements together as a team</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="font-semibold text-blue-600">4.</span>
-              <span>Create a final agreed problem statement</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="font-semibold text-blue-600">5.</span>
-              <span>Export and share the summary</span>
-            </li>
-          </ol>
-        </div>
       </div>
-    </ToolLayout>
+    </AppLayout>
   );
 }

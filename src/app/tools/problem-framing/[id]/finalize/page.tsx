@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ToolLayout } from '@/components/ToolLayout';
+import { AppLayout } from '@/components/AppLayout';
+import { SessionTimeline } from '@/components/problem-framing/SessionTimeline';
 import { FinalStatementEditor } from '@/components/problem-framing/FinalStatementEditor';
 import { StatementCard } from '@/components/problem-framing/StatementCard';
 import { useProblemFramingSession } from '@/lib/hooks/useProblemFramingSession';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle2, FileText } from 'lucide-react';
 
 export default function FinalizePage() {
   const params = useParams();
@@ -68,22 +69,26 @@ export default function FinalizePage() {
 
   if (loading) {
     return (
-      <ToolLayout toolSlug="problem-framing" currentStep={4} totalSteps={5}>
-        <div className="max-w-5xl mx-auto px-4 py-8 text-center">
+      <AppLayout>
+        <div className="max-w-6xl mx-auto px-4 py-12 text-center">
           <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto" />
           <p className="mt-4 text-gray-600">Loading session...</p>
         </div>
-      </ToolLayout>
+      </AppLayout>
     );
   }
 
   if (!data) {
     return (
-      <ToolLayout toolSlug="problem-framing" currentStep={4} totalSteps={5}>
-        <div className="max-w-5xl mx-auto px-4 py-8 text-center">
-          <p className="text-gray-600">Session not found</p>
+      <AppLayout>
+        <div className="max-w-6xl mx-auto px-4 py-12 text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <AlertCircle className="w-8 h-8 text-red-600" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Session Not Found</h2>
+          <p className="text-gray-600">The session you are looking for does not exist or has ended.</p>
         </div>
-      </ToolLayout>
+      </AppLayout>
     );
   }
 
@@ -97,62 +102,100 @@ export default function FinalizePage() {
   const initialValue = facilitatorStatement?.statement || '';
 
   return (
-    <ToolLayout toolSlug="problem-framing" currentStep={4} totalSteps={5}>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Create Final Statement
+    <AppLayout>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        {/* Timeline */}
+        <SessionTimeline currentStep={4} />
+
+        {/* Header */}
+        <div className="text-center mb-10">
+          <h1 className="text-3xl font-bold text-gray-900 mb-3">
+            Final Consensus
           </h1>
-          <p className="text-gray-600">
-            Based on all individual perspectives, craft a final statement that captures
-            the team's shared understanding of the problem.
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Based on all individual perspectives, craft a final statement that captures the team's shared understanding of the problem.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-8 items-start">
+
           {/* Left: Reference Statements */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Individual Perspectives ({statements.length})
-            </h3>
-            <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
-              {statements.map((statement) => (
-                <StatementCard
-                  key={statement.id}
-                  statement={statement}
-                  currentParticipantId={participantId || ''}
-                  onPin={() => {}} // No pin functionality on this page
-                  showPin={false}
-                />
-              ))}
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-gray-500" />
+                Individual Perspectives ({statements.length})
+              </h3>
+            </div>
+
+            <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100 max-h-[800px] overflow-y-auto custom-scrollbar">
+              <div className="space-y-4">
+                {statements.map((statement) => (
+                  <StatementCard
+                    key={statement.id}
+                    statement={statement}
+                    currentParticipantId={participantId || ''}
+                    onPin={() => { }} // No pin functionality on this page
+                    showPin={false}
+                  />
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Right: Final Statement Editor */}
-          <div className="lg:sticky lg:top-8 lg:self-start">
-            <FinalStatementEditor
-              initialValue={initialValue}
-              onFinalize={handleFinalize}
-              loading={finalizing}
-            />
+          <div className="lg:sticky lg:top-8 space-y-6">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-blue-100/50 p-8">
+              <div className="mb-6">
+                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center text-green-600 mb-4">
+                  <CheckCircle2 className="w-6 h-6" />
+                </div>
+                <h2 className="text-xl font-bold text-gray-900">Final Problem Statement</h2>
+                <p className="text-gray-600 text-sm mt-1">
+                  This will be the official output of this session.
+                </p>
+              </div>
 
-            <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex gap-3">
-                <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <FinalStatementEditor
+                initialValue={initialValue}
+                onFinalize={handleFinalize}
+                loading={finalizing}
+              />
+            </div>
+
+            <div className="bg-blue-50 border border-blue-100 rounded-xl p-6">
+              <div className="flex gap-4">
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 text-blue-600">
+                  <AlertCircle className="w-6 h-6" />
+                </div>
                 <div className="text-sm text-blue-900">
-                  <p className="font-semibold mb-1">Tips for creating the final statement:</p>
-                  <ul className="list-disc list-inside space-y-1">
-                    <li>Synthesize common themes from individual perspectives</li>
-                    <li>Be specific and actionable</li>
-                    <li>Focus on the problem, not the solution</li>
-                    <li>Ensure it resonates with the whole team</li>
+                  <p className="font-bold text-base mb-2">Tips for a great problem statement:</p>
+                  <ul className="space-y-2">
+                    <li className="flex gap-2">
+                      <span className="text-blue-500">•</span>
+                      Synthesize common themes from individual perspectives
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="text-blue-500">•</span>
+                      Be specific and actionable
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="text-blue-500">•</span>
+                      Focus on the problem, not the solution
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="text-blue-500">•</span>
+                      Ensure it resonates with the whole team
+                    </li>
                   </ul>
                 </div>
               </div>
             </div>
           </div>
+
         </div>
       </div>
-    </ToolLayout>
+    </AppLayout>
   );
 }
