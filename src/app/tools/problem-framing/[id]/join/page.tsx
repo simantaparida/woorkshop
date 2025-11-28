@@ -77,8 +77,24 @@ export default function JoinPage() {
     }
   }
 
-  function handleStart() {
-    router.push(`/tools/problem-framing/${sessionId}/input`);
+  async function handleStart() {
+    try {
+      // Update session status to 'input' so participants can submit
+      const response = await fetch(`/api/tools/problem-framing/${sessionId}/advance`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nextStep: 2 }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to start session');
+      }
+
+      router.push(`/tools/problem-framing/${sessionId}/input`);
+    } catch (error) {
+      console.error('Error starting session:', error);
+      alert('Failed to start session. Please try again.');
+    }
   }
 
   function handleStepClick(step: number) {
