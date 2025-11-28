@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Home, FolderKanban, Users, LayoutTemplate, Settings, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { Home, FolderKanban, Users, Wrench, Settings, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
 interface NavItem {
   label: string;
@@ -19,6 +19,11 @@ const navItems: NavItem[] = [
     icon: Home,
   },
   {
+    label: 'Tools',
+    href: '/tools',
+    icon: Wrench,
+  },
+  {
     label: 'Projects',
     href: '/projects',
     icon: FolderKanban,
@@ -27,11 +32,6 @@ const navItems: NavItem[] = [
     label: 'Workshops',
     href: '/workshops',
     icon: Users,
-  },
-  {
-    label: 'Templates',
-    href: '/templates',
-    icon: LayoutTemplate,
   },
   {
     label: 'Settings',

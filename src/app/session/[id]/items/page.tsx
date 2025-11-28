@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { AppLayout } from '@/components/AppLayout';
 import { SessionProgress } from '@/components/SessionProgress';
@@ -25,23 +25,40 @@ export default function ItemsPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<Item | null>(null);
 
+    // Load items from localStorage on mount
+    useEffect(() => {
+        const storedItems = localStorage.getItem(`session_${sessionId}_items`);
+        if (storedItems) {
+            setItems(JSON.parse(storedItems));
+        }
+    }, [sessionId]);
+
     const handleAddItem = (item: Omit<Item, 'id'>) => {
         const newItem = {
             ...item,
             id: `item_${Date.now()}`,
         };
-        setItems([...items, newItem]);
+        const updatedItems = [...items, newItem];
+        setItems(updatedItems);
+        // Persist to localStorage
+        localStorage.setItem(`session_${sessionId}_items`, JSON.stringify(updatedItems));
         setIsModalOpen(false);
     };
 
     const handleEditItem = (item: Item) => {
-        setItems(items.map(i => i.id === item.id ? item : i));
+        const updatedItems = items.map(i => i.id === item.id ? item : i);
+        setItems(updatedItems);
+        // Persist to localStorage
+        localStorage.setItem(`session_${sessionId}_items`, JSON.stringify(updatedItems));
         setEditingItem(null);
         setIsModalOpen(false);
     };
 
     const handleDeleteItem = (id: string) => {
-        setItems(items.filter(i => i.id !== id));
+        const updatedItems = items.filter(i => i.id !== id);
+        setItems(updatedItems);
+        // Persist to localStorage
+        localStorage.setItem(`session_${sessionId}_items`, JSON.stringify(updatedItems));
     };
 
     const handleNext = () => {
@@ -110,7 +127,10 @@ export default function ItemsPage() {
                             </Button>
                         </div>
 
-                        <Reorder.Group axis="y" values={items} onReorder={setItems} className="space-y-3">
+                        <Reorder.Group axis="y" values={items} onReorder={(newItems) => {
+                            setItems(newItems);
+                            localStorage.setItem(`session_${sessionId}_items`, JSON.stringify(newItems));
+                        }} className="space-y-3">
                             {items.map((item) => (
                                 <Reorder.Item key={item.id} value={item}>
                                     <motion.div

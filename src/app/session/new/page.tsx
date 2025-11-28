@@ -25,6 +25,17 @@ export default function NewSessionPage() {
 
     const handleAddItems = () => {
         if (sessionId) {
+            // Save session data to localStorage
+            const sessionData = {
+                id: sessionId,
+                title,
+                description,
+                sessionType,
+                createdAt: new Date().toISOString(),
+            };
+            localStorage.setItem(`session_${sessionId}_data`, JSON.stringify(sessionData));
+
+            // Navigate to items page
             router.push(`/session/${sessionId}/items`);
         }
     };
