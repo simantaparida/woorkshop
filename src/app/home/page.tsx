@@ -46,11 +46,11 @@ export default function HomePage() {
         {/* Start Session Cards */}
         <TemplateRecommendations />
 
-        {/* Bottom Section: Recent Workshops & Activities */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <RecentWorkshops />
-          <RecentActivities />
-        </div>
+        {/* Recent Workshops - Full Width */}
+        <RecentWorkshops />
+
+        {/* Recent Activities */}
+        <RecentActivities />
 
       </div>
     </AppLayout>
