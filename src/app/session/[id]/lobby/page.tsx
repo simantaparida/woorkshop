@@ -6,7 +6,8 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { PlayerList } from '@/components/PlayerList';
-import { SessionHeader } from '@/components/SessionHeader';
+import { SessionBreadcrumb } from '@/components/SessionBreadcrumb';
+import { AppLayout } from '@/components/AppLayout';
 import { useToast } from '@/components/ui/Toast';
 import { useSession } from '@/lib/hooks/useSession';
 import { usePlayers } from '@/lib/hooks/usePlayers';
@@ -225,35 +226,29 @@ export default function LobbyPage() {
   const currentPlayer = players.find(p => p.id === currentPlayerId);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <SessionHeader
-        sessionId={sessionId}
-        sessionName={session.project_name}
-        sessionGoal={session.session_goal}
-        expiresAt={session.expires_at}
-        playerName={currentPlayer?.name}
-        isHost={currentPlayer?.is_host}
-      />
-      <div className="py-12 px-4">
-        <div className="max-w-content mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-            className="space-y-8"
-          >
-            {/* Header */}
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.4 }}
-              className="text-center"
-            >
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Lobby
-              </h1>
-              <p className="text-gray-600">Waiting for players to join...</p>
-            </motion.div>
+    <AppLayout>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <SessionBreadcrumb
+          sessionId={sessionId}
+          sessionName={session.project_name}
+          sessionGoal={session.session_goal}
+          expiresAt={session.expires_at}
+          playerName={currentPlayer?.name}
+          isHost={currentPlayer?.is_host}
+        />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+          className="space-y-8"
+        >
+          {/* Header */}
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              Lobby
+            </h1>
+            <p className="text-gray-600">Waiting for players to join...</p>
+          </div>
 
           {/* Join Form or Waiting Status */}
           {!currentPlayerId ? (
@@ -531,8 +526,7 @@ export default function LobbyPage() {
           })()}
         </motion.div>
       </div>
-      </div>
       {ToastContainer}
-    </div>
+    </AppLayout>
   );
 }

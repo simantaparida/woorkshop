@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/Button';
 import { FeatureCard } from '@/components/FeatureCard';
 import { PlayerList } from '@/components/PlayerList';
 import { ProgressIndicator } from '@/components/ProgressIndicator';
-import { SessionHeader } from '@/components/SessionHeader';
+import { SessionBreadcrumb } from '@/components/SessionBreadcrumb';
+import { AppLayout } from '@/components/AppLayout';
 import { ImpactEffortGrid } from '@/components/ImpactEffortGrid';
 import { useToast } from '@/components/ui/Toast';
 import { Tooltip } from '@/components/ui/Tooltip';
@@ -243,47 +244,47 @@ export default function VotePage() {
 
   if (!currentPlayerId) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="text-center max-w-md">
-          <h1 className="text-2xl font-bold mb-4">Please Join First</h1>
-          <p className="text-gray-600 mb-6">
-            You need to join the session before you can vote.
-          </p>
-          <Button onClick={() => router.push(ROUTES.LOBBY(sessionId))}>
-            Go to Lobby
-          </Button>
+      <AppLayout>
+        <div className="flex items-center justify-center min-h-full p-4">
+          <div className="text-center max-w-md">
+            <h1 className="text-2xl font-bold mb-4">Please Join First</h1>
+            <p className="text-gray-600 mb-6">
+              You need to join the session before you can vote.
+            </p>
+            <Button onClick={() => router.push(ROUTES.LOBBY(sessionId))}>
+              Go to Lobby
+            </Button>
+          </div>
         </div>
-      </div>
+      </AppLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {ToastContainer}
-      <SessionHeader
-        sessionId={sessionId}
-        sessionName={session?.project_name}
-        sessionGoal={session?.session_goal}
-        expiresAt={session?.expires_at}
-        playerName={currentPlayer?.name}
-        isHost={currentPlayer?.is_host}
-      />
-      <div className="py-12 px-4">
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="space-y-8"
-          >
-            {/* Header */}
-            <div className="text-center">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Voting
-              </h1>
-              <p className="text-gray-600">
-                Allocate your {TOTAL_POINTS} points across the features
-              </p>
-            </div>
+    <AppLayout>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <SessionBreadcrumb
+          sessionId={sessionId}
+          sessionName={session?.project_name}
+          sessionGoal={session?.session_goal}
+          expiresAt={session?.expires_at}
+          playerName={currentPlayer?.name}
+          isHost={currentPlayer?.is_host}
+        />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-8"
+        >
+          {/* Header */}
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              Voting
+            </h1>
+            <p className="text-gray-600">
+              Allocate your {TOTAL_POINTS} points across the features
+            </p>
+          </div>
 
             {/* View Toggle */}
             <div className="flex justify-center">
@@ -554,7 +555,7 @@ export default function VotePage() {
           </div>
         </motion.div>
       </div>
-      </div>
-    </div>
+      {ToastContainer}
+    </AppLayout>
   );
 }

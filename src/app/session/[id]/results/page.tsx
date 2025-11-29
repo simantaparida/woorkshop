@@ -5,7 +5,8 @@ import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { ResultsChart } from '@/components/ResultsChart';
-import { SessionHeader } from '@/components/SessionHeader';
+import { SessionBreadcrumb } from '@/components/SessionBreadcrumb';
+import { AppLayout } from '@/components/AppLayout';
 import { useToast } from '@/components/ui/Toast';
 import { Tooltip } from '@/components/ui/Tooltip';
 import { VotingBiasAnalysis } from '@/components/VotingBiasAnalysis';
@@ -242,57 +243,58 @@ export default function ResultsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
-          <p className="text-gray-600">Loading results...</p>
+      <AppLayout>
+        <div className="flex items-center justify-center min-h-full">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
+            <p className="text-gray-600">Loading results...</p>
+          </div>
         </div>
-      </div>
+      </AppLayout>
     );
   }
 
   if (!session) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Session Not Found</h1>
-          <Button onClick={() => router.push(ROUTES.HOME)}>Go Home</Button>
+      <AppLayout>
+        <div className="flex items-center justify-center min-h-full">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Session Not Found</h1>
+            <Button onClick={() => router.push(ROUTES.HOME)}>Go Home</Button>
+          </div>
         </div>
-      </div>
+      </AppLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {ToastContainer}
-      <SessionHeader
-        sessionId={sessionId}
-        sessionName={session.project_name}
-        sessionGoal={session.session_goal}
-        expiresAt={session.expires_at}
-        showBackButton={false}
-      />
-      <div className="py-12 px-4">
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="space-y-8"
-          >
-            {/* Header */}
-            <div className="text-center">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.2, type: 'spring' }}
-                className="text-6xl mb-4"
-              >
-                🎉
-              </motion.div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Results
-              </h1>
-              <p className="text-gray-600">Prioritization complete!</p>
+    <AppLayout>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <SessionBreadcrumb
+          sessionId={sessionId}
+          sessionName={session.project_name}
+          sessionGoal={session.session_goal}
+          expiresAt={session.expires_at}
+        />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-8"
+        >
+          {/* Header */}
+          <div className="text-center">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: 'spring' }}
+              className="text-6xl mb-4"
+            >
+              🎉
+            </motion.div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              Results
+            </h1>
+            <p className="text-gray-600">Prioritization complete!</p>
 
               {/* Session Goal Display */}
               {session.session_goal && (() => {
@@ -667,7 +669,7 @@ export default function ResultsPage() {
           </div>
         </motion.div>
       </div>
-      </div>
-    </div>
+      {ToastContainer}
+    </AppLayout>
   );
 }
