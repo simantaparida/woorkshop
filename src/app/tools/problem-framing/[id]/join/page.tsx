@@ -5,9 +5,10 @@ import { useParams, useRouter } from 'next/navigation';
 import { AppLayout } from '@/components/AppLayout';
 import { JoinForm } from '@/components/problem-framing/JoinForm';
 import { ShareLink } from '@/components/problem-framing/ShareLink';
+import { SessionTimeline } from '@/components/problem-framing/SessionTimeline';
 import { Button } from '@/components/ui/Button';
 import { useProblemFramingSession } from '@/lib/hooks/useProblemFramingSession';
-import { Users, ArrowRight, FileText } from 'lucide-react';
+import { Users, ArrowRight, FileText, Link as LinkIcon, Image as ImageIcon, Paperclip, CheckCircle2, ChevronLeft, Copy } from 'lucide-react';
 
 export default function JoinPage() {
   const params = useParams();
@@ -20,14 +21,23 @@ export default function JoinPage() {
   useEffect(() => {
     // Check if user has already joined
     const participantId = localStorage.getItem('pf_participant_id');
-    if (participantId && data?.participants) {
-      const isParticipant = data.participants.some((p) => p.participant_id === participantId);
-      setHasJoined(isParticipant);
+
+    if (participantId && data) {
+      // Check if user is in the participants list
+      const isParticipant = data.participants?.some((p) => p.participant_id === participantId);
+
+      // Check if user is the creator/facilitator (fallback)
+      const isCreator = data.session?.created_by === participantId;
+
+      if (isParticipant || isCreator) {
+        setHasJoined(true);
+      }
 
       // Auto-advance regular participants to current step
-      if (isParticipant) {
-        const currentParticipant = data.participants.find((p) => p.participant_id === participantId);
-        const isFacilitator = currentParticipant?.is_facilitator || false;
+      if (isParticipant || isCreator) {
+        const currentParticipant = data.participants?.find((p) => p.participant_id === participantId);
+        // If they are the creator, they are the facilitator even if not found in list (shouldn't happen but safe fallback)
+        const isFacilitator = currentParticipant?.is_facilitator || isCreator || false;
 
         // If not facilitator and session status has advanced, redirect them
         if (!isFacilitator && data.session.status !== 'setup') {
@@ -46,7 +56,7 @@ export default function JoinPage() {
         }
       }
     }
-  }, [data?.participants, data?.session, router, sessionId]);
+  }, [data, router, sessionId]);
 
   async function handleJoin(name: string) {
     setJoiningLoading(true);
@@ -97,15 +107,16 @@ export default function JoinPage() {
     }
   }
 
+  const participantId = localStorage.getItem('pf_participant_id');
   const currentParticipant = data?.participants.find(
-    (p) => p.participant_id === localStorage.getItem('pf_participant_id')
+    (p) => p.participant_id === participantId
   );
-  const isFacilitator = currentParticipant?.is_facilitator || false;
+  const isFacilitator = currentParticipant?.is_facilitator || (data?.session?.created_by === participantId) || false;
 
   if (loading) {
     return (
       <AppLayout>
-        <div className="max-w-2xl mx-auto px-4 py-12 text-center">
+        <div className="max-w-4xl mx-auto px-4 py-12 text-center">
           <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto" />
           <p className="mt-4 text-gray-600">Loading session...</p>
         </div>
@@ -115,96 +126,176 @@ export default function JoinPage() {
 
   return (
     <AppLayout>
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-        {/* Header */}
-        <div className="text-center mb-10">
-          <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6 text-blue-600 transform rotate-3">
-            <FileText className="w-8 h-8" />
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-3">
+        {/* Back Button */}
+        <div className="mb-6">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.push('/tools')}
+            className="text-gray-500 hover:text-gray-900"
+          >
+            <ChevronLeft className="w-4 h-4 mr-1" />
+            Back to Tools
+          </Button>
+        </div>
+
+        {/* Timeline - Show Step 2 (Input) as active but waiting */}
+        <SessionTimeline currentStep={2} />
+
+        {/* Header Section */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
             {data?.topic_title || 'Problem Framing Session'}
           </h1>
           {data?.topic_description && (
-            <p className="text-lg text-gray-600 max-w-lg mx-auto">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               {data.topic_description}
             </p>
           )}
         </div>
 
-        {/* Main Card */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-blue-100/50 p-8">
-          {!hasJoined ? (
-            <div className="space-y-6">
-              <div className="text-center mb-6">
-                <h2 className="text-xl font-bold text-gray-900">Join the Session</h2>
-                <p className="text-gray-500">Enter your name to join the team</p>
-              </div>
-              <JoinForm onJoin={handleJoin} loading={joiningLoading} />
-            </div>
-          ) : (
-            <div className="space-y-8">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
-                  <Users className="w-8 h-8 text-green-600" />
-                </div>
-                <h2 className="text-xl font-bold text-gray-900 mb-2">
-                  You're in!
-                </h2>
-                <p className="text-gray-600">
-                  Waiting for the facilitator to start the session...
-                </p>
-              </div>
+        {/* Main Content Area */}
+        <div className="space-y-6">
 
-              {/* Participants List */}
-              <div className="bg-gray-50 rounded-xl p-6">
-                <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <Users className="w-4 h-4 text-gray-500" />
-                  Participants ({data?.participants.length})
-                </h3>
-                <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
-                  {data?.participants.map((participant) => (
-                    <div
-                      key={participant.id}
-                      className="flex items-center justify-between px-4 py-3 bg-white border border-gray-100 rounded-lg shadow-sm"
-                    >
-                      <span className="text-gray-900 font-medium">
-                        {participant.participant_name}
-                      </span>
-                      {participant.is_facilitator && (
-                        <span className="text-xs bg-blue-100 text-blue-700 px-2.5 py-1 rounded-full font-medium">
-                          Facilitator
-                        </span>
-                      )}
+          {/* Join / Lobby Card */}
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-blue-100/50 overflow-hidden">
+            <div className="p-8">
+              {!hasJoined ? (
+                <div className="max-w-md mx-auto space-y-6">
+                  <div className="text-center mb-6">
+                    <h2 className="text-2xl font-bold text-gray-900">Join the Session</h2>
+                    <p className="text-gray-500">Enter your name to join the team</p>
+                  </div>
+                  <JoinForm onJoin={handleJoin} loading={joiningLoading} />
+                </div>
+              ) : (
+                <div className="space-y-8">
+                  <div className="text-center">
+                    <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
+                      <CheckCircle2 className="w-10 h-10 text-green-600" />
                     </div>
-                  ))}
-                </div>
-              </div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                      You're in!
+                    </h2>
+                    <p className="text-gray-600">
+                      Waiting for the facilitator to start the session...
+                    </p>
+                  </div>
 
-              {/* Facilitator Controls */}
-              {isFacilitator && (
-                <div className="pt-4">
-                  <Button
-                    onClick={handleStart}
-                    variant="primary"
-                    size="lg"
-                    className="w-full py-4 text-lg font-semibold shadow-lg shadow-blue-200/50"
-                  >
-                    Start Session
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </Button>
+                  {/* Share Link - Prominent */}
+                  <div className="bg-blue-50 border border-blue-100 rounded-xl p-6 text-center">
+                    <p className="text-sm font-semibold text-blue-900 mb-3">
+                      Invite your team to join
+                    </p>
+                    <div className="flex items-center justify-center gap-2 max-w-md mx-auto">
+                      <code className="flex-1 bg-white px-4 py-3 rounded-lg border border-blue-200 text-sm text-gray-600 truncate font-mono">
+                        {typeof window !== 'undefined' ? window.location.href : ''}
+                      </code>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          navigator.clipboard.writeText(window.location.href);
+                          alert('Link copied!');
+                        }}
+                        className="bg-white hover:bg-blue-50 border-blue-200 text-blue-700"
+                      >
+                        <Copy className="w-4 h-4 mr-2" />
+                        Copy
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Participants List */}
+                  <div className="bg-gray-50 rounded-xl p-6 border border-gray-100">
+                    <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                      <Users className="w-5 h-5 text-gray-500" />
+                      Participants ({data?.participants.length})
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {data?.participants.map((participant) => (
+                        <div
+                          key={participant.id}
+                          className="flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm"
+                        >
+                          <span className="text-gray-900 font-medium">
+                            {participant.participant_name}
+                          </span>
+                          {participant.is_facilitator && (
+                            <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-bold uppercase tracking-wide">
+                              Host
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Facilitator Controls */}
+                  {isFacilitator && (
+                    <div className="pt-4 border-t border-gray-100">
+                      <Button
+                        onClick={handleStart}
+                        variant="primary"
+                        size="lg"
+                        className="w-full py-4 text-lg font-semibold shadow-lg shadow-blue-200/50 hover:shadow-blue-300/50 transition-all"
+                      >
+                        Start Session
+                        <ArrowRight className="w-5 h-5 ml-2" />
+                      </Button>
+                      <p className="text-sm text-center text-gray-500 mt-3">
+                        Click when everyone has joined
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
-          )}
-        </div>
-
-        {/* Share Link */}
-        {hasJoined && (
-          <div className="mt-8 flex justify-center">
-            <ShareLink sessionId={sessionId} />
           </div>
-        )}
+
+          {/* Session Context / Attachments - Below Main Card */}
+          {data?.attachments && data.attachments.length > 0 && (
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Paperclip className="w-5 h-5 text-gray-500" />
+                <h3 className="font-semibold text-gray-900">Session Context & Attachments</h3>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                {data.attachments.map((att) => (
+                  <div key={att.id} className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 transition-colors">
+                    <div className="mt-1 p-2 bg-white rounded-lg border border-gray-100 shadow-sm">
+                      {att.type === 'link' && <LinkIcon className="w-5 h-5 text-blue-500" />}
+                      {att.type === 'image' && <ImageIcon className="w-5 h-5 text-purple-500" />}
+                      {att.type === 'document' && <FileText className="w-5 h-5 text-orange-500" />}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-gray-900 truncate mb-1">{att.name}</p>
+                      {att.type === 'link' ? (
+                        <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline truncate block flex items-center">
+                          {att.url} <ArrowRight className="w-3 h-3 ml-1 inline" />
+                        </a>
+                      ) : (
+                        <div className="text-xs text-gray-500">
+                          {att.type === 'image' ? 'Image Attachment' : 'Document Attachment'}
+                        </div>
+                      )}
+
+                      {/* Image Preview */}
+                      {att.type === 'image' && (
+                        <div className="mt-3 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
+                          <img src={att.url} alt={att.name} className="w-full h-32 object-cover" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+        </div>
       </div>
     </AppLayout>
   );

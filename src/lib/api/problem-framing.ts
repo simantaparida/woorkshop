@@ -209,6 +209,15 @@ export async function getPFSessionData(sessionId: string): Promise<PFSessionData
 
   // finalError is expected if no final statement yet
 
+  // Fetch attachments
+  const { data: attachments, error: attachmentsError } = await supabase
+    .from('pf_attachments')
+    .select('*')
+    .eq('tool_session_id', sessionId)
+    .order('created_at', { ascending: true });
+
+  if (attachmentsError) throw attachmentsError;
+
   // Process statements to add pin counts
   const processedStatements: PFIndividualStatement[] = (statements || []).map((stmt: any) => ({
     ...stmt,
@@ -236,6 +245,7 @@ export async function getPFSessionData(sessionId: string): Promise<PFSessionData
     participants: participants || [],
     individual_statements: processedStatements,
     final_statement: finalStatement as PFFinalStatement | null,
+    attachments: (attachments as any[]) || [],
     current_step: currentStep,
   };
 }

@@ -15,8 +15,8 @@ export function SessionTimeline({ currentStep }: SessionTimelineProps) {
     ];
 
     return (
-        <div className="flex items-center justify-center w-full mb-8">
-            <div className="flex items-center">
+        <div className="flex items-center justify-center w-full mb-12">
+            <div className="flex items-center relative z-10">
                 {steps.map((step, index) => {
                     const isActive = step.id === currentStep;
                     const isCompleted = step.id < currentStep;
@@ -26,17 +26,17 @@ export function SessionTimeline({ currentStep }: SessionTimelineProps) {
                         <div key={step.id} className="flex items-center">
                             <div className="flex flex-col items-center relative">
                                 <div
-                                    className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${isActive
-                                            ? 'bg-blue-600 text-white ring-4 ring-blue-50'
-                                            : isCompleted
-                                                ? 'bg-green-500 text-white'
-                                                : 'bg-gray-100 text-gray-400'
+                                    className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 border-2 ${isActive
+                                        ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-200'
+                                        : isCompleted
+                                            ? 'bg-green-500 text-white border-green-500'
+                                            : 'bg-white text-gray-400 border-gray-200'
                                         }`}
                                 >
-                                    {isCompleted ? <Check className="w-4 h-4" /> : step.id}
+                                    {isCompleted ? <Check className="w-5 h-5" /> : step.id}
                                 </div>
                                 <span
-                                    className={`absolute top-10 text-xs font-medium whitespace-nowrap transition-colors duration-300 ${isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-400'
+                                    className={`absolute top-12 text-sm font-medium whitespace-nowrap transition-colors duration-300 ${isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-400'
                                         }`}
                                 >
                                     {step.label}

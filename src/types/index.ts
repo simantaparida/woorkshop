@@ -186,6 +186,180 @@ export interface Database {
           updated_at?: string;
         };
       };
+      tool_sessions: {
+        Row: {
+          id: string;
+          tool_slug: string;
+          title: string;
+          description: string | null;
+          created_by: string | null;
+          status: string;
+          created_at: string;
+          updated_at: string;
+          completed_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          tool_slug: string;
+          title: string;
+          description?: string | null;
+          created_by?: string | null;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+          completed_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          tool_slug?: string;
+          title?: string;
+          description?: string | null;
+          created_by?: string | null;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+          completed_at?: string | null;
+        };
+      };
+      pf_session_participants: {
+        Row: {
+          id: string;
+          tool_session_id: string;
+          participant_id: string;
+          participant_name: string;
+          is_facilitator: boolean;
+          has_submitted: boolean;
+          joined_at: string;
+        };
+        Insert: {
+          id?: string;
+          tool_session_id: string;
+          participant_id: string;
+          participant_name: string;
+          is_facilitator?: boolean;
+          has_submitted?: boolean;
+          joined_at?: string;
+        };
+        Update: {
+          id?: string;
+          tool_session_id?: string;
+          participant_id?: string;
+          participant_name?: string;
+          is_facilitator?: boolean;
+          has_submitted?: boolean;
+          joined_at?: string;
+        };
+      };
+      pf_individual_statements: {
+        Row: {
+          id: string;
+          tool_session_id: string;
+          participant_id: string;
+          participant_name: string;
+          statement: string;
+          submitted_at: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tool_session_id: string;
+          participant_id: string;
+          participant_name: string;
+          statement: string;
+          submitted_at?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          tool_session_id?: string;
+          participant_id?: string;
+          participant_name?: string;
+          statement?: string;
+          submitted_at?: string;
+          created_at?: string;
+        };
+      };
+      pf_statement_pins: {
+        Row: {
+          id: string;
+          statement_id: string;
+          pinned_by_participant_id: string;
+          pinned_by_participant_name: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          statement_id: string;
+          pinned_by_participant_id: string;
+          pinned_by_participant_name: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          statement_id?: string;
+          pinned_by_participant_id?: string;
+          pinned_by_participant_name?: string;
+          created_at?: string;
+        };
+      };
+      pf_final_statement: {
+        Row: {
+          id: string;
+          tool_session_id: string;
+          statement: string;
+          finalized_by_participant_id: string;
+          finalized_by_participant_name: string;
+          finalized_at: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tool_session_id: string;
+          statement: string;
+          finalized_by_participant_id: string;
+          finalized_by_participant_name: string;
+          finalized_at?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          tool_session_id?: string;
+          statement?: string;
+          finalized_by_participant_id?: string;
+          finalized_by_participant_name?: string;
+          finalized_at?: string;
+          created_at?: string;
+        };
+      };
+      pf_attachments: {
+        Row: {
+          id: string;
+          tool_session_id: string;
+          type: 'link' | 'image' | 'document';
+          name: string;
+          url: string;
+          size: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tool_session_id: string;
+          type: 'link' | 'image' | 'document';
+          name: string;
+          url: string;
+          size?: number | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          tool_session_id?: string;
+          type?: 'link' | 'image' | 'document';
+          name?: string;
+          url?: string;
+          size?: number | null;
+          created_at?: string;
+        };
+      };
     };
   };
 }
@@ -523,6 +697,16 @@ export interface PFSessionParticipant {
   joined_at: string;
 }
 
+export interface PFAttachment {
+  id: string;
+  tool_session_id: string;
+  type: 'link' | 'image' | 'document';
+  name: string;
+  url: string;
+  size?: number;
+  created_at: string;
+}
+
 export interface PFSessionData {
   session: ToolSession;
   topic_title: string;
@@ -530,6 +714,7 @@ export interface PFSessionData {
   participants: PFSessionParticipant[];
   individual_statements: PFIndividualStatement[];
   final_statement: PFFinalStatement | null;
+  attachments: PFAttachment[];
   current_step: 1 | 2 | 3 | 4 | 5;
   current_participant?: PFSessionParticipant;
 }
