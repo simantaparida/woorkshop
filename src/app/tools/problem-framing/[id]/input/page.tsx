@@ -29,10 +29,13 @@ export default function IndividualInputPage() {
   const isFacilitator = currentParticipant?.is_facilitator || isCreator || false;
   const hasSubmitted = currentParticipant?.has_submitted || false;
 
-  // Calculate participant stats (excluding facilitator)
+  // Calculate participant stats (excluding facilitator from counts only)
   const regularParticipants = data?.participants.filter(p => !p.is_facilitator) || [];
   const submittedCount = regularParticipants.filter(p => p.has_submitted).length;
   const totalRegularParticipants = regularParticipants.length;
+
+  // All participants for display (including facilitator)
+  const allParticipants = data?.participants || [];
 
   async function handleSubmit(statement: string) {
     if (!participantId || !participantName) {
@@ -220,13 +223,13 @@ export default function IndividualInputPage() {
 
               {/* Participant List */}
               <div className="space-y-3 mb-8">
-                {regularParticipants.length === 0 ? (
+                {allParticipants.length === 0 ? (
                   <div className="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-200">
                     <p className="text-gray-500 font-medium">No participants yet</p>
                     <p className="text-sm text-gray-400 mt-1">Share the link to invite others</p>
                   </div>
                 ) : (
-                  regularParticipants.map((participant) => {
+                  allParticipants.map((participant) => {
                     const isCurrentUser = participant.participant_id === participantId;
 
                     return (
@@ -238,12 +241,19 @@ export default function IndividualInputPage() {
                             : 'bg-gray-50 border-gray-100 hover:bg-gray-100'
                         }`}
                       >
-                        <span className="text-gray-900 font-medium">
-                          {participant.participant_name}
-                          {isCurrentUser && (
-                            <span className="ml-2 text-xs text-blue-600">(You)</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-900 font-medium">
+                            {participant.participant_name}
+                            {isCurrentUser && (
+                              <span className="ml-2 text-xs text-blue-600">(You)</span>
+                            )}
+                          </span>
+                          {participant.is_facilitator && (
+                            <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-bold uppercase tracking-wide">
+                              Host
+                            </span>
                           )}
-                        </span>
+                        </div>
                         {participant.has_submitted ? (
                           <div className="flex items-center gap-2 text-green-600 bg-green-100 px-3 py-1 rounded-full">
                             <CheckCircle2 className="w-4 h-4" />
