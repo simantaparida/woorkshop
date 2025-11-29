@@ -51,7 +51,7 @@ export default function NewSessionPage() {
             value: 'voting',
             label: 'Voting',
             icon: Vote,
-            description: 'Dot voting on ideas'
+            description: 'Voting Board (100-point scoring)'
         },
         {
             value: 'prioritisation',

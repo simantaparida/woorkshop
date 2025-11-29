@@ -25,16 +25,16 @@ export const FACILITATION_TOOLS: FacilitationTool[] = [
     route: '/tools/problem-framing'
   },
   {
-    id: 'dot-voting',
-    slug: 'dot-voting',
-    name: 'Dot Voting',
-    description: 'Democratic voting on ideas with limited votes (5 dots per person)',
+    id: 'voting-board',
+    slug: 'voting-board',
+    name: 'Voting Board',
+    description: '100-point effort scoring where participants allocate points across items',
     category: 'voting',
     icon: 'Vote',
     steps: 3,
     multiUser: true,
     exportFormats: ['pdf', 'markdown'],
-    route: '/tools/dot-voting'
+    route: '/voting-board/new'
   },
   {
     id: 'rice',

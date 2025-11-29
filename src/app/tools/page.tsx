@@ -46,7 +46,7 @@ export default function ToolsPage() {
               <strong>Problem Framing:</strong> Use when you need to deeply understand a problem before solving it
             </li>
             <li>
-              <strong>Dot Voting:</strong> Use when you want team members to democratically vote on ideas
+              <strong>Voting Board:</strong> Use when you want participants to allocate 100 points across items for effort scoring
             </li>
             <li>
               <strong>RICE Prioritization:</strong> Use when you need to score ideas based on reach, impact, confidence, and effort
