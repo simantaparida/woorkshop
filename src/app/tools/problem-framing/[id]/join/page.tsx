@@ -166,6 +166,47 @@ export default function JoinPage() {
           )}
         </div>
 
+        {/* Session Context / Attachments - Below Topic Description */}
+        {data?.attachments && data.attachments.length > 0 && (
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Paperclip className="w-5 h-5 text-gray-500" />
+              <h3 className="font-semibold text-gray-900">Session Context & Attachments</h3>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              {data.attachments.map((att) => (
+                <div key={att.id} className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 transition-colors">
+                  <div className="mt-1 p-2 bg-white rounded-lg border border-gray-100 shadow-sm">
+                    {att.type === 'link' && <LinkIcon className="w-5 h-5 text-blue-500" />}
+                    {att.type === 'image' && <ImageIcon className="w-5 h-5 text-purple-500" />}
+                    {att.type === 'document' && <FileText className="w-5 h-5 text-orange-500" />}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-gray-900 truncate mb-1">{att.name}</p>
+                    {att.type === 'link' ? (
+                      <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline truncate block flex items-center">
+                        {att.url} <ArrowRight className="w-3 h-3 ml-1 inline" />
+                      </a>
+                    ) : (
+                      <div className="text-xs text-gray-500">
+                        {att.type === 'image' ? 'Image Attachment' : 'Document Attachment'}
+                      </div>
+                    )}
+
+                    {/* Image Preview */}
+                    {att.type === 'image' && (
+                      <div className="mt-3 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
+                        <img src={att.url} alt={att.name} className="w-full h-32 object-cover" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Main Content Area */}
         <div className="space-y-6">
 
@@ -274,47 +315,6 @@ export default function JoinPage() {
               )}
             </div>
           </div>
-
-          {/* Session Context / Attachments - Below Main Card */}
-          {data?.attachments && data.attachments.length > 0 && (
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Paperclip className="w-5 h-5 text-gray-500" />
-                <h3 className="font-semibold text-gray-900">Session Context & Attachments</h3>
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-4">
-                {data.attachments.map((att) => (
-                  <div key={att.id} className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 transition-colors">
-                    <div className="mt-1 p-2 bg-white rounded-lg border border-gray-100 shadow-sm">
-                      {att.type === 'link' && <LinkIcon className="w-5 h-5 text-blue-500" />}
-                      {att.type === 'image' && <ImageIcon className="w-5 h-5 text-purple-500" />}
-                      {att.type === 'document' && <FileText className="w-5 h-5 text-orange-500" />}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold text-gray-900 truncate mb-1">{att.name}</p>
-                      {att.type === 'link' ? (
-                        <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline truncate block flex items-center">
-                          {att.url} <ArrowRight className="w-3 h-3 ml-1 inline" />
-                        </a>
-                      ) : (
-                        <div className="text-xs text-gray-500">
-                          {att.type === 'image' ? 'Image Attachment' : 'Document Attachment'}
-                        </div>
-                      )}
-
-                      {/* Image Preview */}
-                      {att.type === 'image' && (
-                        <div className="mt-3 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
-                          <img src={att.url} alt={att.name} className="w-full h-32 object-cover" />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
 
         </div>
       </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { AppLayout } from '@/components/AppLayout';
 import { SessionTimeline } from '@/components/problem-framing/SessionTimeline';
@@ -8,7 +8,7 @@ import { StatementInput } from '@/components/problem-framing/StatementInput';
 import { ShareLink } from '@/components/problem-framing/ShareLink';
 import { Button } from '@/components/ui/Button';
 import { useProblemFramingSession } from '@/lib/hooks/useProblemFramingSession';
-import { ArrowRight, Users, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
+import { ArrowRight, Users, CheckCircle2, Clock, AlertCircle, Paperclip, FileText, Link as LinkIcon, Image as ImageIcon } from 'lucide-react';
 
 export default function IndividualInputPage() {
   const params = useParams();
@@ -28,6 +28,23 @@ export default function IndividualInputPage() {
   const isCreator = data?.session?.created_by === participantId;
   const isFacilitator = currentParticipant?.is_facilitator || isCreator || false;
   const hasSubmitted = currentParticipant?.has_submitted || false;
+
+  // Auto-navigate participants when facilitator advances session
+  useEffect(() => {
+    if (!data || isFacilitator) return;
+
+    const statusToRoute: Record<string, string> = {
+      'review': `/tools/problem-framing/${sessionId}/review`,
+      'finalize': `/tools/problem-framing/${sessionId}/finalize`,
+      'summary': `/tools/problem-framing/${sessionId}/summary`,
+      'completed': `/tools/problem-framing/${sessionId}/summary`,
+    };
+
+    const nextRoute = statusToRoute[data.session.status];
+    if (nextRoute) {
+      router.push(nextRoute);
+    }
+  }, [data?.session.status, isFacilitator, router, sessionId]);
 
   // Calculate participant stats (excluding facilitator from counts only)
   const regularParticipants = data?.participants.filter(p => !p.is_facilitator) || [];
@@ -309,6 +326,47 @@ export default function IndividualInputPage() {
                 )}
               </div>
             </div>
+
+            {/* Attachments Section for Facilitator */}
+            {data?.attachments && data.attachments.length > 0 && (
+              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <Paperclip className="w-5 h-5 text-gray-500" />
+                  <h3 className="font-semibold text-gray-900">Session Context & Attachments</h3>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {data.attachments.map((att) => (
+                    <div key={att.id} className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 transition-colors">
+                      <div className="mt-1 p-2 bg-white rounded-lg border border-gray-100 shadow-sm">
+                        {att.type === 'link' && <LinkIcon className="w-5 h-5 text-blue-500" />}
+                        {att.type === 'image' && <ImageIcon className="w-5 h-5 text-purple-500" />}
+                        {att.type === 'document' && <FileText className="w-5 h-5 text-orange-500" />}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-semibold text-gray-900 truncate mb-1">{att.name}</p>
+                        {att.type === 'link' ? (
+                          <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline truncate block flex items-center">
+                            {att.url} <ArrowRight className="w-3 h-3 ml-1 inline" />
+                          </a>
+                        ) : (
+                          <div className="text-xs text-gray-500">
+                            {att.type === 'image' ? 'Image Attachment' : 'Document Attachment'}
+                          </div>
+                        )}
+
+                        {/* Image Preview */}
+                        {att.type === 'image' && (
+                          <div className="mt-3 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
+                            <img src={att.url} alt={att.name} className="w-full h-32 object-cover" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           /* PARTICIPANT VIEW */
@@ -361,6 +419,47 @@ export default function IndividualInputPage() {
                 </div>
               )}
             </div>
+
+            {/* Attachments Section for Participants */}
+            {data?.attachments && data.attachments.length > 0 && (
+              <div className="mt-6 bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <Paperclip className="w-5 h-5 text-gray-500" />
+                  <h3 className="font-semibold text-gray-900">Session Context & Attachments</h3>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {data.attachments.map((att) => (
+                    <div key={att.id} className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 transition-colors">
+                      <div className="mt-1 p-2 bg-white rounded-lg border border-gray-100 shadow-sm">
+                        {att.type === 'link' && <LinkIcon className="w-5 h-5 text-blue-500" />}
+                        {att.type === 'image' && <ImageIcon className="w-5 h-5 text-purple-500" />}
+                        {att.type === 'document' && <FileText className="w-5 h-5 text-orange-500" />}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-semibold text-gray-900 truncate mb-1">{att.name}</p>
+                        {att.type === 'link' ? (
+                          <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline truncate block flex items-center">
+                            {att.url} <ArrowRight className="w-3 h-3 ml-1 inline" />
+                          </a>
+                        ) : (
+                          <div className="text-xs text-gray-500">
+                            {att.type === 'image' ? 'Image Attachment' : 'Document Attachment'}
+                          </div>
+                        )}
+
+                        {/* Image Preview */}
+                        {att.type === 'image' && (
+                          <div className="mt-3 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
+                            <img src={att.url} alt={att.name} className="w-full h-32 object-cover" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

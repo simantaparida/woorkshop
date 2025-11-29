@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { AppLayout } from '@/components/AppLayout';
 import { SessionTimeline } from '@/components/problem-framing/SessionTimeline';
@@ -25,6 +25,22 @@ export default function TeamReviewPage() {
 
   const isCreator = data?.session?.created_by === participantId;
   const isFacilitator = currentParticipant?.is_facilitator || isCreator || false;
+
+  // Auto-navigate participants when facilitator advances session
+  useEffect(() => {
+    if (!data || isFacilitator) return;
+
+    const statusToRoute: Record<string, string> = {
+      'finalize': `/tools/problem-framing/${sessionId}/finalize`,
+      'summary': `/tools/problem-framing/${sessionId}/summary`,
+      'completed': `/tools/problem-framing/${sessionId}/summary`,
+    };
+
+    const nextRoute = statusToRoute[data.session.status];
+    if (nextRoute) {
+      router.push(nextRoute);
+    }
+  }, [data?.session.status, isFacilitator, router, sessionId]);
 
   async function handleTogglePin(statementId: string) {
     if (!participantId || !participantName) return;
