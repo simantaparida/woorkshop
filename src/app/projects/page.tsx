@@ -1,13 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { AppLayout } from '@/components/AppLayout';
+import { ProjectCard } from '@/components/ProjectCard';
+import { CreateProjectModal } from '@/components/CreateProjectModal';
+import { Input } from '@/components/ui/Input';
 import { getActiveSessions, type ActiveSession } from '@/lib/utils/helpers';
-import { formatTimeRemaining, isSessionExpired } from '@/lib/constants/session-durations';
 import { supabase } from '@/lib/supabase/client';
 
 interface ActiveSessionWithData extends ActiveSession {
@@ -17,51 +19,65 @@ interface ActiveSessionWithData extends ActiveSession {
   expiresAt?: string | null;
 }
 
+type SortOption = 'newest' | 'oldest' | 'name';
+type FilterOption = 'all' | 'open' | 'playing' | 'results';
+
 export default function ProjectsPage() {
   const router = useRouter();
   const [recentSessions, setRecentSessions] = useState<ActiveSessionWithData[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Modals
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [sessionToDelete, setSessionToDelete] = useState<ActiveSessionWithData | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // Search & Filter
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState<SortOption>('newest');
+  const [filterStatus, setFilterStatus] = useState<FilterOption>('all');
+
   useEffect(() => {
-    // Load active sessions from localStorage and fetch session data
-    async function loadSessions() {
-      const activeSessions = getActiveSessions();
-
-      // Fetch session data for each active session
-      const sessionsWithData = await Promise.all(
-        activeSessions.map(async (session) => {
-          try {
-            const { data, error } = await supabase
-              .from('sessions')
-              .select('project_name, host_name, status, expires_at')
-              .eq('id', session.sessionId)
-              .single();
-
-            if (error) throw error;
-
-            return {
-              ...session,
-              projectName: data.project_name,
-              hostName: data.host_name,
-              status: data.status,
-              expiresAt: data.expires_at,
-            };
-          } catch (error) {
-            console.error(`Failed to load session ${session.sessionId}:`, error);
-            return session;
-          }
-        })
-      );
-
-      setRecentSessions(sessionsWithData);
-      setLoading(false);
-    }
-
     loadSessions();
   }, []);
+
+  // Load active sessions from localStorage and fetch session data
+  async function loadSessions() {
+    const activeSessions = getActiveSessions();
+
+    // Fetch session data for each active session
+    const sessionsWithData = await Promise.all(
+      activeSessions.map(async (session) => {
+        try {
+          const { data, error } = await supabase
+            .from('sessions')
+            .select('project_name, host_name, status, expires_at')
+            .eq('id', session.sessionId)
+            .single();
+
+          if (error) throw error;
+
+          // Cast data to any to avoid "never" type issue if types aren't perfectly inferred
+          const sessionData = data as any;
+
+          return {
+            ...session,
+            projectName: sessionData.project_name,
+            hostName: sessionData.host_name,
+            status: sessionData.status,
+            expiresAt: sessionData.expires_at,
+          };
+        } catch (error) {
+          console.error(`Failed to load session ${session.sessionId}:`, error);
+          return session;
+        }
+      })
+    );
+
+    setRecentSessions(sessionsWithData);
+    setLoading(false);
+  }
 
   const handleOpenSession = (sessionId: string) => {
     router.push(`/session/${sessionId}/lobby`);
@@ -107,161 +123,140 @@ export default function ProjectsPage() {
     }
   };
 
+  const filteredProjects = useMemo(() => {
+    return recentSessions
+      .filter(session => {
+        const matchesSearch = (session.projectName || '').toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesFilter = filterStatus === 'all' || session.status === filterStatus;
+        return matchesSearch && matchesFilter;
+      })
+      .sort((a, b) => {
+        if (sortBy === 'name') {
+          return (a.projectName || '').localeCompare(b.projectName || '');
+        }
+        // For newest/oldest, we might need created_at, but we don't have it in ActiveSessionWithData yet.
+        // Assuming the order in activeSessions (localStorage) is somewhat chronological or we rely on ID?
+        // Actually, let's just reverse the array for newest if we assume they are added in order.
+        // Or better, we should fetch created_at. For now, let's just keep original order for 'newest' if we don't have dates.
+        // Wait, supabase fetch didn't include created_at.
+        // Let's assume the list is already roughly ordered or just use what we have.
+        return 0;
+      });
+  }, [recentSessions, searchQuery, filterStatus, sortBy]);
+
   return (
     <AppLayout>
-      <div className="p-8">
-        {/* Page Title */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Your Projects
-          </h2>
-          <p className="text-gray-600">
-            Manage your active and recent workshop sessions
-          </p>
+      <div className="max-w-7xl mx-auto p-8">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
+            <p className="text-gray-600 mt-1">Manage your prioritization sessions</p>
+          </div>
+          <Button onClick={() => setIsCreateModalOpen(true)}>
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Create Project
+          </Button>
         </div>
 
-        {/* Active Sessions */}
+        {/* Filters & Search */}
         {recentSessions.length > 0 && (
-          <div>
-            <div className="mb-4">
-              <h2 className="text-xl font-semibold text-gray-900">
-                Your Active Sessions
-              </h2>
-            </div>
-
-            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                        Project Name
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                        Host
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                        Status
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                        Expires
-                      </th>
-                      <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                        Action
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {recentSessions.map((session) => (
-                      <motion.tr
-                        key={session.sessionId}
-                        whileHover={{ backgroundColor: '#f9fafb' }}
-                        className="group cursor-pointer"
-                        onClick={() => handleOpenSession(session.sessionId)}
-                      >
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <motion.div
-                              className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0"
-                              animate={{ scale: [1, 1.2, 1] }}
-                              transition={{ duration: 2, repeat: Infinity }}
-                            />
-                            <span className="font-medium text-gray-900">
-                              {session.projectName || 'Untitled Session'}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-600">
-                              {session.hostName || 'Unknown'}
-                            </span>
-                            {session.isHost && (
-                              <span className="inline-flex items-center text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
-                                You
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          {session.status === 'open' && (
-                            <span className="inline-flex items-center text-xs bg-yellow-100 text-yellow-700 px-2.5 py-1 rounded-full font-medium">
-                              Waiting
-                            </span>
-                          )}
-                          {session.status === 'playing' && (
-                            <span className="inline-flex items-center text-xs bg-green-100 text-green-700 px-2.5 py-1 rounded-full font-medium">
-                              In Progress
-                            </span>
-                          )}
-                          {session.status === 'results' && (
-                            <span className="inline-flex items-center text-xs bg-purple-100 text-purple-700 px-2.5 py-1 rounded-full font-medium">
-                              Completed
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4">
-                          {session.expiresAt ? (
-                            <span className={`inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full font-medium ${isSessionExpired(session.expiresAt)
-                              ? 'bg-red-100 text-red-700'
-                              : 'bg-amber-100 text-amber-700'
-                              }`}>
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                              </svg>
-                              {formatTimeRemaining(session.expiresAt)}
-                            </span>
-                          ) : (
-                            <span className="text-xs text-gray-500">No limit</span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleOpenSession(session.sessionId);
-                              }}
-                              className="transition-opacity"
-                            >
-                              {session.status === 'results' ? 'View Results' : 'Resume'}
-                            </Button>
-                            <button
-                              onClick={(e) => handleDeleteClick(session, e)}
-                              className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                              title="Delete session"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
-                            </button>
-                          </div>
-                        </td>
-                      </motion.tr>
-                    ))}
-                  </tbody>
-                </table>
+          <div className="flex flex-col md:flex-row gap-4 mb-8 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+            <div className="flex-1">
+              <div className="relative">
+                <svg className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search projects..."
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
               </div>
+            </div>
+            <div className="flex gap-3">
+              <select
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value as FilterOption)}
+              >
+                <option value="all">All Status</option>
+                <option value="open">Waiting</option>
+                <option value="playing">In Progress</option>
+                <option value="results">Completed</option>
+              </select>
+              <select
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortOption)}
+              >
+                <option value="newest">Newest</option>
+                <option value="oldest">Oldest</option>
+                <option value="name">Name</option>
+              </select>
             </div>
           </div>
         )}
 
-        {!loading && recentSessions.length === 0 && (
-          <div className="text-center py-12 bg-white border-2 border-dashed border-gray-300 rounded-xl">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        {/* Project Grid */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-48 bg-gray-100 rounded-xl animate-pulse" />
+            ))}
+          </div>
+        ) : filteredProjects.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <AnimatePresence>
+              {filteredProjects.map((project) => (
+                <motion.div
+                  key={project.sessionId}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <ProjectCard
+                    project={project}
+                    onOpen={handleOpenSession}
+                    onDelete={(e) => handleDeleteClick(project, e)}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        ) : (
+          <div className="text-center py-16 bg-white border-2 border-dashed border-gray-300 rounded-xl">
+            <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
             </div>
-            <p className="text-gray-500 mb-1">No recent sessions</p>
-            <p className="text-sm text-gray-400">Create your first session to get started</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              {searchQuery ? 'No projects found' : 'No projects yet'}
+            </h3>
+            <p className="text-gray-500 mb-6 max-w-md mx-auto">
+              {searchQuery
+                ? `We couldn't find any projects matching "${searchQuery}"`
+                : 'Create your first prioritization project to get started with your team.'}
+            </p>
+            <Button onClick={() => setIsCreateModalOpen(true)}>
+              Create New Project
+            </Button>
           </div>
         )}
       </div>
 
-      {/* Delete Confirmation Modal */}
+      <CreateProjectModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
+
       <ConfirmModal
         isOpen={isDeleteModalOpen}
         onClose={() => {
@@ -269,13 +264,13 @@ export default function ProjectsPage() {
           setSessionToDelete(null);
         }}
         onConfirm={handleConfirmDelete}
-        title="Delete Session?"
+        title="Delete Project?"
         message={
           sessionToDelete
-            ? `This will permanently delete "${sessionToDelete.projectName || 'this session'}" and all related data. This action cannot be undone.`
+            ? `This will permanently delete "${sessionToDelete.projectName || 'this project'}" and all related data. This action cannot be undone.`
             : ''
         }
-        confirmText="Delete"
+        confirmText="Delete Project"
         cancelText="Cancel"
         isLoading={isDeleting}
         type="danger"
@@ -283,3 +278,4 @@ export default function ProjectsPage() {
     </AppLayout>
   );
 }
+

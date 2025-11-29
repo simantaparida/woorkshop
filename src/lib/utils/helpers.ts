@@ -126,3 +126,17 @@ export function clearSession(sessionId: string): void {
   localStorage.removeItem(`player_id_${sessionId}`);
   localStorage.removeItem(`host_token_${sessionId}`);
 }
+
+export function clearLocalUserData(): void {
+  if (typeof window === 'undefined') return;
+
+  const keysToRemove = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && (key.startsWith('host_token_') || key.startsWith('player_id_') || key === 'default_host_name')) {
+      keysToRemove.push(key);
+    }
+  }
+
+  keysToRemove.forEach(key => localStorage.removeItem(key));
+}
