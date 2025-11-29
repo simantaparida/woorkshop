@@ -23,7 +23,8 @@ export default function FinalizePage() {
     (p) => p.participant_id === participantId
   );
 
-  const isFacilitator = currentParticipant?.is_facilitator || false;
+  const isCreator = data?.session?.created_by === participantId;
+  const isFacilitator = currentParticipant?.is_facilitator || isCreator || false;
 
   // Redirect non-facilitators
   useEffect(() => {

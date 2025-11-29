@@ -55,6 +55,10 @@ export default function NewProblemFramingPage() {
       // Store session ID
       localStorage.setItem('pf_current_session_id', sessionId);
 
+      // Small delay to ensure database transaction is committed
+      // before navigating (prevents race condition with auto-add facilitator)
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       // Navigate to join page
       router.push(`/tools/problem-framing/${sessionId}/join`);
     } catch (error) {

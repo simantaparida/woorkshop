@@ -23,7 +23,8 @@ export default function TeamReviewPage() {
     (p) => p.participant_id === participantId
   );
 
-  const isFacilitator = currentParticipant?.is_facilitator || false;
+  const isCreator = data?.session?.created_by === participantId;
+  const isFacilitator = currentParticipant?.is_facilitator || isCreator || false;
 
   async function handleTogglePin(statementId: string) {
     if (!participantId || !participantName) return;
@@ -52,20 +53,29 @@ export default function TeamReviewPage() {
 
   async function handleAdvanceToFinalize() {
     try {
+      const facilitatorId = localStorage.getItem('pf_participant_id');
+
+      if (!facilitatorId) {
+        alert('Facilitator ID not found. Please refresh and try again.');
+        return;
+      }
+
       const response = await fetch(`/api/tools/problem-framing/${sessionId}/advance`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nextStep: 4 }),
+        body: JSON.stringify({ nextStep: 4, facilitatorId }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to advance step');
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to advance step');
       }
 
       router.push(`/tools/problem-framing/${sessionId}/finalize`);
     } catch (error) {
       console.error('Error advancing step:', error);
-      alert('Failed to advance to next step. Please try again.');
+      const message = error instanceof Error ? error.message : 'Please try again.';
+      alert(`Failed to advance to next step: ${message}`);
     }
   }
 

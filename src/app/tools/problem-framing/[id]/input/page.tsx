@@ -16,6 +16,7 @@ export default function IndividualInputPage() {
   const sessionId = params.id as string;
   const { data, loading } = useProblemFramingSession(sessionId);
   const [submitting, setSubmitting] = useState(false);
+  const [advancing, setAdvancing] = useState(false);
 
   const participantId = typeof window !== 'undefined' ? localStorage.getItem('pf_participant_id') : null;
   const participantName = typeof window !== 'undefined' ? localStorage.getItem('pf_participant_name') : null;
@@ -24,7 +25,8 @@ export default function IndividualInputPage() {
     (p) => p.participant_id === participantId
   );
 
-  const isFacilitator = currentParticipant?.is_facilitator || false;
+  const isCreator = data?.session?.created_by === participantId;
+  const isFacilitator = currentParticipant?.is_facilitator || isCreator || false;
   const hasSubmitted = currentParticipant?.has_submitted || false;
 
   // Calculate participant stats (excluding facilitator)
@@ -64,21 +66,34 @@ export default function IndividualInputPage() {
   }
 
   async function handleAdvanceToReview() {
+    setAdvancing(true);
+
     try {
+      const facilitatorId = localStorage.getItem('pf_participant_id');
+
+      if (!facilitatorId) {
+        alert('Facilitator ID not found. Please refresh and try again.');
+        return;
+      }
+
       const response = await fetch(`/api/tools/problem-framing/${sessionId}/advance`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nextStep: 3 }),
+        body: JSON.stringify({ nextStep: 3, facilitatorId }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to advance step');
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to advance step');
       }
 
       router.push(`/tools/problem-framing/${sessionId}/review`);
     } catch (error) {
       console.error('Error advancing step:', error);
-      alert('Failed to advance to next step. Please try again.');
+      const message = error instanceof Error ? error.message : 'Please try again.';
+      alert(`Failed to advance to next step: ${message}`);
+    } finally {
+      setAdvancing(false);
     }
   }
 
@@ -129,6 +144,14 @@ export default function IndividualInputPage() {
         {/* FACILITATOR VIEW */}
         {isFacilitator ? (
           <div className="space-y-8">
+
+            {/* Share Link - Prominent at Top */}
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold text-blue-900">Invite Your Team</h3>
+              </div>
+              <ShareLink sessionId={sessionId} />
+            </div>
 
             {/* Facilitator's Own Input (Optional) */}
             <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-blue-100/50 p-8">
@@ -203,27 +226,38 @@ export default function IndividualInputPage() {
                     <p className="text-sm text-gray-400 mt-1">Share the link to invite others</p>
                   </div>
                 ) : (
-                  regularParticipants.map((participant) => (
-                    <div
-                      key={participant.id}
-                      className="flex items-center justify-between px-5 py-4 bg-gray-50 rounded-xl border border-gray-100 transition-colors hover:bg-gray-100"
-                    >
-                      <span className="text-gray-900 font-medium">
-                        {participant.participant_name}
-                      </span>
-                      {participant.has_submitted ? (
-                        <div className="flex items-center gap-2 text-green-600 bg-green-100 px-3 py-1 rounded-full">
-                          <CheckCircle2 className="w-4 h-4" />
-                          <span className="text-sm font-bold">Submitted</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2 text-amber-600 bg-amber-100 px-3 py-1 rounded-full">
-                          <Clock className="w-4 h-4" />
-                          <span className="text-sm font-bold">Thinking...</span>
-                        </div>
-                      )}
-                    </div>
-                  ))
+                  regularParticipants.map((participant) => {
+                    const isCurrentUser = participant.participant_id === participantId;
+
+                    return (
+                      <div
+                        key={participant.id}
+                        className={`flex items-center justify-between px-5 py-4 rounded-xl border transition-colors ${
+                          isCurrentUser
+                            ? 'bg-blue-50 border-blue-200 hover:bg-blue-100'
+                            : 'bg-gray-50 border-gray-100 hover:bg-gray-100'
+                        }`}
+                      >
+                        <span className="text-gray-900 font-medium">
+                          {participant.participant_name}
+                          {isCurrentUser && (
+                            <span className="ml-2 text-xs text-blue-600">(You)</span>
+                          )}
+                        </span>
+                        {participant.has_submitted ? (
+                          <div className="flex items-center gap-2 text-green-600 bg-green-100 px-3 py-1 rounded-full">
+                            <CheckCircle2 className="w-4 h-4" />
+                            <span className="text-sm font-bold">Submitted</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 text-amber-600 bg-amber-100 px-3 py-1 rounded-full">
+                            <Clock className="w-4 h-4" />
+                            <span className="text-sm font-bold">Thinking...</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
                 )}
               </div>
 
@@ -243,10 +277,19 @@ export default function IndividualInputPage() {
                   variant="primary"
                   size="lg"
                   className="w-full py-4 text-lg font-bold shadow-lg shadow-blue-200/50"
-                  disabled={submittedCount === 0}
+                  disabled={submittedCount === 0 || advancing}
                 >
-                  Proceed to Team Review
-                  <ArrowRight className="w-5 h-5 ml-2" />
+                  {advancing ? (
+                    <>
+                      <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full mr-2" />
+                      Advancing...
+                    </>
+                  ) : (
+                    <>
+                      Proceed to Team Review
+                      <ArrowRight className="w-5 h-5 ml-2" />
+                    </>
+                  )}
                 </Button>
 
                 {submittedCount === 0 && (
@@ -255,10 +298,6 @@ export default function IndividualInputPage() {
                   </p>
                 )}
               </div>
-            </div>
-
-            <div className="flex justify-center">
-              <ShareLink sessionId={sessionId} />
             </div>
           </div>
         ) : (

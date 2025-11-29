@@ -18,45 +18,43 @@ export default function JoinPage() {
   const [hasJoined, setHasJoined] = useState(false);
   const [joiningLoading, setJoiningLoading] = useState(false);
 
+  // Derived state for immediate feedback
+  const [isClient, setIsClient] = useState(false);
+
   useEffect(() => {
-    // Check if user has already joined
-    const participantId = localStorage.getItem('pf_participant_id');
+    setIsClient(true);
+  }, []);
 
-    if (participantId && data) {
-      // Check if user is in the participants list
-      const isParticipant = data.participants?.some((p) => p.participant_id === participantId);
+  const participantId = isClient ? localStorage.getItem('pf_participant_id') : null;
+  const isParticipant = data?.participants?.some((p) => p.participant_id === participantId);
+  const isCreator = data?.session?.created_by === participantId;
 
-      // Check if user is the creator/facilitator (fallback)
-      const isCreator = data.session?.created_by === participantId;
+  // User is considered joined if they are in the list OR they are the creator
+  const effectiveHasJoined = hasJoined || isParticipant || isCreator || false;
 
-      if (isParticipant || isCreator) {
-        setHasJoined(true);
-      }
+  useEffect(() => {
+    // Auto-advance logic
+    if (effectiveHasJoined && data) {
+      const currentParticipant = data.participants?.find((p) => p.participant_id === participantId);
+      const isFacilitator = currentParticipant?.is_facilitator || isCreator || false;
 
-      // Auto-advance regular participants to current step
-      if (isParticipant || isCreator) {
-        const currentParticipant = data.participants?.find((p) => p.participant_id === participantId);
-        // If they are the creator, they are the facilitator even if not found in list (shouldn't happen but safe fallback)
-        const isFacilitator = currentParticipant?.is_facilitator || isCreator || false;
+      // If not facilitator and session status has advanced, redirect them
+      if (!isFacilitator && data.session.status !== 'setup') {
+        const statusToRoute: Record<string, string> = {
+          'input': `/tools/problem-framing/${sessionId}/input`,
+          'review': `/tools/problem-framing/${sessionId}/review`,
+          'finalize': `/tools/problem-framing/${sessionId}/finalize`,
+          'summary': `/tools/problem-framing/${sessionId}/summary`,
+          'completed': `/tools/problem-framing/${sessionId}/summary`,
+        };
 
-        // If not facilitator and session status has advanced, redirect them
-        if (!isFacilitator && data.session.status !== 'setup') {
-          const statusToRoute: Record<string, string> = {
-            'input': `/tools/problem-framing/${sessionId}/input`,
-            'review': `/tools/problem-framing/${sessionId}/review`,
-            'finalize': `/tools/problem-framing/${sessionId}/finalize`,
-            'summary': `/tools/problem-framing/${sessionId}/summary`,
-            'completed': `/tools/problem-framing/${sessionId}/summary`,
-          };
-
-          const nextRoute = statusToRoute[data.session.status];
-          if (nextRoute) {
-            router.push(nextRoute);
-          }
+        const nextRoute = statusToRoute[data.session.status];
+        if (nextRoute) {
+          router.push(nextRoute);
         }
       }
     }
-  }, [data, router, sessionId]);
+  }, [effectiveHasJoined, data, router, sessionId, participantId, isCreator]);
 
   async function handleJoin(name: string) {
     setJoiningLoading(true);
@@ -89,29 +87,41 @@ export default function JoinPage() {
 
   async function handleStart() {
     try {
+      const facilitatorId = localStorage.getItem('pf_participant_id');
+
+      if (!facilitatorId) {
+        alert('Facilitator ID not found. Please refresh and try again.');
+        return;
+      }
+
       // Update session status to 'input' so participants can submit
       const response = await fetch(`/api/tools/problem-framing/${sessionId}/advance`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nextStep: 2 }),
+        body: JSON.stringify({
+          nextStep: 2,
+          facilitatorId
+        }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to start session');
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to start session');
       }
 
       router.push(`/tools/problem-framing/${sessionId}/input`);
     } catch (error) {
       console.error('Error starting session:', error);
-      alert('Failed to start session. Please try again.');
+      const message = error instanceof Error ? error.message : 'Please try again.';
+      alert(`Failed to start session: ${message}`);
     }
   }
 
-  const participantId = localStorage.getItem('pf_participant_id');
-  const currentParticipant = data?.participants.find(
+  // Calculate isFacilitator for render
+  const currentParticipant = data?.participants?.find(
     (p) => p.participant_id === participantId
   );
-  const isFacilitator = currentParticipant?.is_facilitator || (data?.session?.created_by === participantId) || false;
+  const isFacilitator = currentParticipant?.is_facilitator || isCreator || false;
 
   if (loading) {
     return (
@@ -141,8 +151,8 @@ export default function JoinPage() {
           </Button>
         </div>
 
-        {/* Timeline - Show Step 2 (Input) as active but waiting */}
-        <SessionTimeline currentStep={2} />
+        {/* Timeline - Step 1 (Setup/Join) */}
+        <SessionTimeline currentStep={1} />
 
         {/* Header Section */}
         <div className="text-center mb-8">
@@ -162,7 +172,7 @@ export default function JoinPage() {
           {/* Join / Lobby Card */}
           <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-blue-100/50 overflow-hidden">
             <div className="p-8">
-              {!hasJoined ? (
+              {!effectiveHasJoined ? (
                 <div className="max-w-md mx-auto space-y-6">
                   <div className="text-center mb-6">
                     <h2 className="text-2xl font-bold text-gray-900">Join the Session</h2>
@@ -214,21 +224,32 @@ export default function JoinPage() {
                       Participants ({data?.participants.length})
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {data?.participants.map((participant) => (
-                        <div
-                          key={participant.id}
-                          className="flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm"
-                        >
-                          <span className="text-gray-900 font-medium">
-                            {participant.participant_name}
-                          </span>
-                          {participant.is_facilitator && (
-                            <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-bold uppercase tracking-wide">
-                              Host
+                      {data?.participants.map((participant) => {
+                        const isCurrentUser = participant.participant_id === participantId;
+
+                        return (
+                          <div
+                            key={participant.id}
+                            className={`flex items-center justify-between px-4 py-3 rounded-lg border shadow-sm ${
+                              isCurrentUser
+                                ? 'bg-blue-50 border-blue-200'
+                                : 'bg-white border-gray-200'
+                            }`}
+                          >
+                            <span className="text-gray-900 font-medium">
+                              {participant.participant_name}
+                              {isCurrentUser && (
+                                <span className="ml-2 text-xs text-blue-600">(You)</span>
+                              )}
                             </span>
-                          )}
-                        </div>
-                      ))}
+                            {participant.is_facilitator && (
+                              <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-bold uppercase tracking-wide">
+                                Host
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
 

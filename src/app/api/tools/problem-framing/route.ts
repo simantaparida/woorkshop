@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
         .insert(attachmentsToInsert as any);
 
       if (attachmentError) {
-        console.error('Error saving attachments:', attachmentError);
+        console.warn('Attachments table not found or save failed:', attachmentError);
         // We don't fail the whole request if attachments fail, but we log it
       }
     }

@@ -14,6 +14,7 @@ import type {
 
 /**
  * Create a new Problem Framing session
+ * Auto-adds the facilitator as the first participant with rollback on failure
  */
 export async function createPFSession(data: CreatePFSessionInput): Promise<{ sessionId: string }> {
   // Create tool_session record
@@ -29,23 +30,41 @@ export async function createPFSession(data: CreatePFSessionInput): Promise<{ ses
     .select('id')
     .single();
 
-  if (sessionError) throw sessionError;
-  if (!session) throw new Error('Failed to create session');
+  if (sessionError || !session) {
+    throw sessionError || new Error('Failed to create session');
+  }
 
-  // Create facilitator as first participant
+  const sessionId = session.id;
+
+  // Auto-add facilitator as first participant
   const { error: participantError } = await supabase
     .from('pf_session_participants')
     .insert({
-      tool_session_id: session.id,
+      tool_session_id: sessionId,
       participant_id: data.facilitatorId,
       participant_name: data.facilitatorName,
       is_facilitator: true,
       has_submitted: false,
     });
 
-  if (participantError) throw participantError;
+  // If participant creation fails, rollback session creation
+  if (participantError) {
+    console.error('Failed to add facilitator as participant, rolling back session:', participantError);
 
-  return { sessionId: session.id };
+    // Rollback: Delete the session
+    const { error: deleteError } = await supabase
+      .from('tool_sessions')
+      .delete()
+      .eq('id', sessionId);
+
+    if (deleteError) {
+      console.error('Failed to rollback session:', deleteError);
+    }
+
+    throw new Error('Failed to create session: Unable to add facilitator as participant');
+  }
+
+  return { sessionId };
 }
 
 /**
@@ -216,7 +235,9 @@ export async function getPFSessionData(sessionId: string): Promise<PFSessionData
     .eq('tool_session_id', sessionId)
     .order('created_at', { ascending: true });
 
-  if (attachmentsError) throw attachmentsError;
+  if (attachmentsError) {
+    console.warn('Attachments table not found or query failed:', attachmentsError);
+  }
 
   // Process statements to add pin counts
   const processedStatements: PFIndividualStatement[] = (statements || []).map((stmt: any) => ({
