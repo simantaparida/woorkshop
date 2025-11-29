@@ -7,12 +7,18 @@ import { TopicForm } from '@/components/problem-framing/TopicForm';
 import { SessionTimeline } from '@/components/problem-framing/SessionTimeline';
 import { FileText, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { Attachment } from '@/components/problem-framing/AttachmentUpload';
 
 export default function NewProblemFramingPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  async function handleCreateSession(data: { title: string; description?: string; facilitatorName: string }) {
+  async function handleCreateSession(data: {
+    title: string;
+    description?: string;
+    facilitatorName: string;
+    attachments: Attachment[];
+  }) {
     setLoading(true);
 
     try {
@@ -36,6 +42,7 @@ export default function NewProblemFramingPage() {
           description: data.description,
           facilitatorId: participantId,
           facilitatorName: data.facilitatorName,
+          attachments: data.attachments,
         }),
       });
 

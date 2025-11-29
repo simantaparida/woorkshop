@@ -2,10 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
-import { User, Type, FileText } from 'lucide-react';
+import { User, Type, FileText, Paperclip } from 'lucide-react';
+import { AttachmentUpload, Attachment } from './AttachmentUpload';
 
 interface TopicFormProps {
-  onSubmit: (data: { title: string; description?: string; facilitatorName: string }) => void;
+  onSubmit: (data: {
+    title: string;
+    description?: string;
+    facilitatorName: string;
+    attachments: Attachment[];
+  }) => void;
   loading?: boolean;
 }
 
@@ -13,6 +19,7 @@ export function TopicForm({ onSubmit, loading }: TopicFormProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [facilitatorName, setFacilitatorName] = useState('');
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
 
   useEffect(() => {
     const storedName = localStorage.getItem('pf_participant_name');
@@ -26,14 +33,15 @@ export function TopicForm({ onSubmit, loading }: TopicFormProps) {
     onSubmit({
       title,
       description: description || undefined,
-      facilitatorName
+      facilitatorName,
+      attachments
     });
   };
 
   const isValid = title.trim().length > 0 && facilitatorName.trim().length > 0;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-8">
 
       {/* Facilitator Name Input */}
       <div>
@@ -103,7 +111,25 @@ export function TopicForm({ onSubmit, loading }: TopicFormProps) {
         </div>
       </div>
 
-      <div className="pt-2">
+      {/* Attachments */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          Attachments <span className="text-gray-400 font-normal">(Optional)</span>
+        </label>
+        <div className="bg-white border border-gray-200 rounded-xl p-4">
+          <div className="flex items-center gap-2 mb-4 text-sm text-gray-600">
+            <Paperclip className="w-4 h-4" />
+            <span>Add context with links or files</span>
+          </div>
+          <AttachmentUpload
+            attachments={attachments}
+            onChange={setAttachments}
+            disabled={loading}
+          />
+        </div>
+      </div>
+
+      <div className="pt-4">
         <Button
           type="submit"
           variant="primary"
