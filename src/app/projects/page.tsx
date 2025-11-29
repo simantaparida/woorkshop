@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { AppLayout } from '@/components/AppLayout';
 import { ProjectCard } from '@/components/ProjectCard';
-import { CreateProjectModal } from '@/components/CreateProjectModal';
+import { CreateModal } from '@/components/CreateModal';
 import { Input } from '@/components/ui/Input';
 import { getActiveSessions, type ActiveSession } from '@/lib/utils/helpers';
 import { supabase } from '@/lib/supabase/client';
@@ -252,7 +252,8 @@ export default function ProjectsPage() {
         )}
       </div>
 
-      <CreateProjectModal
+      <CreateModal
+        type="project"
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
       />

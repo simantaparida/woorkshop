@@ -12,7 +12,7 @@ export async function GET(
 
     // Fetch session
     const { data: session, error: sessionError } = await supabase
-      .from('sessions')
+      .from('sessions_unified')
       .select('project_name')
       .eq('id', sessionId)
       .single();

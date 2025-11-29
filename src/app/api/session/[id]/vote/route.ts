@@ -25,7 +25,7 @@ export async function POST(
 
     // Verify session is in playing state
     const { data: session, error: sessionError } = await supabase
-      .from('sessions')
+      .from('sessions_unified')
       .select('id, status')
       .eq('id', sessionId)
       .single();
@@ -125,7 +125,7 @@ export async function POST(
     // Optionally auto-transition to results when everyone has voted
     if (allVoted && allPlayers && allPlayers.length > 0) {
       await supabase
-        .from('sessions')
+        .from('sessions_unified')
         .update({ status: 'results' })
         .eq('id', sessionId);
     }

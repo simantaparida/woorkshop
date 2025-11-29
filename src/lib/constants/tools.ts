@@ -22,7 +22,7 @@ export const FACILITATION_TOOLS: FacilitationTool[] = [
     steps: 4,
     multiUser: false,
     exportFormats: ['pdf', 'markdown'],
-    route: '/tools/problem-framing'
+    route: '/tools/problem-framing' // Keep current route for now
   },
   {
     id: 'voting-board',
@@ -34,7 +34,7 @@ export const FACILITATION_TOOLS: FacilitationTool[] = [
     steps: 3,
     multiUser: true,
     exportFormats: ['pdf', 'markdown'],
-    route: '/voting-board/new'
+    route: '/voting-board/new' // Keep current route for now
   },
   {
     id: 'rice',
@@ -46,7 +46,7 @@ export const FACILITATION_TOOLS: FacilitationTool[] = [
     steps: 3,
     multiUser: false,
     exportFormats: ['pdf', 'markdown', 'csv'],
-    route: '/tools/rice'
+    route: '/tools/rice' // Will be implemented in Phase 5
   },
   {
     id: 'moscow',
@@ -58,7 +58,7 @@ export const FACILITATION_TOOLS: FacilitationTool[] = [
     steps: 3,
     multiUser: false,
     exportFormats: ['pdf', 'markdown'],
-    route: '/tools/moscow'
+    route: '/tools/moscow' // Will be implemented in Phase 5
   }
 ];
 

@@ -1,6 +1,7 @@
 // Database types matching Supabase schema
 export type SessionStatus = 'open' | 'playing' | 'results';
 export type WorkshopPhase = 'introduction' | 'discussion' | 'voting' | 'results';
+export type ToolType = 'problem-framing' | 'voting-board' | 'rice' | 'moscow';
 
 // Reference link type
 export interface ReferenceLink {
@@ -8,6 +9,26 @@ export interface ReferenceLink {
   title: string;
   favicon: string;
   type: string;
+}
+
+// New hierarchy types
+export interface Project {
+  id: string;
+  title: string;
+  description: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Workshop {
+  id: string;
+  project_id: string | null;
+  title: string;
+  description: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Database {
@@ -186,36 +207,45 @@ export interface Database {
           updated_at?: string;
         };
       };
-      tool_sessions: {
+      sessions_unified: {
         Row: {
           id: string;
-          tool_slug: string;
+          workshop_id: string | null;
+          tool_type: ToolType;
+          legacy_tool_slug: string | null;
           title: string;
           description: string | null;
           created_by: string | null;
           status: string;
+          session_config: Record<string, any>;
           created_at: string;
           updated_at: string;
           completed_at: string | null;
         };
         Insert: {
           id?: string;
-          tool_slug: string;
+          workshop_id?: string | null;
+          tool_type: ToolType;
+          legacy_tool_slug?: string | null;
           title: string;
           description?: string | null;
           created_by?: string | null;
           status?: string;
+          session_config?: Record<string, any>;
           created_at?: string;
           updated_at?: string;
           completed_at?: string | null;
         };
         Update: {
           id?: string;
-          tool_slug?: string;
+          workshop_id?: string | null;
+          tool_type?: ToolType;
+          legacy_tool_slug?: string | null;
           title?: string;
           description?: string | null;
           created_by?: string | null;
           status?: string;
+          session_config?: Record<string, any>;
           created_at?: string;
           updated_at?: string;
           completed_at?: string | null;
@@ -224,7 +254,7 @@ export interface Database {
       pf_session_participants: {
         Row: {
           id: string;
-          tool_session_id: string;
+          session_id: string;
           participant_id: string;
           participant_name: string;
           is_facilitator: boolean;
@@ -233,7 +263,7 @@ export interface Database {
         };
         Insert: {
           id?: string;
-          tool_session_id: string;
+          session_id: string;
           participant_id: string;
           participant_name: string;
           is_facilitator?: boolean;
@@ -242,7 +272,7 @@ export interface Database {
         };
         Update: {
           id?: string;
-          tool_session_id?: string;
+          session_id?: string;
           participant_id?: string;
           participant_name?: string;
           is_facilitator?: boolean;
@@ -253,7 +283,7 @@ export interface Database {
       pf_individual_statements: {
         Row: {
           id: string;
-          tool_session_id: string;
+          session_id: string;
           participant_id: string;
           participant_name: string;
           statement: string;
@@ -262,7 +292,7 @@ export interface Database {
         };
         Insert: {
           id?: string;
-          tool_session_id: string;
+          session_id: string;
           participant_id: string;
           participant_name: string;
           statement: string;
@@ -271,7 +301,7 @@ export interface Database {
         };
         Update: {
           id?: string;
-          tool_session_id?: string;
+          session_id?: string;
           participant_id?: string;
           participant_name?: string;
           statement?: string;
@@ -305,7 +335,7 @@ export interface Database {
       pf_final_statement: {
         Row: {
           id: string;
-          tool_session_id: string;
+          session_id: string;
           statement: string;
           finalized_by_participant_id: string;
           finalized_by_participant_name: string;
@@ -314,7 +344,7 @@ export interface Database {
         };
         Insert: {
           id?: string;
-          tool_session_id: string;
+          session_id: string;
           statement: string;
           finalized_by_participant_id: string;
           finalized_by_participant_name: string;
@@ -323,7 +353,7 @@ export interface Database {
         };
         Update: {
           id?: string;
-          tool_session_id?: string;
+          session_id?: string;
           statement?: string;
           finalized_by_participant_id?: string;
           finalized_by_participant_name?: string;
@@ -334,7 +364,7 @@ export interface Database {
       pf_attachments: {
         Row: {
           id: string;
-          tool_session_id: string;
+          session_id: string;
           type: 'link' | 'image' | 'document';
           name: string;
           url: string;
@@ -343,7 +373,7 @@ export interface Database {
         };
         Insert: {
           id?: string;
-          tool_session_id: string;
+          session_id: string;
           type: 'link' | 'image' | 'document';
           name: string;
           url: string;
@@ -352,7 +382,7 @@ export interface Database {
         };
         Update: {
           id?: string;
-          tool_session_id?: string;
+          session_id?: string;
           type?: 'link' | 'image' | 'document';
           name?: string;
           url?: string;
@@ -365,7 +395,7 @@ export interface Database {
 }
 
 // Application types
-export type Session = Database['public']['Tables']['sessions']['Row'];
+export type Session = Database['public']['Tables']['sessions_unified']['Row'];
 export type Feature = Database['public']['Tables']['features']['Row'];
 export type Player = Database['public']['Tables']['players']['Row'];
 export type Vote = Database['public']['Tables']['votes']['Row'];
@@ -420,154 +450,9 @@ export type RealtimeEvent =
   | { type: 'player_submitted'; payload: { playerId: string } }
   | { type: 'results_ready'; payload: { sessionId: string } };
 
-// Blank Session Types
-export type BlankSessionStatus = 'setup' | 'items' | 'problem_framing' | 'voting' | 'prioritisation' | 'summary' | 'completed';
-export type BlankSessionType = 'problem_framing' | 'voting' | 'prioritisation';
-export type ItemTag = 'problem' | 'idea' | 'task';
+// RICE/MoSCoW types (for future implementation)
 export type MoSCoWCategory = 'must' | 'should' | 'could' | 'wont';
 export type EffortUnit = 'hours' | 'days' | 'weeks';
-
-export interface BlankSession {
-  id: string;
-  title: string;
-  description: string | null;
-  session_type: BlankSessionType;
-  created_by: string | null;
-  status: BlankSessionStatus;
-  created_at: string;
-  updated_at: string;
-  completed_at: string | null;
-}
-
-export interface SessionItem {
-  id: string;
-  session_id: string;
-  title: string;
-  description: string | null;
-  tag: ItemTag;
-  item_order: number;
-  created_at: string;
-}
-
-export interface ItemFraming {
-  id: string;
-  item_id: string;
-  core_problem: string | null;
-  who_faces: string | null;
-  why_matters: string | null;
-  blocked_outcome: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface SessionParticipant {
-  id: string;
-  session_id: string;
-  name: string;
-  is_facilitator: boolean;
-  joined_at: string;
-}
-
-export interface ItemVote {
-  id: string;
-  session_id: string;
-  item_id: string;
-  participant_id: string;
-  vote_count: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ItemRICE {
-  id: string;
-  item_id: string;
-  reach: number;
-  impact: number; // 1-5
-  confidence: number; // 0-100
-  effort_hours: number;
-  score: number; // calculated
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ItemMoSCoW {
-  id: string;
-  item_id: string;
-  category: MoSCoWCategory;
-  category_order: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface SessionSummary {
-  id: string;
-  session_id: string;
-  decision_notes: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-// Extended types with relations
-export interface SessionItemWithFraming extends SessionItem {
-  framing?: ItemFraming;
-}
-
-export interface SessionItemWithVotes extends SessionItem {
-  votes: ItemVote[];
-  total_votes: number;
-}
-
-export interface SessionItemWithRICE extends SessionItem {
-  rice?: ItemRICE;
-}
-
-export interface SessionItemWithMoSCoW extends SessionItem {
-  moscow?: ItemMoSCoW;
-}
-
-// Form input types for Blank Sessions
-export interface CreateBlankSessionInput {
-  title: string;
-  description?: string;
-  sessionType: BlankSessionType;
-  createdBy?: string;
-}
-
-export interface AddItemInput {
-  sessionId: string;
-  title: string;
-  description?: string;
-  tag: ItemTag;
-}
-
-export interface SaveFramingInput {
-  itemId: string;
-  coreProblem?: string;
-  whoFaces?: string;
-  whyMatters?: string;
-  blockedOutcome?: string;
-}
-
-export interface CastVoteInput {
-  sessionId: string;
-  participantId: string;
-  itemId: string;
-  voteCount: number;
-}
-
-export interface SaveRICEInput {
-  itemId: string;
-  reach: number;
-  impact: number;
-  confidence: number;
-  effortHours: number;
-}
-
-export interface SaveMoSCoWInput {
-  itemId: string;
-  category: MoSCoWCategory;
-  categoryOrder: number;
-}
 
 // RICE configuration types
 export interface ReachPreset {
@@ -619,47 +504,10 @@ export const calculateRICEScore = (
   return (reach * impact * (confidence / 100)) / effortHours;
 };
 
-// Tool Session Types
-export interface ToolSession {
-  id: string;
-  tool_slug: string;
-  title: string;
-  description: string | null;
-  created_by: string | null;
-  status: string;
-  created_at: string;
-  updated_at: string;
-  completed_at: string | null;
-}
-
-export interface ToolItem {
-  id: string;
-  tool_session_id: string;
-  title: string;
-  description: string | null;
-  tag: ItemTag;
-  item_order: number;
-  created_at: string;
-}
-
-export interface CreateToolSessionInput {
-  toolSlug: string;
-  title: string;
-  description?: string;
-  createdBy?: string;
-}
-
-export interface AddToolItemInput {
-  toolSessionId: string;
-  title: string;
-  description?: string;
-  tag: ItemTag;
-}
-
 // Problem Framing Tool Types
 export interface PFIndividualStatement {
   id: string;
-  tool_session_id: string;
+  session_id: string;
   participant_id: string;
   participant_name: string;
   statement: string;
@@ -679,7 +527,7 @@ export interface PFStatementPin {
 
 export interface PFFinalStatement {
   id: string;
-  tool_session_id: string;
+  session_id: string;
   statement: string;
   finalized_by_participant_id: string;
   finalized_by_participant_name: string;
@@ -689,7 +537,7 @@ export interface PFFinalStatement {
 
 export interface PFSessionParticipant {
   id: string;
-  tool_session_id: string;
+  session_id: string;
   participant_id: string;
   participant_name: string;
   is_facilitator: boolean;
@@ -699,7 +547,7 @@ export interface PFSessionParticipant {
 
 export interface PFAttachment {
   id: string;
-  tool_session_id: string;
+  session_id: string;
   type: 'link' | 'image' | 'document';
   name: string;
   url: string;
@@ -708,7 +556,7 @@ export interface PFAttachment {
 }
 
 export interface PFSessionData {
-  session: ToolSession;
+  session: Session;
   topic_title: string;
   topic_description: string | null;
   participants: PFSessionParticipant[];

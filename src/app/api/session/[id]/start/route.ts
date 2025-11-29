@@ -17,7 +17,7 @@ export async function POST(
 
     // Verify host token
     const { data: session, error: sessionError } = await supabase
-      .from('sessions')
+      .from('sessions_unified')
       .select('id, status, host_token')
       .eq('id', sessionId)
       .single();
@@ -56,7 +56,7 @@ export async function POST(
 
     // Update session status to 'playing'
     const { error: updateError } = await supabase
-      .from('sessions')
+      .from('sessions_unified')
       .update({ status: 'playing' })
       .eq('id', sessionId);
 

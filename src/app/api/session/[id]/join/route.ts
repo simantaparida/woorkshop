@@ -20,7 +20,7 @@ export async function POST(
 
     // Check if session exists and is open
     const { data: session, error: sessionError } = await supabase
-      .from('sessions')
+      .from('sessions_unified')
       .select('id, status')
       .eq('id', sessionId)
       .single();

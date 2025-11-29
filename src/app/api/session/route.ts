@@ -29,15 +29,24 @@ export async function POST(request: NextRequest) {
 
     // Create session
     const { data: session, error: sessionError } = await supabase
-      .from('sessions')
+      .from('sessions_unified')
       .insert({
-        host_name: sanitizeString(hostName),
+        title: sanitizeString(projectName),
+        description: null,
+        created_by: sanitizeString(hostName),
         host_token: hostToken,
+        tool_type: 'voting-board',
+        status: 'open',
+        session_config: {
+          session_goal: sessionGoal || null,
+          duration_hours: durationHours ?? null,
+        },
+        expires_at: expiresAt || null,
+        // Legacy fields for backwards compatibility
         project_name: sanitizeString(projectName),
+        host_name: sanitizeString(hostName),
         session_goal: sessionGoal || null,
         duration_hours: durationHours ?? null,
-        expires_at: expiresAt || null,
-        status: 'open',
       })
       .select()
       .single();
@@ -64,7 +73,7 @@ export async function POST(request: NextRequest) {
     if (playerError || !player) {
       console.error('Player creation error:', playerError);
       // Clean up session if player creation fails
-      await supabase.from('sessions').delete().eq('id', session.id);
+      await supabase.from('sessions_unified').delete().eq('id', session.id);
       return NextResponse.json(
         { error: 'Failed to create host player' },
         { status: 500 }
@@ -89,7 +98,7 @@ export async function POST(request: NextRequest) {
     if (featuresInsertError) {
       console.error('Features creation error:', featuresInsertError);
       // Clean up session if features creation fails
-      await supabase.from('sessions').delete().eq('id', session.id);
+      await supabase.from('sessions_unified').delete().eq('id', session.id);
       return NextResponse.json(
         { error: 'Failed to create features' },
         { status: 500 }

@@ -21,7 +21,7 @@ export async function DELETE(
 
     // Verify host token
     const { data: session, error: sessionError } = await supabase
-      .from('sessions')
+      .from('sessions_unified')
       .select('host_token')
       .eq('id', sessionId)
       .single();
@@ -42,7 +42,7 @@ export async function DELETE(
 
     // Delete session (cascade will handle related records)
     const { error: deleteError } = await supabase
-      .from('sessions')
+      .from('sessions_unified')
       .delete()
       .eq('id', sessionId);
 

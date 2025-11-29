@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { PlayerList } from '@/components/PlayerList';
-import { SessionBreadcrumb } from '@/components/SessionBreadcrumb';
+import { SessionNav } from '@/components/SessionNav';
 import { AppLayout } from '@/components/AppLayout';
 import { useToast } from '@/components/ui/Toast';
 import { useSession } from '@/lib/hooks/useSession';
@@ -228,13 +228,20 @@ export default function LobbyPage() {
   return (
     <AppLayout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <SessionBreadcrumb
-          sessionId={sessionId}
-          sessionName={session.project_name}
+        <SessionNav
+          session={{
+            id: sessionId,
+            title: session.project_name,
+            toolType: 'voting-board',
+            status: session.status,
+          }}
           sessionGoal={session.session_goal}
           expiresAt={session.expires_at}
-          playerName={currentPlayer?.name}
-          isHost={currentPlayer?.is_host}
+          currentPhase="lobby"
+          playerInfo={currentPlayer ? {
+            name: currentPlayer.name,
+            isHost: currentPlayer.is_host,
+          } : undefined}
         />
         <motion.div
           initial={{ opacity: 0, y: 20 }}

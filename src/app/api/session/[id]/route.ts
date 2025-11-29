@@ -11,7 +11,7 @@ export async function GET(
 
     // Fetch session details
     const { data: session, error } = await supabase
-      .from('sessions')
+      .from('sessions_unified')
       .select('*')
       .eq('id', sessionId)
       .single();
