@@ -271,7 +271,6 @@ export default function VotePage() {
             status: session?.status,
           }}
           sessionGoal={session?.session_goal}
-          expiresAt={session?.expires_at}
           currentPhase="vote"
           playerInfo={currentPlayer ? {
             name: currentPlayer.name,

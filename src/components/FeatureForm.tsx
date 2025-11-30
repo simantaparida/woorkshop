@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from './ui/Input';
 import { Button } from './ui/Button';
-import { validateFeatureTitle, validateEffortImpact } from '@/lib/utils/validation';
+import { validateFeatureTitle } from '@/lib/utils/validation';
 import { FEATURE_CATEGORIES } from '@/lib/constants/feature-categories';
 import { createReferenceLink, isValidUrl, getLinkTypeIcon } from '@/lib/utils/link-metadata';
 import type { ReferenceLink } from '@/types';
@@ -14,8 +14,6 @@ interface FeatureInput {
   title: string;
   description: string;
   category: string;
-  effort: string;
-  impact: string;
   referenceLinks: ReferenceLink[];
 }
 
@@ -37,8 +35,6 @@ export function FeatureForm({ features, onChange, maxFeatures = 10 }: FeatureFor
           title: '',
           description: '',
           category: '',
-          effort: '',
-          impact: '',
           referenceLinks: [],
         },
       ]);
@@ -49,8 +45,6 @@ export function FeatureForm({ features, onChange, maxFeatures = 10 }: FeatureFor
     onChange(features.filter((f) => f.id !== id));
     const newErrors = { ...errors };
     delete newErrors[`title-${id}`];
-    delete newErrors[`effort-${id}`];
-    delete newErrors[`impact-${id}`];
     setErrors(newErrors);
   };
 
@@ -75,9 +69,6 @@ export function FeatureForm({ features, onChange, maxFeatures = 10 }: FeatureFor
 
     if (field === 'title') {
       error = validateFeatureTitle(value);
-    } else if (field === 'effort' || field === 'impact') {
-      const numValue = value === '' ? null : parseInt(value, 10);
-      error = validateEffortImpact(numValue);
     }
 
     if (error) {
@@ -185,14 +176,14 @@ export function FeatureForm({ features, onChange, maxFeatures = 10 }: FeatureFor
                 />
               </div>
 
-              {/* Category, Effort & Impact Row */}
-              <div className="grid grid-cols-3 gap-2.5 ml-10">
-                <div>
+              {/* Category Row */}
+              <div className="ml-10">
+                <div className="max-w-xs">
                   <label className="flex items-center gap-1 text-xs font-semibold text-gray-700 mb-1.5">
                     <svg className="w-3.5 h-3.5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                     </svg>
-                    Category
+                    Category (Optional)
                   </label>
                   <select
                     value={feature.category}
@@ -204,44 +195,6 @@ export function FeatureForm({ features, onChange, maxFeatures = 10 }: FeatureFor
                       <option key={cat.id} value={cat.id}>
                         {cat.icon} {cat.label}
                       </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="flex items-center gap-1 text-xs font-semibold text-gray-700 mb-1.5">
-                    <svg className="w-3.5 h-3.5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                    Effort
-                  </label>
-                  <select
-                    value={feature.effort}
-                    onChange={(e) => updateFeature(feature.id, 'effort', e.target.value)}
-                    className="w-full px-2.5 py-2 bg-white border-2 border-gray-200 rounded-lg text-xs font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500/30 focus:border-orange-500 transition-all cursor-pointer shadow-sm hover:border-gray-300"
-                  >
-                    <option value="">Select</option>
-                    {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
-                      <option key={num} value={num}>{num} - {num === 0 ? 'Minimal' : num <= 3 ? 'Low' : num <= 6 ? 'Med' : num <= 8 ? 'High' : 'Max'}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="flex items-center gap-1 text-xs font-semibold text-gray-700 mb-1.5">
-                    <svg className="w-3.5 h-3.5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                    </svg>
-                    Impact
-                  </label>
-                  <select
-                    value={feature.impact}
-                    onChange={(e) => updateFeature(feature.id, 'impact', e.target.value)}
-                    className="w-full px-2.5 py-2 bg-white border-2 border-gray-200 rounded-lg text-xs font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500 transition-all cursor-pointer shadow-sm hover:border-gray-300"
-                  >
-                    <option value="">Select</option>
-                    {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
-                      <option key={num} value={num}>{num} - {num === 0 ? 'Minimal' : num <= 3 ? 'Low' : num <= 6 ? 'Med' : num <= 8 ? 'High' : 'Max'}</option>
                     ))}
                   </select>
                 </div>

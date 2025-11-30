@@ -19,8 +19,8 @@ export function useSession(sessionId: string | null) {
 
     async function fetchSession() {
       try {
-        const { data, error } = await supabase
-          .from('sessions')
+        const { data, error} = await supabase
+          .from('sessions_unified')
           .select('*')
           .eq('id', sessionId)
           .single();
@@ -57,7 +57,7 @@ export function useSession(sessionId: string | null) {
         {
           event: 'UPDATE',
           schema: 'public',
-          table: 'sessions',
+          table: 'sessions_unified',
           filter: `id=eq.${sessionId}`,
         },
         (payload) => {

@@ -51,8 +51,8 @@ export default function ProjectsPage() {
       activeSessions.map(async (session) => {
         try {
           const { data, error } = await supabase
-            .from('sessions')
-            .select('project_name, host_name, status, expires_at')
+            .from('sessions_unified')
+            .select('title, created_by, status, duration_hours')
             .eq('id', session.sessionId)
             .single();
 
@@ -63,10 +63,10 @@ export default function ProjectsPage() {
 
           return {
             ...session,
-            projectName: sessionData.project_name,
-            hostName: sessionData.host_name,
+            projectName: sessionData.title,
+            hostName: sessionData.created_by,
             status: sessionData.status,
-            expiresAt: sessionData.expires_at,
+            expiresAt: null, // No longer using expires_at
           };
         } catch (error) {
           console.error(`Failed to load session ${session.sessionId}:`, error);

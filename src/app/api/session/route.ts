@@ -32,17 +32,12 @@ export async function POST(request: NextRequest) {
       .from('sessions_unified')
       .insert({
         title: sanitizeString(projectName),
-        description: null,
+        description: sessionGoal ? sanitizeString(sessionGoal) : null,
         created_by: sanitizeString(hostName),
         host_token: hostToken,
         tool_type: 'voting-board',
         status: 'open',
-        session_config: {
-          session_goal: sessionGoal || null,
-          duration_hours: durationHours ?? null,
-        },
-        expires_at: expiresAt || null,
-        // Legacy fields for backwards compatibility
+        // Legacy voting board columns
         project_name: sanitizeString(projectName),
         host_name: sanitizeString(hostName),
         session_goal: sessionGoal || null,
@@ -86,8 +81,8 @@ export async function POST(request: NextRequest) {
       title: sanitizeString(feature.title),
       description: feature.description ? sanitizeString(feature.description) : null,
       category: feature.category || null,
-      effort: feature.effort ?? null,
-      impact: feature.impact ?? null,
+      effort: null,
+      impact: null,
       reference_links: feature.referenceLinks || [],
     }));
 

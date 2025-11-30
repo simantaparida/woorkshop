@@ -37,6 +37,7 @@ export default function LobbyPage() {
   const [starting, setStarting] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [togglingReady, setTogglingReady] = useState(false);
+  const [showHostLink, setShowHostLink] = useState(false);
 
   const isHost = typeof window !== 'undefined' && localStorage.getItem(`host_token_${sessionId}`) !== null;
   const sessionStatus = session?.status;
@@ -236,7 +237,6 @@ export default function LobbyPage() {
             status: session.status,
           }}
           sessionGoal={session.session_goal}
-          expiresAt={session.expires_at}
           currentPhase="lobby"
           playerInfo={currentPlayer ? {
             name: currentPlayer.name,
@@ -249,6 +249,28 @@ export default function LobbyPage() {
           transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
           className="space-y-8"
         >
+          {/* Session Goal Banner - Only show if goal exists */}
+          {session.session_goal && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, duration: 0.4 }}
+              className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-5"
+            >
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-sm font-semibold text-blue-900 mb-1">Session Goal</h3>
+                  <p className="text-base text-blue-800">{session.session_goal}</p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
           {/* Header */}
           <div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
@@ -357,47 +379,98 @@ export default function LobbyPage() {
               </p>
             </div>
 
-            {/* Host Link - Only show to host */}
+            {/* Host Link - Collapsed by default for safety */}
             {isHost && (
               <div className="pt-4 border-t border-gray-200">
-                <label className="block text-sm font-medium text-amber-700 mb-2">
-                  Host Link (do not share)
-                </label>
-                <div className="flex gap-3">
-                  <input
-                    type="text"
-                    value={`${getSessionLink(sessionId)}?host=${localStorage.getItem(`host_token_${sessionId}`)}`}
-                    readOnly
-                    className="flex-1 px-3 py-2 bg-amber-50 border border-amber-300 rounded-lg text-sm transition-all duration-200 focus:border-amber focus:ring-2 focus:ring-amber/20"
-                  />
-                  <Button
-                    onClick={async () => {
-                      const hostLink = `${getSessionLink(sessionId)}?host=${localStorage.getItem(`host_token_${sessionId}`)}`;
-                      try {
-                        await copyToClipboard(hostLink);
-                        showToast('Host link copied!', 'success');
-                      } catch {
-                        showToast('Failed to copy link', 'error');
-                      }
-                    }}
-                    variant="secondary"
-                    className="bg-amber-100 hover:bg-amber-200 text-amber-900 border-amber-300"
+                <button
+                  type="button"
+                  onClick={() => setShowHostLink(!showHostLink)}
+                  className="flex items-center justify-between w-full text-left group"
+                >
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <span className="text-sm font-medium text-amber-700">
+                      Host Link (Advanced)
+                    </span>
+                  </div>
+                  <svg className={`w-4 h-4 text-amber-600 transition-transform ${showHostLink ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {showHostLink && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="mt-3"
                   >
-                    Copy Host Link
-                  </Button>
-                </div>
-                <p className="mt-2 text-xs text-amber-700">
-                  ⚠️ Keep this private - allows resuming as host
-                </p>
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-3">
+                      <div className="flex items-start gap-2">
+                        <svg className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                        <div className="flex-1">
+                          <p className="text-xs font-semibold text-amber-800 mb-1">⚠️ Warning: Do NOT share this link publicly</p>
+                          <p className="text-xs text-amber-700">This link grants full host privileges. Only use it to resume your session on another device.</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <input
+                        type="text"
+                        value={`${getSessionLink(sessionId)}?host=${localStorage.getItem(`host_token_${sessionId}`)}`}
+                        readOnly
+                        className="flex-1 px-3 py-2 bg-amber-50 border border-amber-300 rounded-lg text-sm transition-all duration-200 focus:border-amber focus:ring-2 focus:ring-amber/20 font-mono text-xs"
+                      />
+                      <Button
+                        onClick={async () => {
+                          const hostLink = `${getSessionLink(sessionId)}?host=${localStorage.getItem(`host_token_${sessionId}`)}`;
+                          try {
+                            await copyToClipboard(hostLink);
+                            showToast('Host link copied! Keep it private.', 'success');
+                          } catch {
+                            showToast('Failed to copy link', 'error');
+                          }
+                        }}
+                        variant="secondary"
+                        className="bg-amber-100 hover:bg-amber-200 text-amber-900 border-amber-300"
+                      >
+                        Copy
+                      </Button>
+                    </div>
+                  </motion.div>
+                )}
               </div>
             )}
           </motion.div>
 
           {/* Features Preview */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold mb-4">
-              Features ({features.length})
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">
+                Features ({features.length})
+              </h2>
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <span className="font-medium">Locked for voting</span>
+              </div>
+            </div>
+            {features.length > 0 ? (
+              <p className="text-sm text-gray-600 mb-4">
+                Review these features before voting. Features cannot be changed once voting begins.
+              </p>
+            ) : (
+              <p className="text-sm text-gray-500 mb-4">
+                No features added yet. The host should add features before starting.
+              </p>
+            )}
             <div className="space-y-2">
               {features.map((feature) => {
                 const category = getFeatureCategoryById(feature.category);
@@ -463,71 +536,112 @@ export default function LobbyPage() {
             </div>
           </div>
 
-          {/* Players List */}
+          {/* Players List with Ready Toggle */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <PlayerList players={players} showReadyStatus={true} />
+
+            {/* Ready Toggle integrated below player list */}
+            {currentPlayerId && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.3 }}
+                className="mt-4 pt-4 border-t border-gray-200"
+              >
+                <div className="flex items-start gap-3 mb-3">
+                  <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                    isReady ? 'bg-green-500' : 'bg-gray-300'
+                  }`}>
+                    {isReady && (
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-900 mb-1">
+                      {isReady ? 'You are ready!' : 'Mark yourself as ready'}
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      {isReady
+                        ? isHost
+                          ? 'You can start voting when all players are ready.'
+                          : 'Waiting for the host to start the game.'
+                        : 'Confirm you have reviewed the features and are ready to vote.'}
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={handleToggleReady}
+                  isLoading={togglingReady}
+                  variant={isReady ? 'secondary' : 'primary'}
+                  size="sm"
+                  className="w-full"
+                >
+                  {isReady ? (
+                    <>
+                      <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                      Mark as Not Ready
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      I'm Ready to Vote
+                    </>
+                  )}
+                </Button>
+              </motion.div>
+            )}
           </div>
 
-          {/* Ready Toggle for All Players (including Host) */}
-          {currentPlayerId && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4, duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-              className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm"
-            >
-              <p className="text-sm text-gray-700 mb-4">
-                {isReady
-                  ? isHost
-                    ? '✓ You are ready! You can start the game when all players are ready.'
-                    : '✓ You are ready! Waiting for the host to start the game...'
-                  : 'Mark yourself as ready when you have reviewed the features and are ready to vote.'}
-              </p>
-              <Button
-                onClick={handleToggleReady}
-                isLoading={togglingReady}
-                variant={isReady ? 'secondary' : 'primary'}
-                className="w-full"
-              >
-                {isReady ? 'Mark as Not Ready' : 'Mark as Ready ✓'}
-              </Button>
-            </motion.div>
-          )}
-
-          {/* Host Actions */}
+          {/* Ready Status Summary - Host only */}
           {isHost && currentPlayerId && (() => {
             const allPlayersReady = players.length > 0 && players.every(p => p.is_ready);
             const readyCount = players.filter(p => p.is_ready).length;
+            const notReadyPlayers = players.filter(p => !p.is_ready);
 
             return (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.5, duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-                className={`border rounded-xl p-6 shadow-sm ${
+                className={`border rounded-xl p-5 shadow-sm ${
                   allPlayersReady
                     ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200'
-                    : 'bg-gradient-to-br from-primary-50 to-blue-50 border-primary-200'
+                    : 'bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200'
                 }`}
               >
-                <p className="text-sm mb-2 font-medium">
-                  {allPlayersReady
-                    ? '✓ All players are ready!'
-                    : `⏳ Waiting for players: ${readyCount}/${players.length} ready`}
-                </p>
-                <p className="text-sm text-gray-700 mb-4">
-                  {allPlayersReady
-                    ? 'Everyone is ready. You can start the game now!'
-                    : 'You can start the game when all players are marked as ready.'}
-                </p>
-                <Button
-                  onClick={handleStartGame}
-                  isLoading={starting}
-                  disabled={players.length === 0 || !allPlayersReady}
-                  className="w-full"
-                >
-                  {allPlayersReady ? 'Start Game →' : 'Waiting for Players...'}
-                </Button>
+                <div className="flex items-start gap-3">
+                  {allPlayersReady ? (
+                    <svg className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                  <div className="flex-1">
+                    <p className={`text-sm font-semibold mb-1 ${allPlayersReady ? 'text-green-800' : 'text-amber-800'}`}>
+                      {allPlayersReady
+                        ? '✓ All players are ready!'
+                        : `${readyCount} of ${players.length} players ready`}
+                    </p>
+                    <p className={`text-sm ${allPlayersReady ? 'text-green-700' : 'text-amber-700'}`}>
+                      {allPlayersReady
+                        ? 'Use the "Begin Voting Round" button in the Session Agenda above to start.'
+                        : notReadyPlayers.length > 0 && (
+                            <>
+                              Waiting for: <span className="font-semibold">{notReadyPlayers.map(p => p.name).join(', ')}</span>
+                            </>
+                          )}
+                    </p>
+                  </div>
+                </div>
               </motion.div>
             );
           })()}

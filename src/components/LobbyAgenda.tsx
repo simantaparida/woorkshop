@@ -75,9 +75,11 @@ export function LobbyAgenda({
   };
 
   const props = { hasJoined, playerCount, featureCount, isHost, onStartGame };
-  const completedSteps = AGENDA_STEPS.filter((step) => step.isComplete(props)).length;
-  const totalSteps = AGENDA_STEPS.length - 1; // Exclude "Start voting" from completion count
-  const progress = (completedSteps / totalSteps) * 100;
+  // Only count the first 3 steps (exclude "Start voting" which is an action, not a completion step)
+  const preparationSteps = AGENDA_STEPS.slice(0, -1);
+  const completedSteps = preparationSteps.filter((step) => step.isComplete(props)).length;
+  const totalSteps = preparationSteps.length;
+  const progress = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
 
   // Check if ready to start
   const canStart = AGENDA_STEPS.slice(0, -1).every((step) => step.isComplete(props));
@@ -190,6 +192,11 @@ export function LobbyAgenda({
                       animate={{ opacity: 1, height: 'auto' }}
                       className="mt-3"
                     >
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+                        <p className="text-xs text-blue-800">
+                          <span className="font-semibold">Ready to begin?</span> This will move all players to the voting screen. Players can no longer join after voting starts.
+                        </p>
+                      </div>
                       <motion.div
                         animate={{
                           boxShadow: [
@@ -202,9 +209,12 @@ export function LobbyAgenda({
                       >
                         <button
                           onClick={onStartGame}
-                          className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-indigo-600 transition-all duration-200 shadow-md"
+                          className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-indigo-600 transition-all duration-200 shadow-md flex items-center gap-2"
                         >
-                          Start Voting Now →
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                          </svg>
+                          Begin Voting Round
                         </button>
                       </motion.div>
                     </motion.div>

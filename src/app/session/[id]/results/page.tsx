@@ -278,7 +278,6 @@ export default function ResultsPage() {
             status: session.status,
           }}
           sessionGoal={session.session_goal}
-          expiresAt={session.expires_at}
           currentPhase="results"
         />
         <motion.div

@@ -72,8 +72,7 @@ export default function NewVotingBoardPage() {
         .map((f) => ({
           title: sanitizeString(f.title),
           description: f.description.trim() ? sanitizeString(f.description) : undefined,
-          effort: f.effort ? parseInt(f.effort, 10) : undefined,
-          impact: f.impact ? parseInt(f.impact, 10) : undefined,
+          category: f.category || undefined,
         }));
 
       const response = await fetch('/api/session', {

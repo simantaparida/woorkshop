@@ -216,8 +216,14 @@ export interface Database {
           title: string;
           description: string | null;
           created_by: string | null;
+          host_token: string | null;
           status: string;
           session_config: Record<string, any>;
+          // Legacy voting board columns
+          host_name: string | null;
+          project_name: string | null;
+          session_goal: string | null;
+          duration_hours: number | null;
           created_at: string;
           updated_at: string;
           completed_at: string | null;
@@ -230,8 +236,14 @@ export interface Database {
           title: string;
           description?: string | null;
           created_by?: string | null;
+          host_token?: string | null;
           status?: string;
           session_config?: Record<string, any>;
+          // Legacy voting board columns
+          host_name?: string | null;
+          project_name?: string | null;
+          session_goal?: string | null;
+          duration_hours?: number | null;
           created_at?: string;
           updated_at?: string;
           completed_at?: string | null;
@@ -244,8 +256,14 @@ export interface Database {
           title?: string;
           description?: string | null;
           created_by?: string | null;
+          host_token?: string | null;
           status?: string;
           session_config?: Record<string, any>;
+          // Legacy voting board columns
+          host_name?: string | null;
+          project_name?: string | null;
+          session_goal?: string | null;
+          duration_hours?: number | null;
           created_at?: string;
           updated_at?: string;
           completed_at?: string | null;
