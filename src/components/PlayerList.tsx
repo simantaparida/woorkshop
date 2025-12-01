@@ -18,11 +18,11 @@ export function PlayerList({
   showReadyStatus = false,
 }: PlayerListProps) {
   return (
-    <div className="space-y-2 h-full flex flex-col">
-      <h3 className="text-sm font-semibold text-gray-900 mb-3">
+    <div className="flex flex-col flex-1 min-h-0">
+      <h3 className="text-sm font-semibold text-gray-900 mb-3 flex-shrink-0">
         Players ({players.length})
       </h3>
-      <div className="flex-1 overflow-y-auto max-h-[500px] pr-1 space-y-2">
+      <div className="flex-1 min-h-0 overflow-y-auto pr-1 space-y-2">
         <AnimatePresence mode="popLayout">
           {players.map((player, index) => (
             <motion.div
