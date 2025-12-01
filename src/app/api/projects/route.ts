@@ -1,18 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { getSupabaseServer } from '@/lib/supabase/server';
 
 // GET /api/projects - List all projects
 export async function GET(request: NextRequest) {
   try {
+    const supabase = getSupabaseServer();
     const { data: projects, error } = await supabase
       .from('projects')
-      .select(`
-        *,
-        workshops:workshops(count),
-        sessions:sessions_unified!sessions_unified_workshop_id_fkey(
-          workshop_id
-        )
-      `)
+      .select('*')
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -23,12 +18,39 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Calculate counts
-    const projectsWithCounts = projects.map((project) => ({
-      ...project,
-      workshopCount: project.workshops?.[0]?.count || 0,
-      sessionCount: project.sessions?.length || 0,
-    }));
+    // Fetch counts for each project
+    const projectsWithCounts = await Promise.all(
+      (projects || []).map(async (project) => {
+        // Count workshops
+        const { count: workshopCount } = await supabase
+          .from('workshops')
+          .select('*', { count: 'exact', head: true })
+          .eq('project_id', project.id);
+
+        // Count sessions through workshops
+        const { data: workshops } = await supabase
+          .from('workshops')
+          .select('id')
+          .eq('project_id', project.id);
+
+        const workshopIds = workshops?.map(w => w.id) || [];
+        let sessionCount = 0;
+        
+        if (workshopIds.length > 0) {
+          const { count } = await supabase
+            .from('sessions_unified')
+            .select('*', { count: 'exact', head: true })
+            .in('workshop_id', workshopIds);
+          sessionCount = count || 0;
+        }
+
+        return {
+          ...project,
+          workshopCount: workshopCount || 0,
+          sessionCount,
+        };
+      })
+    );
 
     return NextResponse.json({ projects: projectsWithCounts });
   } catch (error) {
@@ -54,6 +76,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const supabase = getSupabaseServer();
     const { data: project, error } = await supabase
       .from('projects')
       .insert({

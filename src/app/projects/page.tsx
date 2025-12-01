@@ -6,154 +6,131 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { AppLayout } from '@/components/AppLayout';
-import { ProjectCard } from '@/components/ProjectCard';
 import { CreateModal } from '@/components/CreateModal';
-import { Input } from '@/components/ui/Input';
-import { getActiveSessions, type ActiveSession } from '@/lib/utils/helpers';
-import { supabase } from '@/lib/supabase/client';
+import { useToast } from '@/components/ui/Toast';
+import { ROUTES } from '@/lib/constants';
+import type { Project } from '@/types';
 
-interface ActiveSessionWithData extends ActiveSession {
-  projectName?: string;
-  hostName?: string;
-  status?: string;
-  expiresAt?: string | null;
+interface ProjectWithCounts extends Project {
+  workshopCount?: number;
+  sessionCount?: number;
 }
 
 type SortOption = 'newest' | 'oldest' | 'name';
-type FilterOption = 'all' | 'open' | 'playing' | 'results';
 
 export default function ProjectsPage() {
   const router = useRouter();
-  const [recentSessions, setRecentSessions] = useState<ActiveSessionWithData[]>([]);
+  const { showToast, ToastContainer } = useToast();
+  const [projects, setProjects] = useState<ProjectWithCounts[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Modals
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [sessionToDelete, setSessionToDelete] = useState<ActiveSessionWithData | null>(null);
+  const [projectToDelete, setProjectToDelete] = useState<ProjectWithCounts | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Search & Filter
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
-  const [filterStatus, setFilterStatus] = useState<FilterOption>('all');
 
   useEffect(() => {
-    loadSessions();
+    loadProjects();
   }, []);
 
-  // Load active sessions from localStorage and fetch session data
-  async function loadSessions() {
-    const activeSessions = getActiveSessions();
+  async function loadProjects() {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/projects');
+      const data = await response.json();
 
-    // Fetch session data for each active session
-    const sessionsWithData = await Promise.all(
-      activeSessions.map(async (session) => {
-        try {
-          const { data, error } = await supabase
-            .from('sessions_unified')
-            .select('title, created_by, status, duration_hours')
-            .eq('id', session.sessionId)
-            .single();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch projects');
+      }
 
-          if (error) throw error;
-
-          // Cast data to any to avoid "never" type issue if types aren't perfectly inferred
-          const sessionData = data as any;
-
-          return {
-            ...session,
-            projectName: sessionData.title,
-            hostName: sessionData.created_by,
-            status: sessionData.status,
-            expiresAt: null, // No longer using expires_at
-          };
-        } catch (error) {
-          console.error(`Failed to load session ${session.sessionId}:`, error);
-          return session;
-        }
-      })
-    );
-
-    setRecentSessions(sessionsWithData);
-    setLoading(false);
+      setProjects(data.projects || []);
+    } catch (error) {
+      console.error('Error loading projects:', error);
+      showToast(
+        error instanceof Error ? error.message : 'Failed to load projects',
+        'error'
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
-  const handleOpenSession = (sessionId: string) => {
-    router.push(`/session/${sessionId}/lobby`);
+  const handleOpenProject = (projectId: string) => {
+    router.push(ROUTES.PROJECT_DETAIL(projectId));
   };
 
-  const handleDeleteClick = (session: ActiveSessionWithData, e: React.MouseEvent) => {
+  const handleDeleteClick = (project: ProjectWithCounts, e: React.MouseEvent) => {
     e.stopPropagation();
-    setSessionToDelete(session);
+    setProjectToDelete(project);
     setIsDeleteModalOpen(true);
   };
 
   const handleConfirmDelete = async () => {
-    if (!sessionToDelete) return;
+    if (!projectToDelete) return;
 
     setIsDeleting(true);
     try {
-      const response = await fetch(`/api/session/${sessionToDelete.sessionId}/delete`, {
+      const response = await fetch(`/api/projects/${projectToDelete.id}`, {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ hostToken: sessionToDelete.hostToken }),
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to delete session');
+        throw new Error(error.error || 'Failed to delete project');
       }
 
-      // Remove from localStorage
-      localStorage.removeItem(`host_token_${sessionToDelete.sessionId}`);
-      localStorage.removeItem(`player_id_${sessionToDelete.sessionId}`);
-
-      // Remove from recentSessions
-      setRecentSessions(prev => prev.filter(s => s.sessionId !== sessionToDelete.sessionId));
+      // Remove from projects list
+      setProjects(prev => prev.filter(p => p.id !== projectToDelete.id));
+      showToast('Project deleted successfully', 'success');
 
       // Close modal
       setIsDeleteModalOpen(false);
-      setSessionToDelete(null);
+      setProjectToDelete(null);
     } catch (error) {
       console.error('Delete error:', error);
-      alert(error instanceof Error ? error.message : 'Failed to delete session');
+      showToast(
+        error instanceof Error ? error.message : 'Failed to delete project',
+        'error'
+      );
     } finally {
       setIsDeleting(false);
     }
   };
 
   const filteredProjects = useMemo(() => {
-    return recentSessions
-      .filter(session => {
-        const matchesSearch = (session.projectName || '').toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesFilter = filterStatus === 'all' || session.status === filterStatus;
-        return matchesSearch && matchesFilter;
+    return projects
+      .filter(project => {
+        const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (project.description || '').toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesSearch;
       })
       .sort((a, b) => {
         if (sortBy === 'name') {
-          return (a.projectName || '').localeCompare(b.projectName || '');
+          return a.title.localeCompare(b.title);
         }
-        // For newest/oldest, we might need created_at, but we don't have it in ActiveSessionWithData yet.
-        // Assuming the order in activeSessions (localStorage) is somewhat chronological or we rely on ID?
-        // Actually, let's just reverse the array for newest if we assume they are added in order.
-        // Or better, we should fetch created_at. For now, let's just keep original order for 'newest' if we don't have dates.
-        // Wait, supabase fetch didn't include created_at.
-        // Let's assume the list is already roughly ordered or just use what we have.
-        return 0;
+        const dateA = new Date(a.created_at).getTime();
+        const dateB = new Date(b.created_at).getTime();
+        return sortBy === 'newest' ? dateB - dateA : dateA - dateB;
       });
-  }, [recentSessions, searchQuery, filterStatus, sortBy]);
+  }, [projects, searchQuery, sortBy]);
 
   return (
     <AppLayout>
       <div className="max-w-7xl mx-auto p-8">
+        {ToastContainer}
+
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
-            <p className="text-gray-600 mt-1">Manage your prioritization sessions</p>
+            <p className="text-gray-600 mt-1">Organize your workshops and sessions</p>
           </div>
-          <Button onClick={() => setIsCreateModalOpen(true)}>
+          <Button onClick={() => setIsCreateModalOpen(true)} variant="primary">
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
@@ -162,7 +139,7 @@ export default function ProjectsPage() {
         </div>
 
         {/* Filters & Search */}
-        {recentSessions.length > 0 && (
+        {projects.length > 0 && (
           <div className="flex flex-col md:flex-row gap-4 mb-8 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
             <div className="flex-1">
               <div className="relative">
@@ -179,16 +156,6 @@ export default function ProjectsPage() {
               </div>
             </div>
             <div className="flex gap-3">
-              <select
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value as FilterOption)}
-              >
-                <option value="all">All Status</option>
-                <option value="open">Waiting</option>
-                <option value="playing">In Progress</option>
-                <option value="results">Completed</option>
-              </select>
               <select
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
                 value={sortBy}
@@ -214,18 +181,78 @@ export default function ProjectsPage() {
             <AnimatePresence>
               {filteredProjects.map((project) => (
                 <motion.div
-                  key={project.sessionId}
+                  key={project.id}
                   layout
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <ProjectCard
-                    project={project}
-                    onOpen={handleOpenSession}
-                    onDelete={(e) => handleDeleteClick(project, e)}
-                  />
+                  <div
+                    className="bg-white rounded-lg border border-gray-200 hover:border-primary hover:shadow-lg transition-all cursor-pointer h-full flex flex-col"
+                    onClick={() => handleOpenProject(project.id)}
+                  >
+                    <div className="p-6 flex-1 flex flex-col">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <div className="w-3 h-3 rounded-full bg-gradient-to-r from-primary-400 to-primary-600 shadow-sm flex-shrink-0" />
+                          <h3 className="font-semibold text-gray-900 truncate" title={project.title}>
+                            {project.title}
+                          </h3>
+                        </div>
+                        <button
+                          onClick={(e) => handleDeleteClick(project, e)}
+                          className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+                          title="Delete Project"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+
+                      {project.description && (
+                        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                          {project.description}
+                        </p>
+                      )}
+
+                      <div className="mt-auto space-y-2 pt-4 border-t border-gray-100">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-500">Workshops</span>
+                          <span className="text-gray-900 font-medium">
+                            {project.workshopCount || 0}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-500">Sessions</span>
+                          <span className="text-gray-900 font-medium">
+                            {project.sessionCount || 0}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-500">Created</span>
+                          <span className="text-gray-900 font-medium text-xs">
+                            {new Date(project.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="px-6 pb-6">
+                      <Button
+                        size="sm"
+                        variant="primary"
+                        className="w-full"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenProject(project.id);
+                        }}
+                      >
+                        View Project →
+                      </Button>
+                    </div>
+                  </div>
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -243,9 +270,9 @@ export default function ProjectsPage() {
             <p className="text-gray-500 mb-6 max-w-md mx-auto">
               {searchQuery
                 ? `We couldn't find any projects matching "${searchQuery}"`
-                : 'Create your first prioritization project to get started with your team.'}
+                : 'Create your first project to organize workshops and sessions.'}
             </p>
-            <Button onClick={() => setIsCreateModalOpen(true)}>
+            <Button onClick={() => setIsCreateModalOpen(true)} variant="primary">
               Create New Project
             </Button>
           </div>
@@ -255,20 +282,23 @@ export default function ProjectsPage() {
       <CreateModal
         type="project"
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={() => {
+          setIsCreateModalOpen(false);
+          loadProjects(); // Refresh projects list
+        }}
       />
 
       <ConfirmModal
         isOpen={isDeleteModalOpen}
         onClose={() => {
           setIsDeleteModalOpen(false);
-          setSessionToDelete(null);
+          setProjectToDelete(null);
         }}
         onConfirm={handleConfirmDelete}
         title="Delete Project?"
         message={
-          sessionToDelete
-            ? `This will permanently delete "${sessionToDelete.projectName || 'this project'}" and all related data. This action cannot be undone.`
+          projectToDelete
+            ? `This will permanently delete "${projectToDelete.title}" and all related workshops and sessions. This action cannot be undone.`
             : ''
         }
         confirmText="Delete Project"
@@ -279,4 +309,3 @@ export default function ProjectsPage() {
     </AppLayout>
   );
 }
-

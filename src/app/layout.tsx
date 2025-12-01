@@ -132,11 +132,11 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className={comfortaa.variable}>
+    <html lang="en" className={comfortaa.variable} suppressHydrationWarning>
       <head>
         <link rel="preload" as="image" href="/og.png" />
       </head>
-      <body className={inter.className}>
+      <body className={inter.className} suppressHydrationWarning>
         <Script
           id="json-ld"
           type="application/ld+json"

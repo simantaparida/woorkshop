@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { getSupabaseServer } from '@/lib/supabase/server';
 
 // GET /api/projects/[id] - Get project with workshops
 export async function GET(
@@ -8,6 +8,7 @@ export async function GET(
 ) {
   try {
     const { id } = params;
+    const supabase = getSupabaseServer();
 
     const { data: project, error } = await supabase
       .from('projects')
@@ -88,6 +89,7 @@ export async function PATCH(
       updates.description = description?.trim() || null;
     }
 
+    const supabase = getSupabaseServer();
     const { data: project, error } = await supabase
       .from('projects')
       .update(updates)
@@ -126,6 +128,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = params;
+    const supabase = getSupabaseServer();
 
     // Check if project exists
     const { data: project, error: fetchError } = await supabase
