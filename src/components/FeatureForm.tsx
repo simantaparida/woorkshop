@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from './ui/Input';
 import { Button } from './ui/Button';
 import { validateFeatureTitle } from '@/lib/utils/validation';
-import { FEATURE_CATEGORIES } from '@/lib/constants/feature-categories';
 import { createReferenceLink, isValidUrl, getLinkTypeIcon } from '@/lib/utils/link-metadata';
 import type { ReferenceLink } from '@/types';
 
@@ -13,7 +12,6 @@ interface FeatureInput {
   id: string;
   title: string;
   description: string;
-  category: string;
   referenceLinks: ReferenceLink[];
 }
 
@@ -34,7 +32,6 @@ export function FeatureForm({ features, onChange, maxFeatures = 10 }: FeatureFor
           id: Math.random().toString(36).substring(7),
           title: '',
           description: '',
-          category: '',
           referenceLinks: [],
         },
       ]);
@@ -174,30 +171,6 @@ export function FeatureForm({ features, onChange, maxFeatures = 10 }: FeatureFor
                   rows={2}
                   className="w-full px-3 py-2 bg-white/80 border-2 border-gray-200 rounded-lg text-xs text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary focus:bg-white shadow-sm transition-all resize-none"
                 />
-              </div>
-
-              {/* Category Row */}
-              <div className="ml-10">
-                <div className="max-w-xs">
-                  <label className="flex items-center gap-1 text-xs font-semibold text-gray-700 mb-1.5">
-                    <svg className="w-3.5 h-3.5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                    </svg>
-                    Category (Optional)
-                  </label>
-                  <select
-                    value={feature.category}
-                    onChange={(e) => updateFeature(feature.id, 'category', e.target.value)}
-                    className="w-full px-2.5 py-2 bg-white border-2 border-gray-200 rounded-lg text-xs font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 transition-all cursor-pointer shadow-sm hover:border-gray-300"
-                  >
-                    <option value="">None</option>
-                    {FEATURE_CATEGORIES.map(cat => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.icon} {cat.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
               </div>
 
               {/* Reference Links Section */}

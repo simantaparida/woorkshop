@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
@@ -12,6 +12,7 @@ import { validateSessionName, validateFeatures, sanitizeString } from '@/lib/uti
 import { copyToClipboard, getSessionLink } from '@/lib/utils/helpers';
 import { ROUTES } from '@/lib/constants';
 import { useAnalytics } from '@/lib/hooks/useAnalytics';
+import { supabase } from '@/lib/supabase/client';
 
 interface FeatureInput {
   id: string;
@@ -33,12 +34,48 @@ export default function NewVotingBoardPage() {
   ]);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loadingUser, setLoadingUser] = useState(true);
+
+  // Get current user and auto-populate facilitator name
+  useEffect(() => {
+    async function loadUser() {
+      try {
+        const { data: { user }, error } = await supabase.auth.getUser();
+        
+        if (error) {
+          console.error('Error getting user:', error);
+          setLoadingUser(false);
+          return;
+        }
+
+        if (user) {
+          // Try to get name from user_metadata (full_name or name)
+          const userName = 
+            user.user_metadata?.full_name || 
+            user.user_metadata?.name || 
+            user.user_metadata?.display_name ||
+            user.email?.split('@')[0] || // Fallback to email username
+            'User';
+          
+          setHostName(userName);
+        }
+      } catch (err) {
+        console.error('Error loading user:', err);
+      } finally {
+        setLoadingUser(false);
+      }
+    }
+
+    loadUser();
+  }, []);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
+    // hostName is auto-populated, so we don't need to validate it
+    // But we still check if it exists
     if (!hostName.trim()) {
-      newErrors.hostName = 'Your name is required';
+      newErrors.hostName = 'Unable to get your name. Please refresh the page.';
     }
 
     const projectError = validateSessionName(projectName);
@@ -72,7 +109,6 @@ export default function NewVotingBoardPage() {
         .map((f) => ({
           title: sanitizeString(f.title),
           description: f.description.trim() ? sanitizeString(f.description) : undefined,
-          category: f.category || undefined,
         }));
 
       const response = await fetch('/api/session', {
@@ -192,17 +228,24 @@ export default function NewVotingBoardPage() {
 
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <Input
-                    label="Your Name"
-                    placeholder="e.g., Alice Johnson"
-                    value={hostName}
-                    onChange={(e) => setHostName(e.target.value)}
-                    error={errors.hostName}
-                    required
-                  />
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Facilitator Name
+                  </label>
+                  {loadingUser ? (
+                    <div className="px-3 py-2 bg-gray-50 border-2 border-gray-200 rounded-lg text-sm text-gray-500">
+                      Loading...
+                    </div>
+                  ) : (
+                    <div className="px-3 py-2 bg-gray-50 border-2 border-gray-200 rounded-lg text-sm font-medium text-gray-900">
+                      {hostName || 'Not available'}
+                    </div>
+                  )}
                   <p className="mt-1 text-xs text-gray-500">
                     This will be shown to participants as the session host
                   </p>
+                  {errors.hostName && (
+                    <p className="mt-1 text-xs text-red-600">{errors.hostName}</p>
+                  )}
                 </div>
 
                 <div>
