@@ -38,6 +38,7 @@ export default function LobbyPage() {
   const [showHostLink, setShowHostLink] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [timeInLobby, setTimeInLobby] = useState(0);
+  const [dismissedJoinMessage, setDismissedJoinMessage] = useState(false);
 
   const isHost = typeof window !== 'undefined' && localStorage.getItem(`host_token_${sessionId}`) !== null;
   const sessionStatus = session?.status;
@@ -258,6 +259,109 @@ export default function LobbyPage() {
           transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
           className="space-y-8"
         >
+          {/* Session Timeline Progress */}
+          {(() => {
+            // Determine current step based on voting board flow
+            // Step 1: Join - User needs to join the session
+            // Step 2: Review - User has joined and should review features
+            // Step 3: Ready - User has marked themselves as ready
+            // Step 4: Vote - Voting is in progress
+            // Step 5: Results - Voting is complete, showing results
+            
+            let currentStep = 1;
+            
+            // Check session status first
+            if (sessionStatus === 'results') {
+              currentStep = 5; // Results
+            } else if (sessionStatus === 'playing') {
+              currentStep = 4; // Vote
+            } else if (currentPlayerId) {
+              // Step 1 completed: User has joined
+              currentStep = 2; // Now on Review step
+              
+              // Check if features are available to review
+              if (features.length > 0) {
+                // User can review features, but step 2 is still active until they mark ready
+                // If user is ready, they've completed review
+                if (isReady) {
+                  // Step 2 completed: Features reviewed
+                  // Step 3 completed: User is ready
+                  currentStep = 3; // Now on Ready step (waiting for host to start voting)
+                } else {
+                  // Step 2 active: User is reviewing features
+                  currentStep = 2;
+                }
+              } else {
+                // No features yet, still on review step (waiting for host to add features)
+                currentStep = 2;
+              }
+            }
+
+            const steps = [
+              { id: 1, label: 'Join' },
+              { id: 2, label: 'Review' },
+              { id: 3, label: 'Ready' },
+              { id: 4, label: 'Vote' },
+              { id: 5, label: 'Results' },
+            ];
+
+            return (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1, duration: 0.4 }}
+                className="flex items-center justify-center w-full mb-8"
+              >
+                <div className="flex items-center relative z-10">
+                  {steps.map((step, index) => {
+                    const isActive = step.id === currentStep;
+                    const isCompleted = step.id < currentStep;
+                    const isLast = index === steps.length - 1;
+
+                    return (
+                      <div key={step.id} className="flex items-center">
+                        <div className="flex flex-col items-center relative">
+                          <div
+                            className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-300 border-2 ${
+                              isActive
+                                ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200'
+                                : isCompleted
+                                ? 'bg-green-500 text-white border-green-500'
+                                : 'bg-white text-gray-400 border-gray-200'
+                            }`}
+                          >
+                            {isCompleted ? (
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            ) : (
+                              step.id
+                            )}
+                          </div>
+                          <span
+                            className={`absolute top-8 text-[10px] font-medium whitespace-nowrap transition-colors duration-300 ${
+                              isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-400'
+                            }`}
+                          >
+                            {step.label}
+                          </span>
+                        </div>
+
+                        {!isLast && (
+                          <div
+                            className={`w-12 sm:w-16 h-0.5 mx-1.5 transition-colors duration-300 ${
+                              isCompleted ? 'bg-green-500' : 'bg-gray-200'
+                            }`}
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            );
+          })()}
+
           {/* Session Goal Banner - Only show if goal exists */}
           {session.session_goal && (
             <motion.div
@@ -338,7 +442,7 @@ export default function LobbyPage() {
 
             {/* Start Voting Button - Host Only */}
             {isHost && currentPlayerId && (
-              <div className="flex justify-end">
+              <div className="flex justify-start">
                 <Button
                   onClick={handleStartGame}
                   isLoading={starting}
@@ -395,32 +499,46 @@ export default function LobbyPage() {
               </form>
             </motion.div>
           ) : (
+            <AnimatePresence>
+              {!dismissedJoinMessage && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-              className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-5 shadow-sm"
-            >
-              <div className="flex items-start gap-3">
+                  className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-5 shadow-sm relative"
+                >
+                  <button
+                    onClick={() => setDismissedJoinMessage(true)}
+                    className="absolute top-3 right-3 text-green-600 hover:text-green-800 transition-colors"
+                    aria-label="Dismiss message"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                  <div className="flex items-start gap-3 pr-6">
                 <svg className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
                 <div className="flex-1">
                   <p className="text-green-800 font-semibold mb-1">
-                    ✓ You're in the session!
+                        ✓ You're in the session!
                   </p>
                   <p className="text-sm text-green-700">
                     {isHost
-                      ? "You're the host. Review the features and start voting when everyone is ready."
-                      : "Welcome! Review the features below and mark yourself as ready when you're prepared to vote."}
+                          ? "You're the host. Review the features and start voting when everyone is ready."
+                          : "Welcome! Review the features below and mark yourself as ready when you're prepared to vote."}
                   </p>
                 </div>
               </div>
             </motion.div>
           )}
+            </AnimatePresence>
+          )}
 
-          {/* Session Overview & Players - 2 Column Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          {/* Session Overview & Players - 2 Column Layout (60:40 ratio) */}
+          <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-6 items-start">
             {/* Session Details & Features Card */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -428,14 +546,11 @@ export default function LobbyPage() {
               transition={{ delay: 0.2, duration: 0.4 }}
               className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm"
             >
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                Session Overview
-              </h2>
-              {session.session_goal && (
+            {session.session_goal && (
+              <div className="mb-6">
                 <p className="text-sm text-gray-600 mb-4">{session.session_goal}</p>
-              )}
-            </div>
+              </div>
+            )}
 
             <div className="mb-6">
               <div className="flex items-center justify-between mb-4">
@@ -492,34 +607,47 @@ export default function LobbyPage() {
                             </div>
                           )}
                           {/* Reference Links */}
-                          {feature.reference_links && feature.reference_links.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mt-3">
-                              {feature.reference_links.map((link, linkIndex) => (
-                                <a
-                                  key={linkIndex}
-                                  href={link.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-gray-300 rounded-md text-xs text-gray-700 hover:border-primary hover:text-primary transition-colors"
-                                  title={link.title}
-                                >
-                                  <img
-                                    src={link.favicon}
-                                    alt=""
-                                    className="w-3.5 h-3.5"
-                                    onError={(e) => {
-                                      e.currentTarget.style.display = 'none';
-                                    }}
-                                  />
-                                  <span>{getLinkTypeIcon(link.type)}</span>
-                                  <span className="max-w-[120px] truncate">{link.title}</span>
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                  </svg>
-                                </a>
-                              ))}
-                            </div>
-                          )}
+                          {(() => {
+                            // Handle both array and string (JSON) formats
+                            let links = feature.reference_links;
+                            if (typeof links === 'string') {
+                              try {
+                                links = JSON.parse(links);
+                              } catch (e) {
+                                links = [];
+                              }
+                            }
+                            return links && Array.isArray(links) && links.length > 0 ? (
+                              <div className="flex flex-wrap gap-2 mt-3">
+                                {links.map((link: any, linkIndex: number) => (
+                                  <a
+                                    key={linkIndex}
+                                    href={link.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-gray-300 rounded-md text-xs text-gray-700 hover:border-primary hover:text-primary transition-colors"
+                                    title={link.title || link.url}
+                                  >
+                                    {link.favicon && (
+                                      <img
+                                        src={link.favicon}
+                                        alt=""
+                                        className="w-3.5 h-3.5"
+                                        onError={(e) => {
+                                          e.currentTarget.style.display = 'none';
+                                        }}
+                                      />
+                                    )}
+                                    {link.type && <span>{getLinkTypeIcon(link.type)}</span>}
+                                    <span className="max-w-[120px] truncate">{link.title || link.url}</span>
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                  </a>
+                                ))}
+                              </div>
+                            ) : null;
+                          })()}
                         </div>
                       );
                     })}
@@ -545,7 +673,9 @@ export default function LobbyPage() {
             transition={{ delay: 0.3, duration: 0.4 }}
               className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm flex flex-col"
             >
-            <PlayerList players={players} showReadyStatus={true} />
+            <h3 className="text-[18px] font-medium text-gray-900 mb-3 flex-shrink-0">
+              Players ({players.length})
+            </h3>
 
             {/* Everyone Ready Message - Host only */}
             {isHost && currentPlayerId && (() => {
@@ -554,7 +684,7 @@ export default function LobbyPage() {
               if (!allPlayersReady) return null;
               
               return (
-                <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
                     <p className="text-sm text-green-800 font-medium">
@@ -564,6 +694,8 @@ export default function LobbyPage() {
                 </div>
               );
             })()}
+
+            <PlayerList players={players} showReadyStatus={true} showTitle={false} />
 
             {/* Ready Toggle integrated below player list */}
             {currentPlayerId && (

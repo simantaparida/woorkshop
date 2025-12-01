@@ -13,10 +13,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm';
 
     const variantStyles = {
-      primary: 'bg-primary text-white hover:bg-primary-700 hover:shadow-md active:bg-primary-800 active:shadow-sm',
-      secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200 hover:shadow active:bg-gray-300',
-      ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 active:bg-gray-200 shadow-none',
-      outline: 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900 active:bg-gray-100',
+      primary: 'bg-primary text-white hover:bg-primary-700 hover:shadow-md active:bg-primary-800 active:shadow-sm disabled:bg-gray-400 disabled:hover:bg-gray-400 disabled:active:bg-gray-400',
+      secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200 hover:shadow active:bg-gray-300 disabled:bg-gray-300 disabled:text-gray-500 disabled:hover:bg-gray-300 disabled:active:bg-gray-300',
+      ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 active:bg-gray-200 shadow-none disabled:text-gray-400 disabled:hover:bg-transparent disabled:active:bg-transparent',
+      outline: 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900 active:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-400 disabled:border-gray-200 disabled:hover:bg-gray-100 disabled:hover:text-gray-400 disabled:active:bg-gray-100',
     };
 
     const sizeStyles = {

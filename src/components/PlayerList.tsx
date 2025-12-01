@@ -9,6 +9,7 @@ interface PlayerListProps {
   votedPlayerIds?: Set<string>;
   showVoteStatus?: boolean;
   showReadyStatus?: boolean;
+  showTitle?: boolean;
 }
 
 export function PlayerList({
@@ -16,12 +17,15 @@ export function PlayerList({
   votedPlayerIds = new Set(),
   showVoteStatus = false,
   showReadyStatus = false,
+  showTitle = true,
 }: PlayerListProps) {
   return (
     <div className="flex flex-col flex-1 min-h-0">
-      <h3 className="text-sm font-semibold text-gray-900 mb-3 flex-shrink-0">
-        Players ({players.length})
-      </h3>
+      {showTitle && (
+        <h3 className="text-[18px] font-medium text-gray-900 mb-3 flex-shrink-0">
+          Players ({players.length})
+        </h3>
+      )}
       <div className="flex-1 min-h-0 overflow-y-auto pr-1 space-y-2">
         <AnimatePresence mode="popLayout">
           {players.map((player, index) => (
