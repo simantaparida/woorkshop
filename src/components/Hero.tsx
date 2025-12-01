@@ -125,13 +125,13 @@ export function Hero() {
           {/* CTA Buttons - Elegant Modern Hover */}
           <motion.div variants={itemVariants} className="flex items-center justify-center gap-4 mb-12">
             <Link
-              href={ROUTES.CREATE}
+              href={ROUTES.LOGIN}
               className="group relative inline-flex items-center gap-2 px-7 py-3.5 bg-blue-600 text-white text-base font-semibold rounded-lg transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 overflow-hidden"
-              aria-label="Start a Padool session"
+              aria-label="Get started with Padool"
             >
               <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
               <span className="relative flex items-center gap-2">
-                Let's Padool it
+                Get started
                 <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                 </svg>

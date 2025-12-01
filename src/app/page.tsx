@@ -88,7 +88,7 @@ export default function HomePage() {
             <Button
               variant="secondary"
               size="lg"
-              onClick={handleStartGame}
+              onClick={() => router.push(ROUTES.LOGIN)}
               className="text-xl px-12 py-4 bg-white text-primary hover:bg-gray-50 shadow-lg hover:shadow-xl"
             >
               Start Free Session →

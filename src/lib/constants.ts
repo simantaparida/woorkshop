@@ -42,6 +42,12 @@ export const ROUTES = {
 
   // Tools
   TOOLS: '/tools',
+
+  // Auth
+  LOGIN: '/auth/login',
+  SIGNUP: '/auth/signup',
+  AUTH_CALLBACK: '/auth/callback',
+  RESET_PASSWORD: '/auth/reset-password',
 } as const;
 
 export const TOOL_TYPES = {
