@@ -35,18 +35,25 @@ export default function NewVotingBoardPage() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loadingUser, setLoadingUser] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Get current user and auto-populate facilitator name
+  // Check authentication and get current user
   useEffect(() => {
-    async function loadUser() {
+    async function checkAuthAndLoadUser() {
       try {
-        const { data: { user }, error } = await supabase.auth.getUser();
+        // First check if there's an active session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        if (error) {
-          console.error('Error getting user:', error);
-          setLoadingUser(false);
+        if (sessionError || !session) {
+          // No active session - redirect to login
+          console.log('No active session, redirecting to login');
+          router.push(`${ROUTES.LOGIN}?redirect=${encodeURIComponent('/voting-board/new')}`);
           return;
         }
+
+        // Session exists, get user info
+        setIsAuthenticated(true);
+        const user = session.user;
 
         if (user) {
           // Try to get name from user_metadata (full_name or name)
@@ -60,14 +67,40 @@ export default function NewVotingBoardPage() {
           setHostName(userName);
         }
       } catch (err) {
-        console.error('Error loading user:', err);
+        console.error('Error checking authentication:', err);
+        // On error, redirect to login
+        router.push(`${ROUTES.LOGIN}?redirect=${encodeURIComponent('/voting-board/new')}`);
       } finally {
         setLoadingUser(false);
       }
     }
 
-    loadUser();
-  }, []);
+    checkAuthAndLoadUser();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        router.push(`${ROUTES.LOGIN}?redirect=${encodeURIComponent('/voting-board/new')}`);
+      } else if (session && !isAuthenticated) {
+        // User just signed in
+        const user = session.user;
+        if (user) {
+          const userName = 
+            user.user_metadata?.full_name || 
+            user.user_metadata?.name || 
+            user.user_metadata?.display_name ||
+            user.email?.split('@')[0] ||
+            'User';
+          setHostName(userName);
+          setIsAuthenticated(true);
+        }
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [router, isAuthenticated]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -154,6 +187,37 @@ export default function NewVotingBoardPage() {
       setLoading(false);
     }
   };
+
+  // Show loading state while checking authentication
+  if (loadingUser) {
+    return (
+      <AppLayout>
+        <div className="p-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
+              <p className="text-gray-600">Checking authentication...</p>
+            </div>
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // Don't render form if not authenticated (will redirect)
+  if (!isAuthenticated) {
+    return (
+      <AppLayout>
+        <div className="p-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <p className="text-gray-600">Redirecting to login...</p>
+            </div>
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
