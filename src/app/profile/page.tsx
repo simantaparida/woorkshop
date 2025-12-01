@@ -1,15 +1,22 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/Button';
 import { getActiveSessions } from '@/lib/utils/helpers';
 import { motion } from 'framer-motion';
-import { User, Clock, Award, Zap, Calendar, ArrowRight } from 'lucide-react';
+import { User, Clock, Award, Zap, Calendar, ArrowRight, Users } from 'lucide-react';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase/client';
+import { ROUTES } from '@/lib/constants';
 
 export default function ProfilePage() {
-    const [hostName, setHostName] = useState('Guest User');
+    const router = useRouter();
+    const [userName, setUserName] = useState('Guest User');
+    const [userEmail, setUserEmail] = useState('');
+    const [userInitials, setUserInitials] = useState('GU');
+    const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState({
         hosted: 0,
         participated: 0,
@@ -18,9 +25,41 @@ export default function ProfilePage() {
     const [recentActivity, setRecentActivity] = useState<any[]>([]);
 
     useEffect(() => {
-        // Load user info
-        const savedName = localStorage.getItem('default_host_name');
-        if (savedName) setHostName(savedName);
+        async function loadUser() {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                
+                if (session?.user) {
+                    const userData = session.user;
+                    const name = 
+                        userData.user_metadata?.full_name || 
+                        userData.user_metadata?.name || 
+                        userData.user_metadata?.display_name ||
+                        userData.email?.split('@')[0] ||
+                        'User';
+                    
+                    const initials = name
+                        .split(' ')
+                        .map(n => n[0])
+                        .join('')
+                        .toUpperCase()
+                        .slice(0, 2) || 'U';
+                    
+                    setUserName(name);
+                    setUserEmail(userData.email || '');
+                    setUserInitials(initials);
+                } else {
+                    // Not logged in, redirect to login
+                    router.push(ROUTES.LOGIN);
+                }
+            } catch (err) {
+                console.error('Error loading user:', err);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        loadUser();
 
         // Calculate stats from local storage sessions
         const sessions = getActiveSessions();
@@ -41,17 +80,21 @@ export default function ProfilePage() {
                 {/* Profile Header */}
                 <div className="bg-white rounded-2xl border border-gray-200 p-8 mb-8 shadow-sm flex flex-col md:flex-row items-center md:items-start gap-8">
                     <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-md">
-                        {hostName.charAt(0).toUpperCase()}
+                        {loading ? '...' : userInitials}
                     </div>
 
                     <div className="flex-1 text-center md:text-left">
                         <div className="flex flex-col md:flex-row md:items-center gap-4 mb-2">
-                            <h1 className="text-3xl font-bold text-gray-900">{hostName}</h1>
+                            <h1 className="text-3xl font-bold text-gray-900">
+                                {loading ? 'Loading...' : userName}
+                            </h1>
                             <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 self-center md:self-auto">
                                 Free Plan
                             </span>
                         </div>
-                        <p className="text-gray-500 mb-6">Product Designer • Joined November 2025</p>
+                        <p className="text-gray-500 mb-6">
+                            {userEmail || 'No email'} • Joined {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                        </p>
 
                         <div className="flex flex-wrap justify-center md:justify-start gap-4">
                             <Link href="/settings">
@@ -167,4 +210,3 @@ function StatCard({ icon: Icon, label, value, color }: { icon: any, label: strin
     );
 }
 
-import { Users } from 'lucide-react';

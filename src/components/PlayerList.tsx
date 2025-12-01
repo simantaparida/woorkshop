@@ -18,27 +18,28 @@ export function PlayerList({
   showReadyStatus = false,
 }: PlayerListProps) {
   return (
-    <div className="space-y-2">
-      <h3 className="text-sm font-medium text-gray-700 mb-3">
+    <div className="space-y-2 h-full flex flex-col">
+      <h3 className="text-sm font-semibold text-gray-900 mb-3">
         Players ({players.length})
       </h3>
-      <AnimatePresence mode="popLayout">
-        {players.map((player, index) => (
-          <motion.div
-            key={player.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            transition={{ delay: index * 0.05 }}
-            className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg"
-          >
+      <div className="flex-1 overflow-y-auto max-h-[500px] pr-1 space-y-2">
+        <AnimatePresence mode="popLayout">
+          {players.map((player, index) => (
+            <motion.div
+              key={player.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ delay: index * 0.05 }}
+              className="flex items-center justify-between p-2.5 bg-white border border-gray-200 rounded-lg"
+            >
             <div className="flex items-center gap-3">
               {/* Avatar with Ready Status Ring */}
               <div className="relative">
-                <div className={`w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center ${
+                <div className={`w-9 h-9 rounded-full bg-primary-100 flex items-center justify-center ${
                   showReadyStatus ? (player.is_ready ? 'ring-2 ring-green-500 ring-offset-2' : 'ring-2 ring-gray-300 ring-offset-2') : ''
                 }`}>
-                  <span className="text-primary-700 font-semibold text-sm">
+                  <span className="text-primary-700 font-semibold text-xs">
                     {player.name.charAt(0).toUpperCase()}
                   </span>
                 </div>
@@ -130,15 +131,15 @@ export function PlayerList({
                 )}
               </div>
             )}
-          </motion.div>
-        ))}
-      </AnimatePresence>
-
-      {players.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          <p className="text-sm">No players yet</p>
-        </div>
-      )}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+        {players.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            <p className="text-sm">No players yet</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

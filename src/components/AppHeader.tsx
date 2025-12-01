@@ -1,14 +1,117 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '@/lib/supabase/client';
+import { ROUTES } from '@/lib/constants';
+
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  initials: string;
+}
 
 export function AppHeader() {
+  const router = useRouter();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
+
+  // Get current user
+  useEffect(() => {
+    async function loadUser() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session?.user) {
+          const userData = session.user;
+          const userName = 
+            userData.user_metadata?.full_name || 
+            userData.user_metadata?.name || 
+            userData.user_metadata?.display_name ||
+            userData.email?.split('@')[0] ||
+            'User';
+          
+          // Generate initials
+          const initials = userName
+            .split(' ')
+            .map(n => n[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 2) || 'U';
+          
+          setUser({
+            id: userData.id,
+            email: userData.email || 'No email',
+            name: userName,
+            initials,
+          });
+        }
+      } catch (err) {
+        console.error('Error loading user:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadUser();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        setUser(null);
+      } else if (session?.user) {
+        const userData = session.user;
+        const userName = 
+          userData.user_metadata?.full_name || 
+          userData.user_metadata?.name || 
+          userData.user_metadata?.display_name ||
+          userData.email?.split('@')[0] ||
+          'User';
+        
+        const initials = userName
+          .split(' ')
+          .map(n => n[0])
+          .join('')
+          .toUpperCase()
+          .slice(0, 2) || 'U';
+        
+        setUser({
+          id: userData.id,
+          email: userData.email || 'No email',
+          name: userName,
+          initials,
+        });
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const handleSignOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      // Clear any local storage
+      if (typeof window !== 'undefined') {
+        localStorage.clear();
+      }
+      
+      // Redirect to login
+      router.push(ROUTES.LOGIN);
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -113,11 +216,15 @@ export function AppHeader() {
             aria-label="Profile menu"
           >
             <div className="flex flex-col items-end">
-              <span className="text-sm font-semibold text-gray-900">Guest User</span>
+              <span className="text-sm font-semibold text-gray-900">
+                {loading ? 'Loading...' : user?.name || 'Guest User'}
+              </span>
               <span className="text-xs text-gray-500">Free Plan</span>
             </div>
             <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
-              <span className="text-white text-sm font-semibold">GU</span>
+              <span className="text-white text-sm font-semibold">
+                {loading ? '...' : user?.initials || 'GU'}
+              </span>
             </div>
             <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -138,11 +245,17 @@ export function AppHeader() {
                 <div className="p-4 border-b border-gray-200">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
-                      <span className="text-white font-semibold">GU</span>
+                      <span className="text-white font-semibold">
+                        {user?.initials || 'GU'}
+                      </span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-900 truncate">Guest User</p>
-                      <p className="text-xs text-gray-500 truncate">guest@padool.com</p>
+                      <p className="text-sm font-semibold text-gray-900 truncate">
+                        {user?.name || 'Guest User'}
+                      </p>
+                      <p className="text-xs text-gray-500 truncate">
+                        {user?.email || 'Not signed in'}
+                      </p>
                       <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 mt-1">
                         Free Plan
                       </span>
@@ -173,14 +286,29 @@ export function AppHeader() {
                   </button>
                 </div>
 
-                {/* Sign Out */}
+                {/* Sign Out / Sign In */}
                 <div className="border-t border-gray-200 py-2">
-                  <button className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-3">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    Sign Out
-                  </button>
+                  {user ? (
+                    <button
+                      onClick={handleSignOut}
+                      className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-3"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                      Sign Out
+                    </button>
+                  ) : (
+                    <Link
+                      href={ROUTES.LOGIN}
+                      className="w-full px-4 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 transition-colors flex items-center gap-3"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                      </svg>
+                      Sign In
+                    </Link>
+                  )}
                 </div>
               </motion.div>
             )}

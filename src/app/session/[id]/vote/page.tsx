@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/Button';
 import { FeatureCard } from '@/components/FeatureCard';
 import { PlayerList } from '@/components/PlayerList';
 import { ProgressIndicator } from '@/components/ProgressIndicator';
-import { SessionNav } from '@/components/SessionNav';
 import { AppLayout } from '@/components/AppLayout';
 import { ImpactEffortGrid } from '@/components/ImpactEffortGrid';
 import { useToast } from '@/components/ui/Toast';
@@ -263,20 +262,6 @@ export default function VotePage() {
   return (
     <AppLayout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <SessionNav
-          session={{
-            id: sessionId,
-            title: session?.project_name || '',
-            toolType: 'voting-board',
-            status: session?.status,
-          }}
-          sessionGoal={session?.session_goal}
-          currentPhase="vote"
-          playerInfo={currentPlayer ? {
-            name: currentPlayer.name,
-            isHost: currentPlayer.is_host,
-          } : undefined}
-        />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
