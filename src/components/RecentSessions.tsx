@@ -2,18 +2,37 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Vote, BarChart2, Grid2x2, Clock, ArrowRight, MoreVertical, Search, Lightbulb } from 'lucide-react';
+import { FileText, Vote, BarChart2, Grid2x2, Clock, ArrowRight, MoreVertical, Search, Lightbulb, Users, Radio } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 
-// Mock data for workshops (from RecentWorkshops.tsx)
-const recentWorkshops = [
+interface WorkshopSession {
+    id: string;
+    title: string;
+    type: string;
+    date: string;
+    participants: number;
+    activitiesCompleted: number;
+    totalActivities: number;
+    lastActivity: string;
+    status: 'live' | 'paused' | 'completed';
+    icon: any;
+    color: string;
+    bgColor: string;
+}
+
+// Mock data for workshops with facilitator-friendly indicators
+const recentWorkshops: WorkshopSession[] = [
     {
         id: '1',
         title: 'Mobile App Redesign',
         type: 'Prioritisation',
         date: '2 hours ago',
-        participants: 8,
+        participants: 4,
+        activitiesCompleted: 3,
+        totalActivities: 5,
+        lastActivity: 'Clustering',
+        status: 'live',
         icon: BarChart2,
         color: 'text-blue-600',
         bgColor: 'bg-blue-50',
@@ -24,6 +43,10 @@ const recentWorkshops = [
         type: 'Voting',
         date: 'Yesterday',
         participants: 12,
+        activitiesCompleted: 2,
+        totalActivities: 4,
+        lastActivity: 'Voting',
+        status: 'paused',
         icon: Vote,
         color: 'text-purple-600',
         bgColor: 'bg-purple-50',
@@ -34,6 +57,10 @@ const recentWorkshops = [
         type: 'Problem Framing',
         date: '2 days ago',
         participants: 6,
+        activitiesCompleted: 5,
+        totalActivities: 5,
+        lastActivity: 'Finalizing',
+        status: 'completed',
         icon: Search,
         color: 'text-green-600',
         bgColor: 'bg-green-50',
@@ -90,46 +117,111 @@ export function RecentSessions() {
 
             <div className="overflow-x-auto">
                 {sessions.length > 0 ? (
-                    <table className="w-full">
-                        <thead className="bg-gray-50/50">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                            {sessions.map((session) => {
-                                const Icon = session.icon || FileText;
-                                return (
-                                    <tr key={session.id} className="group hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="flex items-center gap-3">
-                                                <div className={`w-8 h-8 ${session.bgColor || 'bg-gray-100'} rounded-lg flex items-center justify-center`}>
-                                                    <Icon className={`w-4 h-4 ${session.color || 'text-gray-600'}`} />
-                                                </div>
-                                                <span className="text-sm font-medium text-gray-900">{session.title}</span>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                                {session.type || 'Tool Session'}
+                    <div className="divide-y divide-gray-100">
+                        {sessions.map((session) => {
+                            const Icon = session.icon || FileText;
+                            const progressPercentage = session.totalActivities > 0 
+                                ? (session.activitiesCompleted / session.totalActivities) * 100 
+                                : 0;
+                            
+                            const getStatusBadge = () => {
+                                switch (session.status) {
+                                    case 'live':
+                                        return (
+                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                                <Radio className="w-3 h-3 fill-current" />
+                                                Live
                                             </span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {session.date || 'Recently'}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-right">
-                                            <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                                Resume <ArrowRight className="w-3 h-3 ml-1" />
-                                            </Button>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
+                                        );
+                                    case 'paused':
+                                        return (
+                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
+                                                <Clock className="w-3 h-3" />
+                                                Paused
+                                            </span>
+                                        );
+                                    case 'completed':
+                                        return (
+                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                                                Completed
+                                            </span>
+                                        );
+                                }
+                            };
+
+                            return (
+                                <div key={session.id} className="group hover:bg-gray-50 transition-colors">
+                                    <div className="px-6 py-4">
+                                        <div className="flex items-start justify-between gap-4">
+                                            {/* Left side: Icon and Title */}
+                                            <div className="flex items-start gap-3 flex-1 min-w-0">
+                                                <div className={`w-10 h-10 ${session.bgColor || 'bg-gray-100'} rounded-lg flex items-center justify-center flex-shrink-0`}>
+                                                    <Icon className={`w-5 h-5 ${session.color || 'text-gray-600'}`} />
+                                                </div>
+                                                
+                                                <div className="flex-1 min-w-0">
+                                                    {/* Title and Status */}
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <h3 className="text-sm font-semibold text-gray-900 truncate">
+                                                            {session.title}
+                                                        </h3>
+                                                        {getStatusBadge()}
+                                                    </div>
+                                                    
+                                                    {/* Progress Bar */}
+                                                    <div className="mb-2">
+                                                        <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                                                            <div 
+                                                                className={`h-full rounded-full transition-all ${
+                                                                    session.status === 'completed' 
+                                                                        ? 'bg-green-500' 
+                                                                        : session.status === 'live'
+                                                                        ? 'bg-blue-500'
+                                                                        : 'bg-yellow-500'
+                                                                }`}
+                                                                style={{ width: `${progressPercentage}%` }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    {/* Indicators */}
+                                                    <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600">
+                                                        <span className="inline-flex items-center gap-1">
+                                                            <span className="font-medium text-gray-900">
+                                                                {session.activitiesCompleted}/{session.totalActivities}
+                                                            </span>
+                                                            <span>activities completed</span>
+                                                        </span>
+                                                        <span>·</span>
+                                                        <span className="inline-flex items-center gap-1">
+                                                            <Users className="w-3 h-3" />
+                                                            <span>{session.participants} participants</span>
+                                                        </span>
+                                                        <span>·</span>
+                                                        <span>
+                                                            Last activity: <span className="font-medium text-gray-900">{session.lastActivity}</span>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            {/* Right side: Action Button */}
+                                            <div className="flex items-center gap-3 flex-shrink-0">
+                                                <Button 
+                                                    variant="ghost" 
+                                                    size="sm" 
+                                                    className="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+                                                >
+                                                    {session.status === 'completed' ? 'View' : 'Resume'} 
+                                                    <ArrowRight className="w-3 h-3 ml-1" />
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
                 ) : (
                     <div className="p-12 text-center">
                         <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
