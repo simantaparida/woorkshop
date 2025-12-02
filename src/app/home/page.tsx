@@ -66,8 +66,8 @@ export default function HomePage() {
         <section>
           <div className="flex justify-between items-center mb-4">
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Facilitation Tools</h2>
-              <p className="text-gray-500 mt-1">Structured frameworks for your workshops</p>
+              <h2 className="text-xl font-bold text-gray-900">Recommended Tools</h2>
+              <p className="text-gray-500 mt-1">Build structured agendas, run activities, and guide your team through productive product workshops.</p>
             </div>
             <Link
               href="/tools"
