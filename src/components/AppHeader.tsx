@@ -6,95 +6,15 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase/client';
 import { ROUTES } from '@/lib/constants';
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  initials: string;
-}
+import { useUser } from '@/lib/hooks/useUser';
 
 export function AppHeader() {
   const router = useRouter();
+  const { user, loading } = useUser();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
-
-  // Get current user
-  useEffect(() => {
-    async function loadUser() {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (session?.user) {
-          const userData = session.user;
-          const userName = 
-            userData.user_metadata?.full_name || 
-            userData.user_metadata?.name || 
-            userData.user_metadata?.display_name ||
-            userData.email?.split('@')[0] ||
-            'User';
-          
-          // Generate initials
-          const initials = userName
-            .split(' ')
-            .map(n => n[0])
-            .join('')
-            .toUpperCase()
-            .slice(0, 2) || 'U';
-          
-          setUser({
-            id: userData.id,
-            email: userData.email || 'No email',
-            name: userName,
-            initials,
-          });
-        }
-      } catch (err) {
-        console.error('Error loading user:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadUser();
-
-    // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT' || !session) {
-        setUser(null);
-      } else if (session?.user) {
-        const userData = session.user;
-        const userName = 
-          userData.user_metadata?.full_name || 
-          userData.user_metadata?.name || 
-          userData.user_metadata?.display_name ||
-          userData.email?.split('@')[0] ||
-          'User';
-        
-        const initials = userName
-          .split(' ')
-          .map(n => n[0])
-          .join('')
-          .toUpperCase()
-          .slice(0, 2) || 'U';
-        
-        setUser({
-          id: userData.id,
-          email: userData.email || 'No email',
-          name: userName,
-          initials,
-        });
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
 
   const handleSignOut = async () => {
     try {

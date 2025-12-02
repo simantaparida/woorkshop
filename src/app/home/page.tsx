@@ -12,9 +12,11 @@ import { Users, Plus, ArrowRight, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useUser } from '@/lib/hooks/useUser';
 
 export default function HomePage() {
   const router = useRouter();
+  const { user, loading: userLoading } = useUser();
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [showCreateWorkshopModal, setShowCreateWorkshopModal] = useState(false);
   const [sessionCode, setSessionCode] = useState('');
@@ -25,6 +27,9 @@ export default function HomePage() {
     }
   };
 
+  // Get user display name
+  const userName = userLoading ? '...' : (user?.name || 'Guest');
+
   return (
     <AppLayout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -32,7 +37,7 @@ export default function HomePage() {
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Welcome back, Guest</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Welcome back, {userName}</h1>
             <p className="text-gray-500 mt-1">Ready to facilitate your next workshop?</p>
           </div>
           <div className="flex items-center gap-3">
