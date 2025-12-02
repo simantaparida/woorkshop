@@ -89,6 +89,55 @@ function ToolCard({ tool, index }: { tool: FacilitationTool; index: number }) {
   const Icon = iconMap[tool.icon] || FileText;
   const colors = categoryColorMap[tool.category];
   const categoryInfo = TOOL_CATEGORIES[tool.category];
+  const isComingSoon = tool.comingSoon === true;
+
+  const cardContent = (
+    <div className={`bg-white rounded-lg border border-gray-200 p-4 transition-all h-full relative ${
+      isComingSoon 
+        ? 'opacity-75 cursor-not-allowed' 
+        : 'hover:border-blue-500 hover:shadow-md group'
+    }`}>
+      {/* Coming Soon Badge */}
+      {isComingSoon && (
+        <div className="absolute top-3 right-3 px-2 py-0.5 bg-gray-100 text-gray-700 text-xs font-medium rounded-full">
+          Coming Soon
+        </div>
+      )}
+
+      <div className="flex items-start justify-between mb-3">
+        <div className={`w-10 h-10 ${colors.iconBg} rounded-lg flex items-center justify-center transition-transform ${
+          isComingSoon ? '' : 'group-hover:scale-110'
+        }`}>
+          <Icon className={`w-5 h-5 ${colors.text}`} />
+        </div>
+        <span className={`px-2 py-0.5 rounded text-xs font-medium ${colors.bg} ${colors.text}`}>
+          {categoryInfo.label}
+        </span>
+      </div>
+
+      <h3 className={`text-sm font-semibold text-gray-900 mb-1.5 transition-colors ${
+        isComingSoon ? '' : 'group-hover:text-blue-600'
+      }`}>
+        {tool.name}
+      </h3>
+      <p className="text-xs text-gray-600 line-clamp-2">
+        {tool.description}
+      </p>
+    </div>
+  );
+
+  if (isComingSoon) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.05 }}
+        className="cursor-not-allowed"
+      >
+        {cardContent}
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
@@ -98,25 +147,9 @@ function ToolCard({ tool, index }: { tool: FacilitationTool; index: number }) {
     >
       <Link
         href={tool.route}
-        className="block group"
+        className="block"
       >
-        <div className="bg-white rounded-lg border border-gray-200 p-4 transition-all hover:border-blue-500 hover:shadow-md h-full">
-          <div className="flex items-start justify-between mb-3">
-            <div className={`w-10 h-10 ${colors.iconBg} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
-              <Icon className={`w-5 h-5 ${colors.text}`} />
-            </div>
-            <span className={`px-2 py-0.5 rounded text-xs font-medium ${colors.bg} ${colors.text}`}>
-              {categoryInfo.label}
-            </span>
-          </div>
-
-          <h3 className="text-sm font-semibold text-gray-900 mb-1.5 group-hover:text-blue-600 transition-colors">
-            {tool.name}
-          </h3>
-          <p className="text-xs text-gray-600 line-clamp-2">
-            {tool.description}
-          </p>
-        </div>
+        {cardContent}
       </Link>
     </motion.div>
   );
@@ -126,6 +159,61 @@ function ToolCardList({ tool, index }: { tool: FacilitationTool; index: number }
   const Icon = iconMap[tool.icon] || FileText;
   const colors = categoryColorMap[tool.category];
   const categoryInfo = TOOL_CATEGORIES[tool.category];
+  const isComingSoon = tool.comingSoon === true;
+
+  const cardContent = (
+    <div className={`bg-white rounded-lg border border-gray-200 p-4 transition-all flex items-center gap-4 relative ${
+      isComingSoon 
+        ? 'opacity-75 cursor-not-allowed' 
+        : 'hover:border-blue-500 hover:shadow-md group'
+    }`}>
+      {/* Coming Soon Badge */}
+      {isComingSoon && (
+        <div className="absolute top-3 right-3 px-2 py-0.5 bg-gray-100 text-gray-700 text-xs font-medium rounded-full">
+          Coming Soon
+        </div>
+      )}
+
+      <div className={`w-10 h-10 ${colors.iconBg} rounded-lg flex items-center justify-center transition-transform flex-shrink-0 ${
+        isComingSoon ? '' : 'group-hover:scale-110'
+      }`}>
+        <Icon className={`w-5 h-5 ${colors.text}`} />
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          <h3 className={`text-sm font-semibold text-gray-900 transition-colors ${
+            isComingSoon ? '' : 'group-hover:text-blue-600'
+          }`}>
+            {tool.name}
+          </h3>
+          <span className={`px-2 py-0.5 rounded text-xs font-medium ${colors.bg} ${colors.text}`}>
+            {categoryInfo.label}
+          </span>
+        </div>
+        <p className="text-xs text-gray-600">
+          {tool.description}
+        </p>
+      </div>
+
+      <div className="text-xs text-gray-500 flex-shrink-0">
+        {tool.steps} steps
+      </div>
+    </div>
+  );
+
+  if (isComingSoon) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: index * 0.05 }}
+        className="cursor-not-allowed"
+      >
+        {cardContent}
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
@@ -135,31 +223,9 @@ function ToolCardList({ tool, index }: { tool: FacilitationTool; index: number }
     >
       <Link
         href={tool.route}
-        className="block group"
+        className="block"
       >
-        <div className="bg-white rounded-lg border border-gray-200 p-4 transition-all hover:border-blue-500 hover:shadow-md flex items-center gap-4">
-          <div className={`w-10 h-10 ${colors.iconBg} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0`}>
-            <Icon className={`w-5 h-5 ${colors.text}`} />
-          </div>
-
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <h3 className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                {tool.name}
-              </h3>
-              <span className={`px-2 py-0.5 rounded text-xs font-medium ${colors.bg} ${colors.text}`}>
-                {categoryInfo.label}
-              </span>
-            </div>
-            <p className="text-xs text-gray-600">
-              {tool.description}
-            </p>
-          </div>
-
-          <div className="text-xs text-gray-500 flex-shrink-0">
-            {tool.steps} steps
-          </div>
-        </div>
+        {cardContent}
       </Link>
     </motion.div>
   );

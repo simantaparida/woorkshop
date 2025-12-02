@@ -9,6 +9,7 @@ export interface FacilitationTool {
   multiUser: boolean;
   exportFormats: ('pdf' | 'markdown' | 'csv')[];
   route: string;
+  comingSoon?: boolean; // mark tools that are not yet available
 }
 
 export const FACILITATION_TOOLS: FacilitationTool[] = [
@@ -46,7 +47,8 @@ export const FACILITATION_TOOLS: FacilitationTool[] = [
     steps: 3,
     multiUser: false,
     exportFormats: ['pdf', 'markdown', 'csv'],
-    route: '/tools/rice' // Will be implemented in Phase 5
+    route: '/tools/rice', // Will be implemented in Phase 5
+    comingSoon: true
   },
   {
     id: 'moscow',
@@ -58,7 +60,8 @@ export const FACILITATION_TOOLS: FacilitationTool[] = [
     steps: 3,
     multiUser: false,
     exportFormats: ['pdf', 'markdown'],
-    route: '/tools/moscow' // Will be implemented in Phase 5
+    route: '/tools/moscow', // Will be implemented in Phase 5
+    comingSoon: true
   }
 ];
 
