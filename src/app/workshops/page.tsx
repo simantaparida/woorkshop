@@ -128,28 +128,6 @@ export default function WorkshopsPage() {
                 onClick={() => handleWorkshopClick(workshop.id)}
               >
                 <div className="p-6">
-                  {/* Project Badge if workshop is in a project */}
-                  {workshop.project && (
-                    <div className="mb-3">
-                      <span className="inline-flex items-center gap-1 text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
-                        <svg
-                          className="w-3 h-3"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
-                          />
-                        </svg>
-                        {workshop.project.title}
-                      </span>
-                    </div>
-                  )}
-
                   <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate">
                     {workshop.title}
                   </h3>

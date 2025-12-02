@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServer } from '@/lib/supabase/server';
+import { getToolPhases } from '@/lib/tools/registry';
+import type { ToolType } from '@/types';
 
 // GET /api/workshops/[id] - Get workshop with sessions
 export async function GET(
@@ -39,6 +41,43 @@ export async function GET(
         { error: 'Failed to fetch workshop' },
         { status: 500 }
       );
+    }
+
+    // Enrich sessions with participant counts and activity progress
+    if (workshop.sessions && workshop.sessions.length > 0) {
+      const enrichedSessions = await Promise.all(
+        workshop.sessions.map(async (session: any) => {
+          // Get participant count
+          const { count: participantCount } = await supabase
+            .from('players')
+            .select('*', { count: 'exact', head: true })
+            .eq('session_id', session.id);
+
+          // Calculate activity progress based on tool type and session status
+          const toolPhases = getToolPhases(session.tool_type as ToolType);
+          const totalActivities = toolPhases.length;
+          let activitiesCompleted = 1; // At least first phase (lobby/join) is done
+          let lastActivity = toolPhases[0]?.label || 'Started';
+          
+          if (session.status === 'playing') {
+            activitiesCompleted = 2; // Lobby + current active phase
+            lastActivity = toolPhases[1]?.label || 'Active';
+          } else if (session.status === 'results') {
+            activitiesCompleted = totalActivities;
+            lastActivity = toolPhases[toolPhases.length - 1]?.label || 'Results';
+          }
+
+          return {
+            ...session,
+            participantCount: participantCount || 0,
+            activitiesCompleted,
+            totalActivities,
+            lastActivity,
+          };
+        })
+      );
+
+      workshop.sessions = enrichedSessions;
     }
 
     return NextResponse.json({ workshop });

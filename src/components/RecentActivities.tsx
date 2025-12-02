@@ -1,6 +1,7 @@
 'use client';
 
-import { Plus, Edit3, Layers, Sparkles, BarChart2 } from 'lucide-react';
+import { useState } from 'react';
+import { Plus, Edit3, Layers, Sparkles, BarChart2, ChevronDown, ChevronUp } from 'lucide-react';
 
 const activities = [
     {
@@ -45,28 +46,65 @@ const activities = [
     },
 ];
 
+const DEFAULT_ITEMS_TO_SHOW = 3;
+
 export function RecentActivities() {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const displayedActivities = isExpanded ? activities : activities.slice(0, DEFAULT_ITEMS_TO_SHOW);
+    const hasMoreActivities = activities.length > DEFAULT_ITEMS_TO_SHOW;
+
     return (
         <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-                <div className="space-y-4">
-                    {activities.map((activity, index) => (
-                        <div key={activity.id} className="flex gap-3 relative">
-                            {index !== activities.length - 1 && (
-                                <div className="absolute left-4 top-8 bottom-[-16px] w-0.5 bg-gray-100" />
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                {/* Header with collapse toggle */}
+                <div className="flex items-center justify-between p-4 border-b border-gray-100">
+                    <h2 className="text-lg font-semibold text-gray-900">Workshop Timeline</h2>
+                    {hasMoreActivities && (
+                        <button
+                            onClick={() => setIsExpanded(!isExpanded)}
+                            className="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1 transition-colors"
+                        >
+                            {isExpanded ? (
+                                <>
+                                    Show less
+                                    <ChevronUp className="w-4 h-4" />
+                                </>
+                            ) : (
+                                <>
+                                    Show more ({activities.length - DEFAULT_ITEMS_TO_SHOW} more)
+                                    <ChevronDown className="w-4 h-4" />
+                                </>
                             )}
-                            <div className={`w-8 h-8 ${activity.bgColor} rounded-full flex items-center justify-center flex-shrink-0 z-10`}>
-                                <activity.icon className={`w-4 h-4 ${activity.color}`} />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm text-gray-900">
-                                    {activity.text}
-                                </p>
-                                <p className="text-xs text-gray-400 mt-1">{activity.time}</p>
-                            </div>
+                        </button>
+                    )}
+                </div>
+
+                {/* Activities list */}
+                <div className="p-4">
+                    {displayedActivities.length > 0 ? (
+                        <div className="space-y-4">
+                            {displayedActivities.map((activity, index) => (
+                                <div key={activity.id} className="flex gap-3 relative">
+                                    {index !== displayedActivities.length - 1 && (
+                                        <div className="absolute left-4 top-8 bottom-[-16px] w-0.5 bg-gray-100" />
+                                    )}
+                                    <div className={`w-8 h-8 ${activity.bgColor} rounded-full flex items-center justify-center flex-shrink-0 z-10`}>
+                                        <activity.icon className={`w-4 h-4 ${activity.color}`} />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm text-gray-900">
+                                            {activity.text}
+                                        </p>
+                                        <p className="text-xs text-gray-400 mt-1">{activity.time}</p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    ))}
+                    ) : (
+                        <div className="text-center py-8 text-sm text-gray-500">
+                            No recent activity
+                        </div>
+                    )}
                 </div>
             </div>
         </section>

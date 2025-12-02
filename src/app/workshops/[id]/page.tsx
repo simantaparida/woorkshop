@@ -9,10 +9,18 @@ import { CreateModal } from '@/components/CreateModal';
 import { useToast } from '@/components/ui/Toast';
 import { ROUTES } from '@/lib/constants';
 import { getToolById } from '@/lib/tools/registry';
+import { Users, Radio, Clock, ArrowRight } from 'lucide-react';
 import type { Workshop, Session } from '@/types';
 
+interface SessionWithProgress extends Session {
+  participantCount?: number;
+  activitiesCompleted?: number;
+  totalActivities?: number;
+  lastActivity?: string;
+}
+
 interface WorkshopWithContext extends Workshop {
-  sessions?: Session[];
+  sessions?: SessionWithProgress[];
 }
 
 export default function WorkshopDetailPage() {
@@ -163,51 +171,132 @@ export default function WorkshopDetailPage() {
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sessions.map((session) => {
-                const tool = getToolById(session.tool_type);
-                return (
-                  <motion.div
-                    key={session.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    whileHover={{ y: -4 }}
-                    className="bg-white rounded-lg border border-gray-200 hover:border-primary hover:shadow-lg transition-all cursor-pointer"
-                    onClick={() => handleSessionClick(session.id)}
-                  >
-                    <div className="p-6">
-                      <div className="flex items-start justify-between mb-3">
-                        <span className="text-xs font-medium text-primary bg-primary-50 px-2 py-1 rounded">
-                          {tool?.name || session.tool_type}
+            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+              <div className="divide-y divide-gray-100">
+                {sessions.map((session) => {
+                  const tool = getToolById(session.tool_type);
+                  const activitiesCompleted = session.activitiesCompleted || 1;
+                  const totalActivities = session.totalActivities || 3;
+                  const participantCount = session.participantCount || 0;
+                  const progressPercentage = totalActivities > 0 
+                    ? (activitiesCompleted / totalActivities) * 100 
+                    : 0;
+                  
+                  // Determine status badge
+                  const getStatusBadge = () => {
+                    if (session.status === 'playing') {
+                      return (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                          <Radio className="w-3 h-3 fill-current" />
+                          Live
                         </span>
-                        <span className={`text-xs px-2 py-1 rounded ${
-                          session.status === 'open' ? 'bg-yellow-100 text-yellow-700' :
-                          session.status === 'playing' ? 'bg-green-100 text-green-700' :
-                          'bg-purple-100 text-purple-700'
-                        }`}>
-                          {session.status}
+                      );
+                    } else if (session.status === 'open') {
+                      return (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
+                          <Clock className="w-3 h-3" />
+                          Paused
                         </span>
-                      </div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate">
-                        {session.title}
-                      </h3>
-                      {session.description && (
-                        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                          {session.description}
-                        </p>
-                      )}
-                      <div className="flex items-center justify-between text-sm border-t border-gray-100 pt-4 mt-4">
-                        <span className="text-gray-500">
-                          {new Date(session.created_at).toLocaleDateString()}
+                      );
+                    } else {
+                      return (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                          Completed
                         </span>
-                        <span className="text-primary font-medium hover:underline">
-                          Open →
-                        </span>
+                      );
+                    }
+                  };
+
+                  return (
+                    <div
+                      key={session.id}
+                      className="group hover:bg-gray-50 transition-colors cursor-pointer"
+                      onClick={() => handleSessionClick(session.id)}
+                    >
+                      <div className="px-6 py-4">
+                        <div className="flex items-start justify-between gap-4">
+                          {/* Left side: Icon and Details */}
+                          <div className="flex items-start gap-3 flex-1 min-w-0">
+                            <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                              <span className="text-blue-600 text-xs font-semibold">
+                                {tool?.name?.charAt(0) || 'S'}
+                              </span>
+                            </div>
+                            
+                            <div className="flex-1 min-w-0">
+                              {/* Title and Status */}
+                              <div className="flex items-center gap-2 mb-2">
+                                <h3 className="text-sm font-semibold text-gray-900 truncate">
+                                  {session.title}
+                                </h3>
+                                {getStatusBadge()}
+                                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
+                                  {tool?.name || session.tool_type}
+                                </span>
+                              </div>
+                              
+                              {/* Progress Bar */}
+                              <div className="mb-2">
+                                <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                                  <div 
+                                    className={`h-full rounded-full transition-all ${
+                                      session.status === 'results' 
+                                        ? 'bg-green-500' 
+                                        : session.status === 'playing'
+                                        ? 'bg-blue-500'
+                                        : 'bg-yellow-500'
+                                    }`}
+                                    style={{ width: `${progressPercentage}%` }}
+                                  />
+                                </div>
+                              </div>
+                              
+                              {/* Indicators */}
+                              <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600">
+                                <span className="inline-flex items-center gap-1">
+                                  <span className="font-medium text-gray-900">
+                                    {activitiesCompleted}/{totalActivities}
+                                  </span>
+                                  <span>activities completed</span>
+                                </span>
+                                <span>·</span>
+                                <span className="inline-flex items-center gap-1">
+                                  <Users className="w-3 h-3" />
+                                  <span>{participantCount} {participantCount === 1 ? 'participant' : 'participants'}</span>
+                                </span>
+                                {session.lastActivity && (
+                                  <>
+                                    <span>·</span>
+                                    <span>
+                                      Last activity: <span className="font-medium text-gray-900">{session.lastActivity}</span>
+                                    </span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Right side: Action Button */}
+                          <div className="flex items-center gap-3 flex-shrink-0">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSessionClick(session.id);
+                              }}
+                            >
+                              {session.status === 'results' ? 'View' : 'Resume'} 
+                              <ArrowRight className="w-3 h-3 ml-1" />
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </motion.div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
