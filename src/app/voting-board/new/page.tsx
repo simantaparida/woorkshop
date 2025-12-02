@@ -236,7 +236,77 @@ export default function NewVotingBoardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+          className="space-y-8"
         >
+          {/* Session Timeline Progress */}
+          {(() => {
+            const currentStep = 1; // Create step is active
+            const steps = [
+              { id: 1, label: 'Create' },
+              { id: 2, label: 'Join' },
+              { id: 3, label: 'Review' },
+              { id: 4, label: 'Ready' },
+              { id: 5, label: 'Vote' },
+              { id: 6, label: 'Results' },
+            ];
+
+            return (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1, duration: 0.4 }}
+                className="flex items-center justify-center w-full mb-8"
+              >
+                <div className="flex items-center relative z-10">
+                  {steps.map((step, index) => {
+                    const isActive = step.id === currentStep;
+                    const isCompleted = step.id < currentStep;
+                    const isLast = index === steps.length - 1;
+
+                    return (
+                      <div key={step.id} className="flex items-center">
+                        <div className="flex flex-col items-center relative">
+                          <div
+                            className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-300 border-2 ${
+                              isActive
+                                ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200'
+                                : isCompleted
+                                ? 'bg-green-500 text-white border-green-500'
+                                : 'bg-white text-gray-400 border-gray-200'
+                            }`}
+                          >
+                            {isCompleted ? (
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            ) : (
+                              step.id
+                            )}
+                          </div>
+                          <span
+                            className={`absolute top-8 text-[10px] font-medium whitespace-nowrap transition-colors duration-300 ${
+                              isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-400'
+                            }`}
+                          >
+                            {step.label}
+                          </span>
+                        </div>
+
+                        {!isLast && (
+                          <div
+                            className={`w-12 sm:w-16 h-0.5 mx-1.5 transition-colors duration-300 ${
+                              isCompleted ? 'bg-green-500' : 'bg-gray-200'
+                            }`}
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            );
+          })()}
+
           {/* Page Header with Actions */}
           <div className="flex items-start justify-between mb-8">
             <div>

@@ -7,14 +7,9 @@ import { Button } from '@/components/ui/Button';
 import { ResultsChart } from '@/components/ResultsChart';
 import { AppLayout } from '@/components/AppLayout';
 import { useToast } from '@/components/ui/Toast';
-import { Tooltip } from '@/components/ui/Tooltip';
-import { VotingBiasAnalysis } from '@/components/VotingBiasAnalysis';
-import { EffortImpactScatter } from '@/components/EffortImpactScatter';
-import { RoleFilter } from '@/components/RoleFilter';
 import { copyToClipboard, getSessionLink } from '@/lib/utils/helpers';
 import { calculateConsensusMetrics, type ConsensusMetrics } from '@/lib/utils/consensus';
 import { ROUTES } from '@/lib/constants';
-import { getSessionGoalById } from '@/lib/constants/session-goals';
 import type { FeatureWithVotes, Session } from '@/types';
 
 export default function ResultsPage() {
@@ -25,13 +20,10 @@ export default function ResultsPage() {
 
   const [session, setSession] = useState<Session | null>(null);
   const [results, setResults] = useState<FeatureWithVotes[]>([]);
-  const [filteredResults, setFilteredResults] = useState<FeatureWithVotes[]>([]);
   const [consensus, setConsensus] = useState<ConsensusMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<string>('all');
-  const [availableRoles, setAvailableRoles] = useState<string[]>([]);
 
   useEffect(() => {
     if (sessionId) {
@@ -50,13 +42,9 @@ export default function ResultsPage() {
 
       setSession(data.session);
       setResults(data.results);
-      setFilteredResults(data.results);
       // Calculate consensus metrics
       const metrics = calculateConsensusMetrics(data.results);
       setConsensus(metrics);
-
-      // Fetch available roles
-      fetchAvailableRoles();
     } catch (error) {
       console.error('Error fetching results:', error);
       showToast('Failed to load results', 'error');
@@ -65,62 +53,6 @@ export default function ResultsPage() {
     }
   };
 
-  const fetchAvailableRoles = async () => {
-    try {
-      const response = await fetch(`/api/session/${sessionId}/voting-analysis`);
-      if (response.ok) {
-        const data = await response.json();
-        const roles = data.roleProfiles.map((profile: any) => profile.role).filter((r: string) => r !== 'Unknown');
-        setAvailableRoles(roles);
-      }
-    } catch (error) {
-      console.error('Error fetching roles:', error);
-    }
-  };
-
-  const handleRoleChange = async (role: string) => {
-    setSelectedRole(role);
-
-    if (role === 'all') {
-      setFilteredResults(results);
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/session/${sessionId}/results-by-role?role=${encodeURIComponent(role)}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch filtered results');
-      }
-      const data = await response.json();
-
-      // Convert to FeatureWithVotes format
-      const filtered: FeatureWithVotes[] = data.results.map((r: any) => ({
-        id: r.featureId,
-        session_id: sessionId,
-        title: r.featureTitle,
-        description: null,
-        category: null,
-        effort: r.featureEffort,
-        impact: r.featureImpact,
-        reach: null,
-        confidence: null,
-        moscow_priority: null,
-        user_business_value: null,
-        time_criticality: null,
-        risk_reduction: null,
-        job_size: null,
-        reference_links: [],
-        created_at: '',
-        total_points: r.totalPoints,
-        vote_count: r.voteCount,
-      }));
-
-      setFilteredResults(filtered);
-    } catch (error) {
-      console.error('Error fetching filtered results:', error);
-      showToast('Failed to filter results by role', 'error');
-    }
-  };
 
   const handleCopyLink = async () => {
     const link = getSessionLink(sessionId);
@@ -272,37 +204,154 @@ export default function ResultsPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="space-y-8"
+          transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+          className="space-y-6"
         >
-          {/* Header */}
-          <div className="text-center">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: 'spring' }}
-              className="text-6xl mb-4"
-            >
-              🎉
-            </motion.div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Results
-            </h1>
-            <p className="text-gray-600">Prioritization complete!</p>
+          {/* Session Timeline Progress */}
+          {(() => {
+            const currentStep = 6; // Results step is active
+            const steps = [
+              { id: 1, label: 'Create' },
+              { id: 2, label: 'Join' },
+              { id: 3, label: 'Review' },
+              { id: 4, label: 'Ready' },
+              { id: 5, label: 'Vote' },
+              { id: 6, label: 'Results' },
+            ];
 
-              {/* Session Goal Display */}
-              {session.session_goal && (() => {
-                const goal = getSessionGoalById(session.session_goal);
-                return goal ? (
-                  <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg">
-                    <span className="text-2xl">{goal.icon}</span>
-                    <div className="text-left">
-                      <p className="text-xs text-gray-500">Session Focus</p>
-                      <p className="text-sm font-semibold text-gray-900">{goal.label}</p>
-                    </div>
-                  </div>
-                ) : null;
-              })()}
+            return (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1, duration: 0.4 }}
+                className="flex items-center justify-center w-full mb-6"
+              >
+                <div className="flex items-center relative z-10">
+                  {steps.map((step, index) => {
+                    const isActive = step.id === currentStep;
+                    const isCompleted = step.id < currentStep;
+                    const isLast = index === steps.length - 1;
+
+                    return (
+                      <div key={step.id} className="flex items-center">
+                        <div className="flex flex-col items-center relative">
+                          <div
+                            className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-300 border-2 ${
+                              isActive
+                                ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200'
+                                : isCompleted
+                                ? 'bg-green-500 text-white border-green-500'
+                                : 'bg-white text-gray-400 border-gray-200'
+                            }`}
+                          >
+                            {isCompleted ? (
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            ) : (
+                              step.id
+                            )}
+                          </div>
+                          <span
+                            className={`absolute top-8 text-[10px] font-medium whitespace-nowrap transition-colors duration-300 ${
+                              isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-400'
+                            }`}
+                          >
+                            {step.label}
+                          </span>
+                        </div>
+
+                        {!isLast && (
+                          <div
+                            className={`w-12 sm:w-16 h-0.5 mx-1.5 transition-colors duration-300 ${
+                              isCompleted ? 'bg-green-500' : 'bg-gray-200'
+                            }`}
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            );
+          })()}
+
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-1">
+                {session?.title || session?.project_name || 'Results'}
+              </h1>
+              <p className="text-gray-600 text-sm">Voting complete</p>
             </div>
+
+            {/* Compact Actions */}
+            <div className="flex gap-2">
+              <Button onClick={handleCopyLink} variant="secondary" size="sm">
+                <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                Copy Link
+              </Button>
+
+              {/* Export Dropdown */}
+              <div className="relative">
+                <Button
+                  onClick={() => setShowExportMenu(!showExportMenu)}
+                  variant="secondary"
+                  size="sm"
+                  isLoading={downloading}
+                >
+                  <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Export
+                  <svg className="w-3 h-3 ml-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </Button>
+
+                {showExportMenu && (
+                  <div className="absolute top-full mt-2 right-0 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-40 z-10">
+                    <button
+                      onClick={() => {
+                        handleDownloadCSV();
+                        setShowExportMenu(false);
+                      }}
+                      className="w-full px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    >
+                      <span>📊</span> CSV
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleDownloadJSON();
+                        setShowExportMenu(false);
+                      }}
+                      className="w-full px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    >
+                      <span>🔧</span> JSON
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleDownloadMarkdown();
+                        setShowExportMenu(false);
+                      }}
+                      className="w-full px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    >
+                      <span>📝</span> Markdown
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <Button onClick={handleNewSession} variant="primary" size="sm">
+                <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                New Session
+              </Button>
+            </div>
+          </div>
 
           {/* Actions */}
           <div className="flex flex-wrap gap-3 justify-center">
@@ -410,92 +459,24 @@ export default function ResultsPage() {
             </Button>
           </div>
 
-          {/* Role Filter */}
-          {availableRoles.length > 0 && results.length > 0 && (
-            <RoleFilter
-              selectedRole={selectedRole}
-              availableRoles={availableRoles}
-              onRoleChange={handleRoleChange}
-            />
-          )}
-
           {/* Results Visualization */}
           {results.length > 0 ? (
-            <ResultsChart results={filteredResults} />
+            <ResultsChart results={results} />
           ) : (
-            <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
+            <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
               <p className="text-gray-600">No votes have been submitted yet.</p>
             </div>
           )}
 
-          {/* Voting Bias Analysis - Role-based voting patterns */}
-          {results.length > 0 && (
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <span className="text-xl">👥</span>
-                Voting Patterns by Role
-              </h2>
-              <VotingBiasAnalysis sessionId={sessionId} />
-            </div>
-          )}
-
-          {/* Effort vs Impact Scatter Plot */}
-          {results.length > 0 && (
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <span className="text-xl">📊</span>
-                Multi-Dimensional Analysis
-                {selectedRole !== 'all' && (
-                  <span className="text-sm font-normal text-gray-600">
-                    (filtered by {selectedRole})
-                  </span>
-                )}
-              </h2>
-              <EffortImpactScatter results={filteredResults} />
-            </div>
-          )}
-
-          {/* Consensus Metrics */}
+          {/* Compact Consensus Metrics */}
           {consensus && results.length > 0 && (
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <span className="text-xl">🤝</span>
-                Team Consensus Insights
-              </h2>
-
-              <div className="grid md:grid-cols-2 gap-4 mb-4">
-                {/* Team Alignment Score */}
-                <div className="bg-white rounded-lg p-4">
+            <div className="bg-white rounded-xl border border-gray-200 p-5">
+              <div className="grid md:grid-cols-2 gap-4">
+                {/* Team Alignment */}
+                <div>
                   <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-gray-600">Team Alignment</span>
-                      <Tooltip
-                        content={
-                          <div>
-                            <div className="font-semibold mb-1">How is this calculated?</div>
-                            <div className="text-xs opacity-90">
-                              Measures how concentrated votes are in the top 3 features.
-                              <br /><br />
-                              Formula: (Points in top 3 ÷ Total points) × 100
-                              <br /><br />
-                              <strong>70%+</strong> = Strong consensus
-                              <br />
-                              <strong>40-69%</strong> = Moderate agreement
-                              <br />
-                              <strong>&lt;40%</strong> = Diverse opinions
-                            </div>
-                          </div>
-                        }
-                        position="right"
-                      >
-                        <button className="text-gray-400 hover:text-gray-600 transition-colors">
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                          </svg>
-                        </button>
-                      </Tooltip>
-                    </div>
-                    <span className={`text-2xl font-bold ${
+                    <span className="text-sm font-medium text-gray-700">Team Alignment</span>
+                    <span className={`text-xl font-bold ${
                       consensus.teamAlignment >= 70 ? 'text-green-600' :
                       consensus.teamAlignment >= 40 ? 'text-yellow-600' :
                       'text-red-600'
@@ -503,9 +484,9 @@ export default function ResultsPage() {
                       {consensus.teamAlignment}%
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full bg-gray-200 rounded-full h-1.5">
                     <div
-                      className={`h-2 rounded-full transition-all ${
+                      className={`h-1.5 rounded-full transition-all ${
                         consensus.teamAlignment >= 70 ? 'bg-green-600' :
                         consensus.teamAlignment >= 40 ? 'bg-yellow-600' :
                         'bg-red-600'
@@ -513,153 +494,47 @@ export default function ResultsPage() {
                       style={{ width: `${consensus.teamAlignment}%` }}
                     />
                   </div>
-                  <p className="text-xs text-gray-500 mt-2">
-                    {consensus.teamAlignment >= 70 ? 'Strong consensus on top priorities' :
-                     consensus.teamAlignment >= 40 ? 'Moderate agreement among team' :
-                     'Diverse opinions, consider discussion'}
-                  </p>
                 </div>
 
                 {/* Consensus Leader */}
                 {consensus.consensusLeader && (
-                  <div className="bg-white rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-lg">🏆</span>
-                      <span className="text-sm font-medium text-gray-600">Clear Winner</span>
-                      <Tooltip
-                        content={
-                          <div>
-                            <div className="font-semibold mb-1">What does this mean?</div>
-                            <div className="text-xs opacity-90">
-                              The feature with the highest total points.
-                              <br /><br />
-                              This indicates the feature that received the most support from the team overall.
-                            </div>
-                          </div>
-                        }
-                        position="right"
-                      >
-                        <button className="text-gray-400 hover:text-gray-600 transition-colors">
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                          </svg>
-                        </button>
-                      </Tooltip>
-                    </div>
-                    <p className="font-semibold text-gray-900 mb-1">
+                  <div>
+                    <span className="text-xs text-gray-500">Top Priority</span>
+                    <p className="text-sm font-semibold text-gray-900 mt-1">
                       {consensus.consensusLeader.title}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {consensus.consensusLeader.total_points} points from {consensus.consensusLeader.vote_count} votes
+                      {consensus.consensusLeader.total_points} pts • {consensus.consensusLeader.vote_count} votes
                     </p>
                   </div>
                 )}
               </div>
-
-              {/* Controversial Features */}
-              {consensus.controversialFeatures.length > 0 && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-lg">⚠️</span>
-                    <span className="text-sm font-semibold text-gray-900">Worth Discussing</span>
-                    <Tooltip
-                      content={
-                        <div>
-                          <div className="font-semibold mb-1">How are these identified?</div>
-                          <div className="text-xs opacity-90">
-                            Features that received votes from multiple people but with varying amounts of points.
-                            <br /><br />
-                            This indicates differing opinions on priority. Consider discussing these features to understand different perspectives.
-                          </div>
-                        </div>
-                      }
-                      position="right"
-                    >
-                      <button className="text-yellow-600 hover:text-yellow-700 transition-colors">
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                        </svg>
-                      </button>
-                    </Tooltip>
-                  </div>
-                  <p className="text-xs text-gray-600 mb-2">These features received mixed votes:</p>
-                  <ul className="space-y-1">
-                    {consensus.controversialFeatures.map((feature) => (
-                      <li key={feature.id} className="text-sm text-gray-700 flex items-center gap-2">
-                        <span className="w-1 h-1 bg-yellow-500 rounded-full" />
-                        {feature.title}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Unanimous Winners */}
-              {consensus.unanimousWinners.length > 0 && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-lg">✨</span>
-                    <span className="text-sm font-semibold text-gray-900">Broad Agreement</span>
-                    <Tooltip
-                      content={
-                        <div>
-                          <div className="font-semibold mb-1">How are these identified?</div>
-                          <div className="text-xs opacity-90">
-                            Features that received points from a majority of participants (more than 50%).
-                            <br /><br />
-                            This indicates strong team-wide support. These features are clear priorities with broad buy-in.
-                          </div>
-                        </div>
-                      }
-                      position="right"
-                    >
-                      <button className="text-green-600 hover:text-green-700 transition-colors">
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                        </svg>
-                      </button>
-                    </Tooltip>
-                  </div>
-                  <p className="text-xs text-gray-600 mb-2">These features had strong team support:</p>
-                  <ul className="space-y-1">
-                    {consensus.unanimousWinners.map((feature) => (
-                      <li key={feature.id} className="text-sm text-gray-700 flex items-center gap-2">
-                        <span className="w-1 h-1 bg-green-500 rounded-full" />
-                        {feature.title}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
             </div>
           )}
 
-          {/* Summary Stats */}
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-white rounded-lg border border-gray-200 p-6 text-center">
-              <div className="text-3xl font-bold text-primary mb-2">
-                {results.length}
+          {/* Compact Summary Stats */}
+          {results.length > 0 && (
+            <div className="grid grid-cols-3 gap-4">
+              <div className="bg-white rounded-xl border border-gray-200 p-4 text-center">
+                <div className="text-2xl font-bold text-primary mb-1">
+                  {results.length}
+                </div>
+                <p className="text-xs text-gray-600">Features</p>
               </div>
-              <p className="text-gray-600">Features</p>
-            </div>
-            <div className="bg-white rounded-lg border border-gray-200 p-6 text-center">
-              <div className="text-3xl font-bold text-primary mb-2">
-                {results.reduce((sum, r) => sum + r.vote_count, 0)}
+              <div className="bg-white rounded-xl border border-gray-200 p-4 text-center">
+                <div className="text-2xl font-bold text-primary mb-1">
+                  {results.reduce((sum, r) => sum + r.vote_count, 0)}
+                </div>
+                <p className="text-xs text-gray-600">Votes</p>
               </div>
-              <p className="text-gray-600">Total Votes</p>
-            </div>
-            <div className="bg-white rounded-lg border border-gray-200 p-6 text-center">
-              <div className="text-3xl font-bold text-primary mb-2">
-                {results.reduce((sum, r) => sum + r.total_points, 0)}
+              <div className="bg-white rounded-xl border border-gray-200 p-4 text-center">
+                <div className="text-2xl font-bold text-primary mb-1">
+                  {results.reduce((sum, r) => sum + r.total_points, 0)}
+                </div>
+                <p className="text-xs text-gray-600">Points</p>
               </div>
-              <p className="text-gray-600">Total Points</p>
             </div>
-          </div>
-
-          {/* Footer */}
-          <div className="text-center text-sm text-gray-500 pt-8">
-            <p>These results are publicly accessible via the session link</p>
-          </div>
+          )}
         </motion.div>
       </div>
       {ToastContainer}
