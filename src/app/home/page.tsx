@@ -5,7 +5,6 @@ import { AppLayout } from '@/components/AppLayout';
 import { ToolsCatalog } from '@/components/ToolsCatalog';
 import { RecentSessions } from '@/components/RecentSessions';
 import { RecentActivities } from '@/components/RecentActivities';
-import { QuickActions } from '@/components/QuickActions';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Users, Wrench, ArrowRight, X } from 'lucide-react';
@@ -55,9 +54,6 @@ export default function HomePage() {
             </Button>
           </div>
         </div>
-
-        {/* Quick Actions */}
-        <QuickActions onJoinSession={() => setShowJoinModal(true)} />
 
         {/* Facilitation Tools */}
         <section>

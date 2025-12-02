@@ -77,7 +77,7 @@ export function ToolsCatalog({ layout = 'grid', featured, limit }: ToolsCatalogP
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {tools.map((tool, index) => (
         <ToolCard key={tool.id} tool={tool} index={index} />
       ))}
@@ -100,28 +100,22 @@ function ToolCard({ tool, index }: { tool: FacilitationTool; index: number }) {
         href={tool.route}
         className="block group"
       >
-        <div className="bg-white rounded-xl border-2 border-gray-200 p-6 transition-all hover:border-blue-500 hover:shadow-lg h-full">
-          <div className="flex items-start justify-between mb-4">
-            <div className={`w-12 h-12 ${colors.iconBg} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
-              <Icon className={`w-6 h-6 ${colors.text}`} />
+        <div className="bg-white rounded-lg border border-gray-200 p-4 transition-all hover:border-blue-500 hover:shadow-md h-full">
+          <div className="flex items-start justify-between mb-3">
+            <div className={`w-10 h-10 ${colors.iconBg} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
+              <Icon className={`w-5 h-5 ${colors.text}`} />
             </div>
-            <span className={`px-2 py-1 rounded text-xs font-medium ${colors.bg} ${colors.text}`}>
+            <span className={`px-2 py-0.5 rounded text-xs font-medium ${colors.bg} ${colors.text}`}>
               {categoryInfo.label}
             </span>
           </div>
 
-          <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+          <h3 className="text-sm font-semibold text-gray-900 mb-1.5 group-hover:text-blue-600 transition-colors">
             {tool.name}
           </h3>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-xs text-gray-600 line-clamp-2">
             {tool.description}
           </p>
-
-          <div className="flex items-center gap-3 text-xs text-gray-500">
-            <span>{tool.steps} steps</span>
-            <span>•</span>
-            <span>{tool.multiUser ? 'Multi-user' : 'Single-user'}</span>
-          </div>
         </div>
       </Link>
     </motion.div>
