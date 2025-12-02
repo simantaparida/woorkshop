@@ -8,14 +8,10 @@ import { AppLayout } from '@/components/AppLayout';
 import { CreateModal } from '@/components/CreateModal';
 import { useToast } from '@/components/ui/Toast';
 import { ROUTES } from '@/lib/constants';
-import type { Workshop, Project } from '@/types';
+import type { Workshop } from '@/types';
 
 interface WorkshopWithContext extends Workshop {
   sessionCount: number;
-  project?: {
-    id: string;
-    title: string;
-  } | null;
 }
 
 export default function WorkshopsPage() {

@@ -48,7 +48,7 @@ export function Pricing() {
         'Community support',
       ],
       ctaText: 'Start Free Session →',
-      ctaLink: '/projects',
+      ctaLink: '/tools',
     },
     {
       name: 'Pro',

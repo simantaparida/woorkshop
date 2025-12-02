@@ -1,27 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { getSupabaseServer } from '@/lib/supabase/server';
 
-// GET /api/workshops - List workshops (optionally filtered by project_id)
+// GET /api/workshops - List workshops
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const projectId = searchParams.get('project_id');
-
-    let query = supabase
+    const supabase = getSupabaseServer();
+    const { data: workshops, error } = await supabase
       .from('workshops')
       .select(`
         *,
-        project:projects(id, title),
         sessions:sessions_unified(count)
       `)
       .order('created_at', { ascending: false });
-
-    // Filter by project_id if provided
-    if (projectId) {
-      query = query.eq('project_id', projectId);
-    }
-
-    const { data: workshops, error } = await query;
 
     if (error) {
       console.error('Error fetching workshops:', error);
@@ -52,7 +42,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { title, description, created_by, project_id } = body;
+    const { title, description, created_by } = body;
 
     // Validation
     if (!title || !title.trim()) {
@@ -62,29 +52,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // If project_id is provided, verify it exists
-    if (project_id) {
-      const { data: project, error: projectError } = await supabase
-        .from('projects')
-        .select('id')
-        .eq('id', project_id)
-        .single();
-
-      if (projectError || !project) {
-        return NextResponse.json(
-          { error: 'Project not found' },
-          { status: 404 }
-        );
-      }
-    }
-
+    const supabase = getSupabaseServer();
     const { data: workshop, error } = await supabase
       .from('workshops')
       .insert({
         title: title.trim(),
         description: description?.trim() || null,
         created_by: created_by?.trim() || null,
-        project_id: project_id || null,
       })
       .select()
       .single();

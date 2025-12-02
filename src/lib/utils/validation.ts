@@ -2,13 +2,13 @@ import { TOTAL_POINTS, MAX_FEATURES } from '../constants';
 
 export function validateSessionName(name: string): string | null {
   if (!name || name.trim().length === 0) {
-    return 'Project name is required';
+    return 'Session name is required';
   }
   if (name.trim().length < 3) {
-    return 'Project name must be at least 3 characters';
+    return 'Session name must be at least 3 characters';
   }
   if (name.trim().length > 100) {
-    return 'Project name must be less than 100 characters';
+    return 'Session name must be less than 100 characters';
   }
   return null;
 }

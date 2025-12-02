@@ -8,11 +8,10 @@ import { getSessionGoalById } from '@/lib/constants/session-goals';
 import { formatTimeRemaining, isSessionExpired } from '@/lib/constants/session-durations';
 import { copyToClipboard, getSessionLink } from '@/lib/utils/helpers';
 import { useToast } from './ui/Toast';
-import type { ToolType, Project, Workshop } from '@/types';
+import type { ToolType, Workshop } from '@/types';
 
 interface SessionNavProps {
   variant?: 'header' | 'breadcrumb';
-  project?: Project | null;
   workshop?: Workshop | null;
   session: {
     id: string;
@@ -40,7 +39,6 @@ function getPhaseFromPath(pathname: string): Phase {
 
 export function SessionNav({
   variant = 'breadcrumb',
-  project,
   workshop,
   session,
   sessionGoal,
@@ -84,31 +82,16 @@ export function SessionNav({
     <>
       <div className="bg-white border-b border-gray-200 px-6 py-4 mb-6">
         <div className="max-w-7xl mx-auto">
-          {/* Hierarchical Breadcrumb (if project/workshop exists) */}
-          {(project || workshop) && (
+          {/* Hierarchical Breadcrumb (if workshop exists) */}
+          {workshop && (
             <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-              {project && (
-                <>
-                  <a
-                    href={ROUTES.PROJECT_DETAIL(project.id)}
-                    className="hover:text-primary transition-colors"
-                  >
-                    {project.title}
-                  </a>
-                  <span>→</span>
-                </>
-              )}
-              {workshop && (
-                <>
-                  <a
-                    href={ROUTES.WORKSHOP_DETAIL(workshop.id)}
-                    className="hover:text-primary transition-colors"
-                  >
-                    {workshop.title}
-                  </a>
-                  <span>→</span>
-                </>
-              )}
+              <a
+                href={ROUTES.WORKSHOP_DETAIL(workshop.id)}
+                className="hover:text-primary transition-colors"
+              >
+                {workshop.title}
+              </a>
+              <span>→</span>
               <span className="text-gray-900 font-medium">{session.title}</span>
             </div>
           )}

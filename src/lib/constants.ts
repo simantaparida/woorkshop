@@ -17,11 +17,6 @@ export const ROUTES = {
   FEATURES: '/features',
   CREATE: '/voting-board/new', // Default creation route
 
-  // Projects
-  PROJECTS: '/projects',
-  PROJECT_DETAIL: (id: string) => `/projects/${id}`,
-  PROJECT_NEW: '/projects/new',
-
   // Workshops
   WORKSHOPS: '/workshops',
   WORKSHOP_DETAIL: (id: string) => `/workshops/${id}`,

@@ -9,13 +9,12 @@ import { copyToClipboard, getSessionLink } from '@/lib/utils/helpers';
 import { ROUTES } from '@/lib/constants';
 import type { ToolType } from '@/types';
 
-type CreateType = 'project' | 'workshop' | 'session';
+type CreateType = 'workshop' | 'session';
 
 interface CreateModalProps {
   isOpen: boolean;
   onClose: () => void;
   type: CreateType;
-  projectId?: string; // For creating workshops within a project
   workshopId?: string; // For creating sessions within a workshop
   defaultTool?: ToolType; // For creating sessions with a specific tool
 }
@@ -31,7 +30,6 @@ export function CreateModal({
   isOpen,
   onClose,
   type,
-  projectId,
   workshopId,
   defaultTool
 }: CreateModalProps) {
@@ -82,20 +80,12 @@ export function CreateModal({
       let redirectRoute = '';
 
       // Build request based on type
-      if (type === 'project') {
-        endpoint = '/api/projects';
-        payload = {
-          title: sanitizeString(formData.title),
-          description: formData.description?.trim() ? sanitizeString(formData.description) : undefined,
-          created_by: formData.hostName?.trim() ? sanitizeString(formData.hostName) : undefined,
-        };
-      } else if (type === 'workshop') {
+      if (type === 'workshop') {
         endpoint = '/api/workshops';
         payload = {
           title: sanitizeString(formData.title),
           description: formData.description?.trim() ? sanitizeString(formData.description) : undefined,
           created_by: formData.hostName?.trim() ? sanitizeString(formData.hostName) : undefined,
-          project_id: projectId || null,
         };
       } else if (type === 'session') {
         endpoint = '/api/sessions';
@@ -123,10 +113,7 @@ export function CreateModal({
       }
 
       // Handle success based on type
-      if (type === 'project') {
-        showToast('Project created successfully!', 'success');
-        router.push(ROUTES.PROJECT_DETAIL(data.project.id));
-      } else if (type === 'workshop') {
+      if (type === 'workshop') {
         showToast('Workshop created successfully!', 'success');
         router.push(ROUTES.WORKSHOP_DETAIL(data.workshop.id));
       } else if (type === 'session') {
@@ -159,15 +146,13 @@ export function CreateModal({
   // Title and labels based on type
   const getTitle = () => {
     switch (type) {
-      case 'project': return 'Create New Project';
-      case 'workshop': return projectId ? 'Add Workshop to Project' : 'Create New Workshop';
+      case 'workshop': return 'Create New Workshop';
       case 'session': return workshopId ? 'Add Session to Workshop' : 'Create New Session';
     }
   };
 
   const getTitleLabel = () => {
     switch (type) {
-      case 'project': return 'Project Name';
       case 'workshop': return 'Workshop Name';
       case 'session': return 'Session Name';
     }
@@ -175,7 +160,6 @@ export function CreateModal({
 
   const getTitlePlaceholder = () => {
     switch (type) {
-      case 'project': return 'e.g., Flipkart Mobile App';
       case 'workshop': return 'e.g., Q4 Product Planning';
       case 'session': return 'e.g., Feature Prioritization';
     }

@@ -143,8 +143,8 @@ export function RecentSessions() {
 
             {sessions.length > 0 && (
                 <div className="p-4 border-t border-gray-100 bg-gray-50/50 text-center">
-                    <Link href="/projects" className="text-sm text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-1">
-                        View All Sessions <ArrowRight className="w-3 h-3" />
+                    <Link href="/workshops" className="text-sm text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-1">
+                        View All Workshops <ArrowRight className="w-3 h-3" />
                     </Link>
                 </div>
             )}

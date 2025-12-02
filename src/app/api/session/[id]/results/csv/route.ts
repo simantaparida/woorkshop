@@ -13,7 +13,7 @@ export async function GET(
     // Fetch session
     const { data: session, error: sessionError } = await supabase
       .from('sessions_unified')
-      .select('project_name')
+      .select('title, project_name')
       .eq('id', sessionId)
       .single();
 
@@ -36,7 +36,8 @@ export async function GET(
     const results = aggregateVotes(features || [], votes || []);
     const csv = exportToCSV(results);
 
-    const filename = `${session.project_name.replace(/[^a-z0-9]/gi, '_')}_results.csv`;
+    const sessionName = session.title || session.project_name || 'session';
+    const filename = `${sessionName.replace(/[^a-z0-9]/gi, '_')}_results.csv`;
 
     return new NextResponse(csv, {
       status: 200,

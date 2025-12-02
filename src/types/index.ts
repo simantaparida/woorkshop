@@ -12,18 +12,8 @@ export interface ReferenceLink {
 }
 
 // New hierarchy types
-export interface Project {
-  id: string;
-  title: string;
-  description: string | null;
-  created_by: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
 export interface Workshop {
   id: string;
-  project_id: string | null;
   title: string;
   description: string | null;
   created_by: string | null;
@@ -432,7 +422,7 @@ export interface PlayerProgress {
 // Form types
 export interface CreateSessionInput {
   hostName: string;
-  projectName: string;
+  projectName?: string; // Optional for legacy compatibility
   sessionGoal?: string | null;
   durationHours?: number | null;
   expiresAt?: string | null;

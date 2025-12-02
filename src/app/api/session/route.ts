@@ -9,8 +9,9 @@ export async function POST(request: NextRequest) {
     const body: CreateSessionInput = await request.json();
     const { hostName, projectName, sessionGoal, durationHours, expiresAt, features } = body;
 
-    // Validate input
-    const sessionNameError = validateSessionName(projectName);
+    // Validate input - projectName is optional but if provided, should be valid
+    const sessionName = projectName || 'Untitled Session';
+    const sessionNameError = projectName ? validateSessionName(projectName) : null;
     if (sessionNameError) {
       return NextResponse.json({ error: sessionNameError }, { status: 400 });
     }
@@ -31,14 +32,14 @@ export async function POST(request: NextRequest) {
     const { data: session, error: sessionError } = await supabase
       .from('sessions_unified')
       .insert({
-        title: sanitizeString(projectName),
+        title: sanitizeString(sessionName),
         description: sessionGoal ? sanitizeString(sessionGoal) : null,
         created_by: sanitizeString(hostName),
         host_token: hostToken,
         tool_type: 'voting-board',
         status: 'open',
         // Legacy voting board columns
-        project_name: sanitizeString(projectName),
+        project_name: projectName ? sanitizeString(projectName) : null,
         host_name: sanitizeString(hostName),
         session_goal: sessionGoal || null,
         duration_hours: durationHours ?? null,

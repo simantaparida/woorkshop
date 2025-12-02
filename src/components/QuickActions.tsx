@@ -18,7 +18,7 @@ export function QuickActions({ onJoinSession }: QuickActionsProps) {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          onClick={() => router.push('/projects')}
+          onClick={() => router.push('/workshops')}
           className="flex items-center p-6 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl shadow-lg shadow-blue-200/50 text-white text-left group relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />

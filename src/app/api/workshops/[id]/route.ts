@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { getSupabaseServer } from '@/lib/supabase/server';
 
 // GET /api/workshops/[id] - Get workshop with sessions
 export async function GET(
@@ -8,12 +8,12 @@ export async function GET(
 ) {
   try {
     const { id } = params;
+    const supabase = getSupabaseServer();
 
     const { data: workshop, error } = await supabase
       .from('workshops')
       .select(`
         *,
-        project:projects(id, title),
         sessions:sessions_unified(
           id,
           title,
@@ -59,7 +59,7 @@ export async function PATCH(
   try {
     const { id } = params;
     const body = await request.json();
-    const { title, description, project_id } = body;
+    const { title, description } = body;
 
     // Build update object
     const updates: any = {
@@ -80,25 +80,7 @@ export async function PATCH(
       updates.description = description?.trim() || null;
     }
 
-    if (project_id !== undefined) {
-      // If project_id is provided (not null), verify it exists
-      if (project_id) {
-        const { data: project, error: projectError } = await supabase
-          .from('projects')
-          .select('id')
-          .eq('id', project_id)
-          .single();
-
-        if (projectError || !project) {
-          return NextResponse.json(
-            { error: 'Project not found' },
-            { status: 404 }
-          );
-        }
-      }
-      updates.project_id = project_id;
-    }
-
+    const supabase = getSupabaseServer();
     const { data: workshop, error } = await supabase
       .from('workshops')
       .update(updates)
@@ -139,6 +121,7 @@ export async function DELETE(
     const { id } = params;
 
     // Check if workshop exists
+    const supabase = getSupabaseServer();
     const { data: workshop, error: fetchError } = await supabase
       .from('workshops')
       .select('id')

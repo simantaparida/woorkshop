@@ -5,9 +5,10 @@ import { AppLayout } from '@/components/AppLayout';
 import { ToolsCatalog } from '@/components/ToolsCatalog';
 import { RecentSessions } from '@/components/RecentSessions';
 import { RecentActivities } from '@/components/RecentActivities';
+import { CreateModal } from '@/components/CreateModal';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { Users, Wrench, ArrowRight, X } from 'lucide-react';
+import { Users, Plus, ArrowRight, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,6 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function HomePage() {
   const router = useRouter();
   const [showJoinModal, setShowJoinModal] = useState(false);
+  const [showCreateWorkshopModal, setShowCreateWorkshopModal] = useState(false);
   const [sessionCode, setSessionCode] = useState('');
 
   const handleJoinSession = () => {
@@ -47,10 +49,10 @@ export default function HomePage() {
               variant="primary"
               size="sm"
               className="flex items-center gap-2"
-              onClick={() => router.push('/tools')}
+              onClick={() => setShowCreateWorkshopModal(true)}
             >
-              <Wrench className="w-4 h-4" />
-              Browse Tools
+              <Plus className="w-4 h-4" />
+              New Workshop
             </Button>
           </div>
         </div>
@@ -73,19 +75,11 @@ export default function HomePage() {
           <ToolsCatalog layout="grid" limit={4} />
         </section>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Recent Sessions - Full Width */}
+        <RecentSessions />
 
-          {/* Left Column: Recent Sessions (2/3 width) */}
-          <div className="lg:col-span-2 space-y-8">
-            <RecentSessions />
-          </div>
-
-          {/* Right Column: Activity Feed (1/3 width) */}
-          <div className="space-y-8">
-            <RecentActivities />
-          </div>
-        </div>
+        {/* Recent Activity - Full Width */}
+        <RecentActivities />
 
       </div>
 
@@ -155,6 +149,15 @@ export default function HomePage() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Create Workshop Modal */}
+      <CreateModal
+        type="workshop"
+        isOpen={showCreateWorkshopModal}
+        onClose={() => {
+          setShowCreateWorkshopModal(false);
+        }}
+      />
     </AppLayout>
   );
 }

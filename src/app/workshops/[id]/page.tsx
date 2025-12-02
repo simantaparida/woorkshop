@@ -12,10 +12,6 @@ import { getToolById } from '@/lib/tools/registry';
 import type { Workshop, Session } from '@/types';
 
 interface WorkshopWithContext extends Workshop {
-  project?: {
-    id: string;
-    title: string;
-  } | null;
   sessions?: Session[];
 }
 
@@ -91,40 +87,15 @@ export default function WorkshopDetailPage() {
         {/* Breadcrumb */}
         <nav className="mb-6">
           <ol className="flex items-center space-x-2 text-sm text-gray-600">
-            {workshop.project ? (
-              <>
-                <li>
-                  <button
-                    onClick={() => router.push(ROUTES.PROJECTS)}
-                    className="hover:text-primary transition-colors"
-                  >
-                    Projects
-                  </button>
-                </li>
-                <li>→</li>
-                <li>
-                  <button
-                    onClick={() => router.push(ROUTES.PROJECT_DETAIL(workshop.project!.id))}
-                    className="hover:text-primary transition-colors"
-                  >
-                    {workshop.project.title}
-                  </button>
-                </li>
-                <li>→</li>
-              </>
-            ) : (
-              <>
-                <li>
-                  <button
-                    onClick={() => router.push(ROUTES.WORKSHOPS)}
-                    className="hover:text-primary transition-colors"
-                  >
-                    Workshops
-                  </button>
-                </li>
-                <li>→</li>
-              </>
-            )}
+            <li>
+              <button
+                onClick={() => router.push(ROUTES.WORKSHOPS)}
+                className="hover:text-primary transition-colors"
+              >
+                Workshops
+              </button>
+            </li>
+            <li>→</li>
             <li className="text-gray-900 font-medium">{workshop.title}</li>
           </ol>
         </nav>
