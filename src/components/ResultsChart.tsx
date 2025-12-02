@@ -118,34 +118,68 @@ export function ResultsChart({ results }: ResultsChartProps) {
                       <span>{feature.vote_count} votes</span>
                     </div>
                     {/* Reference Links */}
-                    {feature.reference_links && feature.reference_links.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {feature.reference_links.map((link, linkIndex) => (
-                          <a
-                            key={linkIndex}
-                            href={link.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-2 py-1 bg-white border border-gray-300 rounded text-xs text-gray-700 hover:border-primary hover:text-primary transition-colors"
-                            title={link.title}
-                          >
-                            <img
-                              src={link.favicon}
-                              alt=""
-                              className="w-3 h-3"
-                              onError={(e) => {
-                                e.currentTarget.style.display = 'none';
-                              }}
-                            />
-                            <span>{getLinkTypeIcon(link.type)}</span>
-                            <span className="max-w-[120px] truncate">{link.title}</span>
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                          </a>
-                        ))}
-                      </div>
-                    )}
+                    {(() => {
+                      // Handle both array and string (JSON) formats, and null/undefined
+                      let links = feature.reference_links;
+                      
+                      // If null or undefined, return empty
+                      if (links == null) {
+                        return null;
+                      }
+                      
+                      // If it's a string, try to parse it
+                      if (typeof links === 'string') {
+                        try {
+                          links = JSON.parse(links);
+                        } catch (e) {
+                          console.warn('Failed to parse reference_links JSON:', e);
+                          return null;
+                        }
+                      }
+                      
+                      // Ensure it's an array and has items
+                      if (!Array.isArray(links) || links.length === 0) {
+                        return null;
+                      }
+                      
+                      // Filter out any invalid links (must have url)
+                      const validLinks = links.filter((link: any) => link && typeof link === 'object' && link.url);
+                      
+                      if (validLinks.length === 0) {
+                        return null;
+                      }
+                      
+                      return (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {validLinks.map((link: any, linkIndex: number) => (
+                            <a
+                              key={linkIndex}
+                              href={link.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-2 py-1 bg-white border border-gray-300 rounded text-xs text-gray-700 hover:border-primary hover:text-primary transition-colors"
+                              title={link.title || link.url}
+                            >
+                              {link.favicon && (
+                                <img
+                                  src={link.favicon}
+                                  alt=""
+                                  className="w-3 h-3"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                  }}
+                                />
+                              )}
+                              {link.type && <span>{getLinkTypeIcon(link.type)}</span>}
+                              <span className="max-w-[120px] truncate">{link.title || link.url}</span>
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                              </svg>
+                            </a>
+                          ))}
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
 

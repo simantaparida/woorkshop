@@ -98,34 +98,93 @@ export function FeatureCard({
             </div>
           )}
           {/* Reference Links */}
-          {feature.reference_links && feature.reference_links.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2">
-              {feature.reference_links.map((link, linkIndex) => (
-                <a
-                  key={linkIndex}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-2 py-1 bg-gray-50 border border-gray-200 rounded text-xs text-gray-700 hover:border-primary hover:text-primary transition-colors"
-                  title={link.title}
-                >
-                  <img
-                    src={link.favicon}
-                    alt=""
-                    className="w-3 h-3"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                  />
-                  <span>{getLinkTypeIcon(link.type)}</span>
-                  <span className="max-w-[100px] truncate">{link.title}</span>
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                </a>
-              ))}
-            </div>
-          )}
+          {(() => {
+            // Handle both array and string (JSON) formats, and null/undefined
+            let links = feature.reference_links;
+            
+            // Debug logging
+            if (links != null) {
+              console.log(`FeatureCard "${feature.title}":`, {
+                reference_links: links,
+                type: typeof links,
+                isArray: Array.isArray(links),
+                length: Array.isArray(links) ? links.length : 'N/A'
+              });
+            }
+            
+            // If null or undefined, return empty
+            if (links == null) {
+              return null;
+            }
+            
+            // If it's a string, try to parse it
+            if (typeof links === 'string') {
+              try {
+                links = JSON.parse(links);
+                console.log(`FeatureCard "${feature.title}": Parsed JSON string to:`, links);
+              } catch (e) {
+                console.warn(`FeatureCard "${feature.title}": Failed to parse reference_links JSON:`, e, 'Raw value:', links);
+                return null;
+              }
+            }
+            
+            // Ensure it's an array and has items
+            if (!Array.isArray(links)) {
+              console.warn(`FeatureCard "${feature.title}": reference_links is not an array:`, links);
+              return null;
+            }
+            
+            if (links.length === 0) {
+              return null;
+            }
+            
+            // Filter out any invalid links (must have url)
+            const validLinks = links.filter((link: any) => {
+              const isValid = link && typeof link === 'object' && link.url;
+              if (!isValid) {
+                console.warn(`FeatureCard "${feature.title}": Invalid link filtered out:`, link);
+              }
+              return isValid;
+            });
+            
+            if (validLinks.length === 0) {
+              console.warn(`FeatureCard "${feature.title}": No valid links after filtering`);
+              return null;
+            }
+            
+            console.log(`FeatureCard "${feature.title}": Rendering ${validLinks.length} valid links`);
+            
+            return (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {validLinks.map((link: any, linkIndex: number) => (
+                  <a
+                    key={linkIndex}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-2 py-1 bg-gray-50 border border-gray-200 rounded text-xs text-gray-700 hover:border-primary hover:text-primary transition-colors"
+                    title={link.title || link.url}
+                  >
+                    {link.favicon && (
+                      <img
+                        src={link.favicon}
+                        alt=""
+                        className="w-3 h-3"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    )}
+                    {link.type && <span>{getLinkTypeIcon(link.type)}</span>}
+                    <span className="max-w-[100px] truncate">{link.title || link.url}</span>
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </a>
+                ))}
+              </div>
+            );
+          })()}
         </div>
 
         {/* Points Allocator */}

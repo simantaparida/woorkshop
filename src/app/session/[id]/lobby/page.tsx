@@ -51,8 +51,25 @@ export default function LobbyPage() {
         .select('*')
         .eq('session_id', sessionId)
         .order('created_at', { ascending: true })
-        .then(({ data }) => {
-          if (data) setFeatures(data);
+        .then(({ data, error }) => {
+          if (error) {
+            console.error('Error fetching features:', error);
+            return;
+          }
+          if (data) {
+            // Debug: Check reference_links for each feature
+            data.forEach((f: any) => {
+              if (f.reference_links) {
+                console.log(`Feature "${f.title}":`, {
+                  reference_links: f.reference_links,
+                  type: typeof f.reference_links,
+                  isArray: Array.isArray(f.reference_links),
+                  length: Array.isArray(f.reference_links) ? f.reference_links.length : 'N/A'
+                });
+              }
+            });
+            setFeatures(data as Feature[]);
+          }
         });
     }
   }, [sessionId]);
@@ -423,7 +440,7 @@ export default function LobbyPage() {
                       className="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-sm font-mono"
                     />
                     <Button
-                      onClick={() => handleCopyLink(getSessionLink(sessionId))}
+                      onClick={handleCopyLink}
                       variant="secondary"
                       size="sm"
                     >
@@ -608,18 +625,46 @@ export default function LobbyPage() {
                           )}
                           {/* Reference Links */}
                           {(() => {
-                            // Handle both array and string (JSON) formats
+                            // Handle both array and string (JSON) formats, and null/undefined
                             let links = feature.reference_links;
+                            
+                            // If null or undefined, return empty
+                            if (links == null) {
+                              return null;
+                            }
+                            
+                            // If it's a string, try to parse it (shouldn't happen with JSONB, but handle it)
                             if (typeof links === 'string') {
                               try {
                                 links = JSON.parse(links);
                               } catch (e) {
-                                links = [];
+                                console.warn(`Feature "${feature.title}": Failed to parse reference_links JSON:`, e);
+                                return null;
                               }
                             }
-                            return links && Array.isArray(links) && links.length > 0 ? (
+                            
+                            // Ensure it's an array and has items
+                            if (!Array.isArray(links)) {
+                              console.warn(`Feature "${feature.title}": reference_links is not an array:`, links);
+                              return null;
+                            }
+                            
+                            if (links.length === 0) {
+                              return null;
+                            }
+                            
+                            // Filter out any invalid links (must have url)
+                            const validLinks = links.filter((link: any) => {
+                              return link && typeof link === 'object' && link.url;
+                            });
+                            
+                            if (validLinks.length === 0) {
+                              return null;
+                            }
+                            
+                            return (
                               <div className="flex flex-wrap gap-2 mt-3">
-                                {links.map((link: any, linkIndex: number) => (
+                                {validLinks.map((link: any, linkIndex: number) => (
                                   <a
                                     key={linkIndex}
                                     href={link.url}
@@ -646,7 +691,7 @@ export default function LobbyPage() {
                                   </a>
                                 ))}
                               </div>
-                            ) : null;
+                            );
                           })()}
                         </div>
                       );
@@ -882,3 +927,4 @@ export default function LobbyPage() {
     </AppLayout>
   );
 }
+

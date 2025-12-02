@@ -13,13 +13,13 @@ import { copyToClipboard, getSessionLink } from '@/lib/utils/helpers';
 import { ROUTES } from '@/lib/constants';
 import { useAnalytics } from '@/lib/hooks/useAnalytics';
 import { supabase } from '@/lib/supabase/client';
+import type { ReferenceLink } from '@/types';
 
 interface FeatureInput {
   id: string;
   title: string;
   description: string;
-  effort: string;
-  impact: string;
+  referenceLinks: ReferenceLink[];
 }
 
 export default function NewVotingBoardPage() {
@@ -30,7 +30,7 @@ export default function NewVotingBoardPage() {
   const [hostName, setHostName] = useState('');
   const [projectName, setProjectName] = useState('');
   const [features, setFeatures] = useState<FeatureInput[]>([
-    { id: '1', title: '', description: '', effort: '', impact: '' },
+    { id: '1', title: '', description: '', referenceLinks: [] },
   ]);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -139,10 +139,18 @@ export default function NewVotingBoardPage() {
     try {
       const validFeatures = features
         .filter((f) => f.title.trim().length > 0)
-        .map((f) => ({
-          title: sanitizeString(f.title),
-          description: f.description.trim() ? sanitizeString(f.description) : undefined,
-        }));
+        .map((f) => {
+          const feature = {
+            title: sanitizeString(f.title),
+            description: f.description.trim() ? sanitizeString(f.description) : undefined,
+            referenceLinks: f.referenceLinks || [],
+          };
+          // Debug: Log reference links being sent
+          if (feature.referenceLinks.length > 0) {
+            console.log(`Feature "${feature.title}" has ${feature.referenceLinks.length} reference links:`, feature.referenceLinks);
+          }
+          return feature;
+        });
 
       const response = await fetch('/api/session', {
         method: 'POST',

@@ -8,7 +8,6 @@ import { FeatureCard } from '@/components/FeatureCard';
 import { PlayerList } from '@/components/PlayerList';
 import { ProgressIndicator } from '@/components/ProgressIndicator';
 import { AppLayout } from '@/components/AppLayout';
-import { ImpactEffortGrid } from '@/components/ImpactEffortGrid';
 import { useToast } from '@/components/ui/Toast';
 import { Tooltip } from '@/components/ui/Tooltip';
 import { useSession } from '@/lib/hooks/useSession';
@@ -35,7 +34,6 @@ export default function VotePage() {
   const [currentPlayerId, setCurrentPlayerId] = useState<string | null>(null);
   const [showUndoOption, setShowUndoOption] = useState(false);
   const [undoTimeoutId, setUndoTimeoutId] = useState<NodeJS.Timeout | null>(null);
-  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
 
   const remainingPoints = calculateRemainingPoints(TOTAL_POINTS, votes);
   const votedPlayerIds = new Set(progress.filter(p => p.has_voted).map(p => p.player.id));
@@ -54,12 +52,27 @@ export default function VotePage() {
         .select('*')
         .eq('session_id', sessionId)
         .order('created_at', { ascending: true })
-        .then(({ data }) => {
+        .then(({ data, error }) => {
+          if (error) {
+            console.error('Error fetching features:', error);
+            return;
+          }
           if (data) {
-            setFeatures(data);
+            // Debug: Log reference links for each feature
+            data.forEach((f: any) => {
+              if (f.reference_links) {
+                console.log(`Vote Page - Feature "${f.title}":`, {
+                  reference_links: f.reference_links,
+                  type: typeof f.reference_links,
+                  isArray: Array.isArray(f.reference_links),
+                  length: Array.isArray(f.reference_links) ? f.reference_links.length : 'N/A'
+                });
+              }
+            });
+            setFeatures(data as Feature[]);
             // Initialize votes object
             const initialVotes: Record<string, number> = {};
-            data.forEach((f) => {
+            data.forEach((f: any) => {
               initialVotes[f.id] = 0;
             });
             setVotes(initialVotes);
@@ -259,92 +272,148 @@ export default function VotePage() {
     );
   }
 
+  const sessionStatus = session?.status;
+
   return (
     <AppLayout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
           className="space-y-8"
         >
+          {/* Session Timeline Progress */}
+          {(() => {
+            // Determine current step based on voting board flow
+            // Step 1: Join - User needs to join the session
+            // Step 2: Review - User has joined and should review features
+            // Step 3: Ready - User has marked themselves as ready
+            // Step 4: Vote - Voting is in progress
+            // Step 5: Results - Voting is complete, showing results
+            
+            let currentStep = 4; // Vote step is active when on this page
+            
+            // Check session status
+            if (sessionStatus === 'results') {
+              currentStep = 5; // Results
+            } else if (sessionStatus === 'playing') {
+              currentStep = 4; // Vote (current)
+            }
+
+            const steps = [
+              { id: 1, label: 'Join' },
+              { id: 2, label: 'Review' },
+              { id: 3, label: 'Ready' },
+              { id: 4, label: 'Vote' },
+              { id: 5, label: 'Results' },
+            ];
+
+            return (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1, duration: 0.4 }}
+                className="flex items-center justify-center w-full mb-8"
+              >
+                <div className="flex items-center relative z-10">
+                  {steps.map((step, index) => {
+                    const isActive = step.id === currentStep;
+                    const isCompleted = step.id < currentStep;
+                    const isLast = index === steps.length - 1;
+
+                    return (
+                      <div key={step.id} className="flex items-center">
+                        <div className="flex flex-col items-center relative">
+                          <div
+                            className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-300 border-2 ${
+                              isActive
+                                ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200'
+                                : isCompleted
+                                ? 'bg-green-500 text-white border-green-500'
+                                : 'bg-white text-gray-400 border-gray-200'
+                            }`}
+                          >
+                            {isCompleted ? (
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            ) : (
+                              step.id
+                            )}
+                          </div>
+                          <span
+                            className={`absolute top-8 text-[10px] font-medium whitespace-nowrap transition-colors duration-300 ${
+                              isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-400'
+                            }`}
+                          >
+                            {step.label}
+                          </span>
+                        </div>
+
+                        {!isLast && (
+                          <div
+                            className={`w-12 sm:w-16 h-0.5 mx-1.5 transition-colors duration-300 ${
+                              isCompleted ? 'bg-green-500' : 'bg-gray-200'
+                            }`}
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            );
+          })()}
+
           {/* Header */}
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Voting
-            </h1>
-            <p className="text-gray-600">
-              Allocate your {TOTAL_POINTS} points across the features
-            </p>
+          <div className="space-y-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                {session?.title || session?.project_name || 'Voting Session'}
+              </h1>
+              <p className="text-gray-600">
+                Allocate your {TOTAL_POINTS} points across the features
+              </p>
+            </div>
           </div>
 
-            {/* View Toggle */}
-            <div className="flex justify-center">
-              <div className="inline-flex rounded-lg border border-gray-200 bg-white p-1">
-                <button
-                  onClick={() => setViewMode('list')}
-                  className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
-                    viewMode === 'list'
-                      ? 'bg-primary text-white shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                    List View
+          {/* Main Content Grid */}
+          <div className="grid lg:grid-cols-[2fr_1fr] gap-6 items-start">
+            {/* Left Column - Features */}
+            <div className="space-y-6">
+              {/* Points Remaining Card */}
+              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                <div className="text-center mb-4">
+                  <div className="text-5xl font-bold mb-2">
+                    <span className={remainingPoints < 0 ? 'text-red-600' : 'text-primary'}>
+                      {remainingPoints}
+                    </span>
                   </div>
-                </button>
-                <button
-                  onClick={() => setViewMode('grid')}
-                  className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
-                    viewMode === 'grid'
-                      ? 'bg-primary text-white shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                    Impact vs Effort Grid
+                  <p className="text-gray-600">
+                    {remainingPoints < 0 ? 'Points over limit' : 'Points remaining'}
+                  </p>
+
+                  {/* Helper Copy */}
+                  <div className="mt-3 pt-3 border-t border-gray-200">
+                    <p className="text-sm text-gray-600">
+                      You have <span className="font-semibold text-gray-900">{TOTAL_POINTS} points</span> to allocate across features.
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {remainingPoints > 0
+                        ? `Tip: Remaining ${remainingPoints} points won't count if not allocated.`
+                        : remainingPoints === 0
+                        ? 'Perfect! All points allocated.'
+                        : "You've exceeded the limit. Please reduce your allocation."}
+                    </p>
                   </div>
-                </button>
-              </div>
-            </div>
+                </div>
 
-          {/* Points Remaining */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <div className="text-center mb-4">
-              <div className="text-5xl font-bold mb-2">
-                <span className={remainingPoints < 0 ? 'text-red-600' : 'text-primary'}>
-                  {remainingPoints}
-                </span>
-              </div>
-              <p className="text-gray-600">
-                {remainingPoints < 0 ? 'Points over limit' : 'Points remaining'}
-              </p>
-
-              {/* Helper Copy */}
-              <div className="mt-3 pt-3 border-t border-gray-200">
-                <p className="text-sm text-gray-600">
-                  You have <span className="font-semibold text-gray-900">{TOTAL_POINTS} points</span> to allocate across features.
-                </p>
-                <p className="text-xs text-gray-500 mt-1">
-                  {remainingPoints > 0
-                    ? `Tip: Remaining ${remainingPoints} points won't count if not allocated.`
-                    : remainingPoints === 0
-                    ? 'Perfect! All points allocated.'
-                    : "You've exceeded the limit. Please reduce your allocation."}
-                </p>
-              </div>
-            </div>
-
-            {/* Smart Distribution Buttons */}
-            {!hasSubmitted && (
-              <div className="border-t border-gray-200 pt-4">
-                <p className="text-xs text-gray-500 mb-2 text-center">Quick actions:</p>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {/* Smart Distribution Buttons */}
+                {!hasSubmitted && (
+                  <div className="border-t border-gray-200 pt-4">
+                    <p className="text-xs text-gray-500 mb-2 text-center">Quick actions:</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   <Tooltip
                     content={
                       <div>
@@ -436,30 +505,24 @@ export default function VotePage() {
                       🗑️ Clear
                     </button>
                   </Tooltip>
-                </div>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Features */}
-            <div className="lg:col-span-2 space-y-4">
-              {viewMode === 'grid' ? (
-                <ImpactEffortGrid features={features} votes={votes} />
-              ) : (
-                <>
-                  {features.map((feature) => (
-                    <FeatureCard
-                      key={feature.id}
-                      feature={feature}
-                      points={votes[feature.id] || 0}
-                      remainingPoints={remainingPoints}
-                      onPointsChange={handlePointsChange}
-                      disabled={hasSubmitted}
-                    />
-                  ))}
-                </>
-              )}
+              {/* Features List */}
+              <div className="space-y-4">
+                {features.map((feature) => (
+                  <FeatureCard
+                    key={feature.id}
+                    feature={feature}
+                    points={votes[feature.id] || 0}
+                    remainingPoints={remainingPoints}
+                    onPointsChange={handlePointsChange}
+                    disabled={hasSubmitted}
+                  />
+                ))}
+              </div>
 
               {/* Submit Button */}
               <div className="sticky bottom-4 space-y-3">
@@ -525,10 +588,9 @@ export default function VotePage() {
               </div>
             </div>
 
-            {/* Sidebar */}
+            {/* Right Sidebar - Players */}
             <div className="space-y-6">
-              {/* Progress */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6 sticky top-4">
+              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm sticky top-4">
                 <ProgressIndicator
                   current={votedPlayerIds.size}
                   total={players.length}
