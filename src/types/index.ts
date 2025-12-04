@@ -608,3 +608,29 @@ export interface FinalizePFStatementInput {
   participantId: string;
   participantName: string;
 }
+
+// HomePage types
+export interface WorkshopSessionData {
+  id: string;
+  title: string;
+  tool_type: ToolType;
+  status: 'open' | 'playing' | 'results' | 'completed';
+  created_at: string;
+  updated_at: string;
+  workshop_id: string | null;
+  workshop_title?: string;
+  participantCount: number;
+  activitiesCompleted: number;
+  totalActivities: number;
+  lastActivity: string;
+}
+
+export interface ActivityEntry {
+  id: string;
+  type: 'player_joined' | 'statement_submitted' | 'pin_added' | 'vote_cast' | 'finalization';
+  message: string;
+  user_name: string | null;
+  timestamp: string;
+  session_id?: string;
+  session_title?: string;
+}

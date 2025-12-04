@@ -5,113 +5,79 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Vote, BarChart2, Grid2x2, Clock, ArrowRight, MoreVertical, Search, Lightbulb, Users, Radio } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
-
-interface WorkshopSession {
-    id: string;
-    title: string;
-    type: string;
-    date: string;
-    participants: number;
-    activitiesCompleted: number;
-    totalActivities: number;
-    lastActivity: string;
-    status: 'live' | 'paused' | 'completed';
-    icon: any;
-    color: string;
-    bgColor: string;
-}
-
-// Mock data for workshops with facilitator-friendly indicators
-const recentWorkshops: WorkshopSession[] = [
-    {
-        id: '1',
-        title: 'Mobile App Redesign',
-        type: 'Prioritisation',
-        date: '2 hours ago',
-        participants: 4,
-        activitiesCompleted: 3,
-        totalActivities: 5,
-        lastActivity: 'Clustering',
-        status: 'live',
-        icon: BarChart2,
-        color: 'text-blue-600',
-        bgColor: 'bg-blue-50',
-    },
-    {
-        id: '2',
-        title: 'Q4 Feature Planning',
-        type: 'Voting',
-        date: 'Yesterday',
-        participants: 12,
-        activitiesCompleted: 2,
-        totalActivities: 4,
-        lastActivity: 'Voting',
-        status: 'paused',
-        icon: Vote,
-        color: 'text-purple-600',
-        bgColor: 'bg-purple-50',
-    },
-    {
-        id: '3',
-        title: 'User Onboarding Issues',
-        type: 'Problem Framing',
-        date: '2 days ago',
-        participants: 6,
-        activitiesCompleted: 5,
-        totalActivities: 5,
-        lastActivity: 'Finalizing',
-        status: 'completed',
-        icon: Search,
-        color: 'text-green-600',
-        bgColor: 'bg-green-50',
-    },
-];
-
-// Mock data for tool sessions (from RecentToolSessions.tsx)
-// In a real app, this would come from the database
-const recentToolSessions: any[] = [];
+import { useUser } from '@/lib/hooks/useUser';
+import { useWorkshopSessions } from '@/lib/hooks/useWorkshopSessions';
+import { getToolById } from '@/lib/tools/registry';
+import type { ToolType } from '@/types';
 
 type TabType = 'all' | 'workshops' | 'tools';
 
+// Map tool type to icon
+const getToolIcon = (toolType: ToolType) => {
+  const iconMap = {
+    'voting-board': Vote,
+    'problem-framing': Lightbulb,
+    'rice': BarChart2,
+    'moscow': Grid2x2,
+  };
+  return iconMap[toolType] || FileText;
+};
+
+// Map tool type to colors
+const getToolColors = (toolType: ToolType) => {
+  const colorMap = {
+    'voting-board': { color: 'text-blue-600', bgColor: 'bg-blue-50' },
+    'problem-framing': { color: 'text-green-600', bgColor: 'bg-green-50' },
+    'rice': { color: 'text-purple-600', bgColor: 'bg-purple-50' },
+    'moscow': { color: 'text-orange-600', bgColor: 'bg-orange-50' },
+  };
+  return colorMap[toolType] || { color: 'text-gray-600', bgColor: 'bg-gray-50' };
+};
+
 export function RecentSessions() {
     const [activeTab, setActiveTab] = useState<TabType>('all');
+    const { user } = useUser();
+    const { sessions: workshopSessions, loading, error } = useWorkshopSessions(user?.id || null);
 
-    const getFilteredSessions = () => {
-        switch (activeTab) {
-            case 'workshops':
-                return recentWorkshops;
-            case 'tools':
-                return recentToolSessions;
-            default:
-                return [...recentWorkshops, ...recentToolSessions].sort((a, b) => {
-                    // Simple mock sort, in reality would parse dates
-                    return 0;
-                });
-        }
-    };
+    const sessions = workshopSessions;
 
-    const sessions = getFilteredSessions();
+    // Loading state
+    if (loading) {
+        return (
+            <section className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                <div className="p-6 border-b border-gray-100">
+                    <h2 className="text-lg font-bold text-gray-900">Recent Sessions</h2>
+                </div>
+                <div className="p-6 space-y-4">
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="animate-pulse">
+                            <div className="h-20 bg-gray-100 rounded-lg"></div>
+                        </div>
+                    ))}
+                </div>
+            </section>
+        );
+    }
+
+    // Error state
+    if (error) {
+        return (
+            <section className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                <div className="p-6 border-b border-gray-100">
+                    <h2 className="text-lg font-bold text-gray-900">Recent Sessions</h2>
+                </div>
+                <div className="p-6">
+                    <p className="text-red-600 text-sm">Error loading sessions: {error}</p>
+                </div>
+            </section>
+        );
+    }
 
     return (
         <section className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
             <div className="p-6 border-b border-gray-100">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <h2 className="text-lg font-bold text-gray-900">Recent Sessions</h2>
-
-                    <div className="flex p-1 bg-gray-100 rounded-lg self-start sm:self-auto">
-                        {(['all', 'workshops', 'tools'] as TabType[]).map((tab) => (
-                            <button
-                                key={tab}
-                                onClick={() => setActiveTab(tab)}
-                                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${activeTab === tab
-                                        ? 'bg-white text-gray-900 shadow-sm'
-                                        : 'text-gray-500 hover:text-gray-700'
-                                    }`}
-                            >
-                                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                            </button>
-                        ))}
-                    </div>
                 </div>
             </div>
 
@@ -119,9 +85,10 @@ export function RecentSessions() {
                 {sessions.length > 0 ? (
                     <div className="divide-y divide-gray-100">
                         {sessions.map((session) => {
-                            const Icon = session.icon || FileText;
-                            const progressPercentage = session.totalActivities > 0 
-                                ? (session.activitiesCompleted / session.totalActivities) * 100 
+                            const Icon = getToolIcon(session.tool_type);
+                            const { color, bgColor } = getToolColors(session.tool_type);
+                            const progressPercentage = session.totalActivities > 0
+                                ? (session.activitiesCompleted / session.totalActivities) * 100
                                 : 0;
                             
                             const getStatusBadge = () => {
@@ -155,8 +122,8 @@ export function RecentSessions() {
                                         <div className="flex items-start justify-between gap-4">
                                             {/* Left side: Icon and Title */}
                                             <div className="flex items-start gap-3 flex-1 min-w-0">
-                                                <div className={`w-10 h-10 ${session.bgColor || 'bg-gray-100'} rounded-lg flex items-center justify-center flex-shrink-0`}>
-                                                    <Icon className={`w-5 h-5 ${session.color || 'text-gray-600'}`} />
+                                                <div className={`w-10 h-10 ${bgColor} rounded-lg flex items-center justify-center flex-shrink-0`}>
+                                                    <Icon className={`w-5 h-5 ${color}`} />
                                                 </div>
                                                 
                                                 <div className="flex-1 min-w-0">
@@ -195,7 +162,7 @@ export function RecentSessions() {
                                                         <span>·</span>
                                                         <span className="inline-flex items-center gap-1">
                                                             <Users className="w-3 h-3" />
-                                                            <span>{session.participants} participants</span>
+                                                            <span>{session.participantCount} participants</span>
                                                         </span>
                                                         <span>·</span>
                                                         <span>
@@ -207,14 +174,16 @@ export function RecentSessions() {
                                             
                                             {/* Right side: Action Button */}
                                             <div className="flex items-center gap-3 flex-shrink-0">
-                                                <Button 
-                                                    variant="ghost" 
-                                                    size="sm" 
-                                                    className="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
-                                                >
-                                                    {session.status === 'completed' ? 'View' : 'Resume'} 
-                                                    <ArrowRight className="w-3 h-3 ml-1" />
-                                                </Button>
+                                                <Link href={`/session/${session.id}/lobby`}>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+                                                    >
+                                                        {session.status === 'completed' ? 'View' : 'Resume'}
+                                                        <ArrowRight className="w-3 h-3 ml-1" />
+                                                    </Button>
+                                                </Link>
                                             </div>
                                         </div>
                                     </div>
