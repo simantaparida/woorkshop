@@ -20,7 +20,7 @@ export function useRecentActivities(userId: string | null, limit: number = 10) {
 
     async function fetchActivities() {
       try {
-        const response = await fetch(`/api/recent-activities?limit=${limit}`);
+        const response = await fetch(`/api/recent-activities?userId=${userId}&limit=${limit}`);
 
         if (!response.ok) {
           throw new Error('Failed to fetch activities');

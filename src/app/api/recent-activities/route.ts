@@ -1,23 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabaseServer } from '@/lib/supabase/server';
+import { supabase } from '@/lib/supabase/client';
 import type { ActivityEntry } from '@/types';
 
 // GET /api/recent-activities - Get user's recent activity timeline
 export async function GET(request: NextRequest) {
   try {
-    const supabase = getSupabaseServer();
-
-    // Get limit from query params (default 20, max 100)
+    // Get query params
     const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('userId');
     const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 100);
 
-    // Get authenticated user
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
+    if (!userId) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
+        { error: 'User ID is required' },
+        { status: 400 }
       );
     }
 
@@ -25,7 +21,7 @@ export async function GET(request: NextRequest) {
     const { data: userSessions, error: sessionsError } = await supabase
       .from('sessions_unified')
       .select('id, title')
-      .eq('created_by', user.id);
+      .eq('created_by', userId);
 
     if (sessionsError) {
       console.error('Error fetching user sessions:', sessionsError);

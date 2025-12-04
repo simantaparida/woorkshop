@@ -20,7 +20,7 @@ export function useWorkshopSessions(userId: string | null) {
 
     async function fetchSessions() {
       try {
-        const response = await fetch('/api/recent-sessions');
+        const response = await fetch(`/api/recent-sessions?userId=${userId}`);
 
         if (!response.ok) {
           throw new Error('Failed to fetch sessions');

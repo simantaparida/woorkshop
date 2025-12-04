@@ -1,20 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabaseServer } from '@/lib/supabase/server';
+import { supabase } from '@/lib/supabase/client';
 import { getToolPhases } from '@/lib/tools/registry';
 import type { ToolType, WorkshopSessionData } from '@/types';
 
 // GET /api/recent-sessions - Get user's recent workshop sessions
 export async function GET(request: NextRequest) {
   try {
-    const supabase = getSupabaseServer();
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('userId');
 
-    // Get authenticated user
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
+    if (!userId) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
+        { error: 'User ID is required' },
+        { status: 400 }
       );
     }
 
@@ -33,7 +31,7 @@ export async function GET(request: NextRequest) {
           title
         )
       `)
-      .eq('created_by', user.id)
+      .eq('created_by', userId)
       .order('updated_at', { ascending: false })
       .limit(10);
 
