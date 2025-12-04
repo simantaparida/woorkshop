@@ -1,12 +1,14 @@
 'use client';
 
+import { useState } from 'react';
 import { Star } from 'lucide-react';
+import { toast } from 'sonner';
 import type { PFIndividualStatement } from '@/types';
 
 interface StatementCardProps {
   statement: PFIndividualStatement;
   currentParticipantId: string;
-  onPin: (statementId: string) => void;
+  onPin: (statementId: string) => Promise<void>;
   showPin?: boolean;
 }
 
@@ -16,12 +18,34 @@ export function StatementCard({
   onPin,
   showPin = true,
 }: StatementCardProps) {
-  const isPinned = statement.pins?.some(
+  const actualIsPinned = statement.pins?.some(
     (p) => p.pinned_by_participant_id === currentParticipantId
   ) || false;
 
-  const handlePinClick = () => {
-    onPin(statement.id);
+  // Optimistic state
+  const [optimisticPinned, setOptimisticPinned] = useState(actualIsPinned);
+  const [isToggling, setIsToggling] = useState(false);
+
+  // Use optimistic state if toggling, otherwise use actual state
+  const isPinned = isToggling ? optimisticPinned : actualIsPinned;
+
+  const handlePinClick = async () => {
+    // Optimistic update
+    setOptimisticPinned(!optimisticPinned);
+    setIsToggling(true);
+
+    try {
+      await onPin(statement.id);
+      // Success - optimistic state will be replaced by real data on next fetch
+    } catch (error) {
+      // Rollback on error
+      setOptimisticPinned(actualIsPinned);
+      toast.error('Failed to pin statement', {
+        description: 'Please try again.',
+      });
+    } finally {
+      setIsToggling(false);
+    }
   };
 
   return (
@@ -39,11 +63,12 @@ export function StatementCard({
         {showPin && (
           <button
             onClick={handlePinClick}
+            disabled={isToggling}
             className={`flex items-center gap-1 px-3 py-1.5 rounded-lg transition-colors ${
               isPinned
                 ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
+            } ${isToggling ? 'opacity-50 cursor-not-allowed' : ''}`}
             title={isPinned ? 'Unpin statement' : 'Pin statement'}
           >
             <Star

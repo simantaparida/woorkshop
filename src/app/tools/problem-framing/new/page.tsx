@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { AppLayout } from '@/components/AppLayout';
 import { TopicForm } from '@/components/problem-framing/TopicForm';
 import { SessionTimeline } from '@/components/problem-framing/SessionTimeline';
@@ -63,7 +64,9 @@ export default function NewProblemFramingPage() {
       router.push(`/tools/problem-framing/${sessionId}/join`);
     } catch (error) {
       console.error('Error creating session:', error);
-      alert('Failed to create session. Please try again.');
+      toast.error('Failed to create session', {
+        description: 'Please try again.',
+      });
     } finally {
       setLoading(false);
     }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { AppLayout } from '@/components/AppLayout';
 import { JoinForm } from '@/components/problem-framing/JoinForm';
 import { ShareLink } from '@/components/problem-framing/ShareLink';
@@ -79,7 +80,9 @@ export default function JoinPage() {
       setHasJoined(true);
     } catch (error) {
       console.error('Error joining session:', error);
-      alert('Failed to join session. Please try again.');
+      toast.error('Failed to join session', {
+        description: 'Please try again.',
+      });
     } finally {
       setJoiningLoading(false);
     }
@@ -90,7 +93,9 @@ export default function JoinPage() {
       const facilitatorId = localStorage.getItem('pf_participant_id');
 
       if (!facilitatorId) {
-        alert('Facilitator ID not found. Please refresh and try again.');
+        toast.error('Facilitator ID not found', {
+          description: 'Please refresh and try again.',
+        });
         return;
       }
 
@@ -113,7 +118,9 @@ export default function JoinPage() {
     } catch (error) {
       console.error('Error starting session:', error);
       const message = error instanceof Error ? error.message : 'Please try again.';
-      alert(`Failed to start session: ${message}`);
+      toast.error('Failed to start session', {
+        description: message,
+      });
     }
   }
 
@@ -248,7 +255,9 @@ export default function JoinPage() {
                         variant="outline"
                         onClick={() => {
                           navigator.clipboard.writeText(window.location.href);
-                          alert('Link copied!');
+                          toast.success('Link copied!', {
+                            description: 'Share it with your team.',
+                          });
                         }}
                         className="bg-white hover:bg-blue-50 border-blue-200 text-blue-700"
                       >

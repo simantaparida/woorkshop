@@ -1,12 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 
 interface StatementInputProps {
   topicTitle: string;
   topicDescription?: string;
-  onSubmit: (statement: string) => void;
+  onSubmit: (statement: string) => Promise<void>;
   loading?: boolean;
 }
 
@@ -17,13 +18,34 @@ export function StatementInput({
   loading,
 }: StatementInputProps) {
   const [statement, setStatement] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const charCount = statement.length;
   const minChars = 10;
   const isValid = charCount >= minChars;
 
-  const handleSubmit = () => {
-    if (isValid) {
-      onSubmit(statement);
+  const handleSubmit = async () => {
+    if (!isValid || isSubmitting) return;
+
+    // Optimistic update
+    setSubmitted(true);
+    setIsSubmitting(true);
+
+    try {
+      await onSubmit(statement);
+      // Success confirmed
+      toast.success('Statement submitted!', {
+        description: 'Your input has been recorded.',
+      });
+    } catch (error) {
+      // Rollback on error
+      setSubmitted(false);
+      toast.error('Failed to submit statement', {
+        description: 'Please check your connection and try again.',
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -50,7 +72,7 @@ export function StatementInput({
           placeholder="Describe the problem from your perspective..."
           rows={8}
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none text-base"
-          disabled={loading}
+          disabled={loading || submitted || isSubmitting}
           autoFocus
         />
         <div className="flex justify-between items-center mt-2">
@@ -65,9 +87,9 @@ export function StatementInput({
           onClick={handleSubmit}
           variant="primary"
           size="lg"
-          disabled={!isValid || loading}
+          disabled={!isValid || loading || submitted || isSubmitting}
         >
-          {loading ? 'Submitting...' : 'Submit Statement'}
+          {isSubmitting ? 'Submitting...' : submitted ? 'Submitted!' : 'Submit Statement'}
         </Button>
       </div>
     </div>

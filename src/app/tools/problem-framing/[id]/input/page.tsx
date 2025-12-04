@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { AppLayout } from '@/components/AppLayout';
 import { SessionTimeline } from '@/components/problem-framing/SessionTimeline';
 import { StatementInput } from '@/components/problem-framing/StatementInput';
@@ -56,7 +57,9 @@ export default function IndividualInputPage() {
 
   async function handleSubmit(statement: string) {
     if (!participantId || !participantName) {
-      alert('Participant information not found. Please rejoin the session.');
+      toast.error('Participant information not found', {
+        description: 'Please rejoin the session.',
+      });
       router.push(`/tools/problem-framing/${sessionId}/join`);
       return;
     }
@@ -79,7 +82,10 @@ export default function IndividualInputPage() {
       }
     } catch (error) {
       console.error('Error submitting statement:', error);
-      alert('Failed to submit statement. Please try again.');
+      toast.error('Failed to submit statement', {
+        description: 'Please try again.',
+      });
+      throw error; // Re-throw so StatementInput can handle rollback
     } finally {
       setSubmitting(false);
     }
@@ -92,7 +98,9 @@ export default function IndividualInputPage() {
       const facilitatorId = localStorage.getItem('pf_participant_id');
 
       if (!facilitatorId) {
-        alert('Facilitator ID not found. Please refresh and try again.');
+        toast.error('Facilitator ID not found', {
+          description: 'Please refresh and try again.',
+        });
         return;
       }
 
@@ -111,7 +119,9 @@ export default function IndividualInputPage() {
     } catch (error) {
       console.error('Error advancing step:', error);
       const message = error instanceof Error ? error.message : 'Please try again.';
-      alert(`Failed to advance to next step: ${message}`);
+      toast.error('Failed to advance to next step', {
+        description: message,
+      });
     } finally {
       setAdvancing(false);
     }

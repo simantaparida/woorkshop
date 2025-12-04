@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, Comfortaa } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
+import { Toaster } from '@/components/ui/Toaster';
 
 const inter = Inter({ subsets: ['latin'] });
 export const comfortaa = Comfortaa({
@@ -145,6 +146,7 @@ export default function RootLayout({
         <div className="min-h-screen bg-gray-50">
           {children}
         </div>
+        <Toaster />
       </body>
     </html>
   );

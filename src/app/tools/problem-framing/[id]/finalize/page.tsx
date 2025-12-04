@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { AppLayout } from '@/components/AppLayout';
 import { SessionTimeline } from '@/components/problem-framing/SessionTimeline';
 import { FinalStatementEditor } from '@/components/problem-framing/FinalStatementEditor';
@@ -29,14 +30,18 @@ export default function FinalizePage() {
   // Redirect non-facilitators
   useEffect(() => {
     if (!loading && data && !isFacilitator) {
-      alert('Only the facilitator can create the final statement.');
+      toast.error('Access restricted', {
+        description: 'Only the facilitator can create the final statement.',
+      });
       router.push(`/tools/problem-framing/${sessionId}/review`);
     }
   }, [loading, data, isFacilitator, router, sessionId]);
 
   async function handleFinalize(statement: string) {
     if (!participantId || !participantName) {
-      alert('Participant information not found. Please rejoin the session.');
+      toast.error('Participant information not found', {
+        description: 'Please rejoin the session.',
+      });
       router.push(`/tools/problem-framing/${sessionId}/join`);
       return;
     }
@@ -62,7 +67,9 @@ export default function FinalizePage() {
       router.push(`/tools/problem-framing/${sessionId}/summary`);
     } catch (error) {
       console.error('Error finalizing statement:', error);
-      alert('Failed to finalize statement. Please try again.');
+      toast.error('Failed to finalize statement', {
+        description: 'Please try again.',
+      });
     } finally {
       setFinalizing(false);
     }

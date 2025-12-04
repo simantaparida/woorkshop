@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { AppLayout } from '@/components/AppLayout';
 import { SessionTimeline } from '@/components/problem-framing/SessionTimeline';
 import { StatementCard } from '@/components/problem-framing/StatementCard';
@@ -63,7 +64,10 @@ export default function TeamReviewPage() {
       // Pin toggled successfully - hook will update UI
     } catch (error) {
       console.error('Error toggling pin:', error);
-      alert('Failed to toggle pin. Please try again.');
+      toast.error('Failed to toggle pin', {
+        description: 'Please try again.',
+      });
+      throw error; // Re-throw so StatementCard can handle rollback
     }
   }
 
@@ -72,7 +76,9 @@ export default function TeamReviewPage() {
       const facilitatorId = localStorage.getItem('pf_participant_id');
 
       if (!facilitatorId) {
-        alert('Facilitator ID not found. Please refresh and try again.');
+        toast.error('Facilitator ID not found', {
+          description: 'Please refresh and try again.',
+        });
         return;
       }
 
@@ -91,7 +97,9 @@ export default function TeamReviewPage() {
     } catch (error) {
       console.error('Error advancing step:', error);
       const message = error instanceof Error ? error.message : 'Please try again.';
-      alert(`Failed to advance to next step: ${message}`);
+      toast.error('Failed to advance to next step', {
+        description: message,
+      });
     }
   }
 

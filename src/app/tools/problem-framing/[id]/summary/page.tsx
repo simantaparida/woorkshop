@@ -1,6 +1,9 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { AppLayout } from '@/components/AppLayout';
 import { SessionSummary } from '@/components/problem-framing/SessionSummary';
 import { Button } from '@/components/ui/Button';
@@ -14,9 +17,123 @@ export default function SummaryPage() {
   const { data, loading } = useProblemFramingSession(sessionId);
 
   function handleExportPDF() {
-    // PDF export implementation
-    // For now, show a message that this feature is coming soon
-    alert('PDF export will be available soon! For now, please use the "Copy as Markdown" option.');
+    if (!data) {
+      toast.error('No data available', {
+        description: 'Please wait for the session data to load.',
+      });
+      return;
+    }
+
+    try {
+      const doc = new jsPDF();
+
+      // Title
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Problem Framing Session Results', 14, 20);
+
+      // Metadata
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Topic: ${data.topic_title}`, 14, 30);
+      doc.text(`Date: ${new Date(data.session.created_at).toLocaleDateString()}`, 14, 35);
+      doc.text(`Participants: ${data.participants.length}`, 14, 40);
+
+      let yPos = 50;
+
+      // Final Statement
+      if (data.final_statement) {
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Final Agreed Statement', 14, yPos);
+
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        const finalText = doc.splitTextToSize(
+          data.final_statement.statement,
+          180
+        );
+        doc.text(finalText, 14, yPos + 8);
+
+        const finalTextHeight = finalText.length * 5;
+        yPos += finalTextHeight + 18;
+      }
+
+      // Individual Statements Table
+      if (data.individual_statements.length > 0) {
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Individual Submissions', 14, yPos);
+        yPos += 5;
+
+        const tableData = data.individual_statements.map((stmt, idx) => [
+          `${idx + 1}`,
+          stmt.participant_name,
+          stmt.statement,
+          stmt.pin_count || 0
+        ]);
+
+        autoTable(doc, {
+          startY: yPos,
+          head: [['#', 'Participant', 'Statement', 'Pins']],
+          body: tableData,
+          styles: { fontSize: 9 },
+          columnStyles: {
+            0: { cellWidth: 10 },
+            1: { cellWidth: 35 },
+            2: { cellWidth: 120 },
+            3: { cellWidth: 15 }
+          },
+          headStyles: {
+            fillColor: [37, 99, 235], // blue-600
+            textColor: 255,
+            fontStyle: 'bold'
+          }
+        });
+
+        yPos = (doc as any).lastAutoTable.finalY + 10;
+      }
+
+      // Participants List
+      if (yPos + 50 > doc.internal.pageSize.height) {
+        doc.addPage();
+        yPos = 20;
+      }
+
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Participants', 14, yPos);
+      yPos += 8;
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      data.participants.forEach((p, idx) => {
+        const label = p.is_facilitator ? `${p.participant_name} (Facilitator)` : p.participant_name;
+        doc.text(`${idx + 1}. ${label}`, 14, yPos + (idx * 5));
+      });
+
+      // Footer
+      doc.setFontSize(8);
+      doc.setTextColor(128);
+      doc.text(
+        `Generated with UX Play on ${new Date().toLocaleString()}`,
+        14,
+        doc.internal.pageSize.height - 10
+      );
+
+      // Save
+      const filename = `problem-framing-${data.session.id.slice(0, 8)}.pdf`;
+      doc.save(filename);
+
+      toast.success('PDF exported successfully!', {
+        description: `Saved as ${filename}`,
+      });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error('Failed to export PDF', {
+        description: 'Please try again or use the Markdown option.',
+      });
+    }
   }
 
   function handleCopyMarkdown() {
@@ -70,10 +187,14 @@ export default function SummaryPage() {
 
     // Copy to clipboard
     navigator.clipboard.writeText(markdown).then(() => {
-      // Success feedback is shown via the component
+      toast.success('Markdown copied!', {
+        description: 'You can now paste it anywhere.',
+      });
     }).catch(err => {
       console.error('Failed to copy markdown:', err);
-      alert('Failed to copy to clipboard. Please try again.');
+      toast.error('Failed to copy to clipboard', {
+        description: 'Please try again.',
+      });
     });
   }
 
