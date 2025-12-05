@@ -9,6 +9,17 @@ export async function POST(request: NextRequest) {
     const body: CreateSessionInput = await request.json();
     const { hostName, projectName, sessionGoal, durationHours, expiresAt, features } = body;
 
+    // Authenticate user (required for session creation)
+    const supabase = getSupabaseServer();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Authentication required. Please sign in to create a session.' },
+        { status: 401 }
+      );
+    }
+
     // Validate input - projectName is optional but if provided, should be valid
     const sessionName = projectName || 'Untitled Session';
     const sessionNameError = projectName ? validateSessionName(projectName) : null;
@@ -25,7 +36,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Host name is required' }, { status: 400 });
     }
 
-    const supabase = getSupabaseServer();
     const hostToken = generateToken();
 
     // Create session
@@ -34,7 +44,7 @@ export async function POST(request: NextRequest) {
       .insert({
         title: sanitizeString(sessionName),
         description: sessionGoal ? sanitizeString(sessionGoal) : null,
-        created_by: sanitizeString(hostName),
+        created_by: user.id, // Store authenticated user UUID
         host_token: hostToken,
         tool_type: 'voting-board',
         status: 'open',

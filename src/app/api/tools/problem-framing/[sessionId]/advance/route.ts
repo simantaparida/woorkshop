@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { advanceStep } from '@/lib/api/problem-framing';
-import { supabase } from '@/lib/supabase/client';
+import { advanceStep } from '@/lib/api/problem-framing-server';
+import { getSupabaseServer } from '@/lib/supabase/server';
 
 /**
  * POST /api/tools/problem-framing/[sessionId]/advance
@@ -52,8 +52,9 @@ export async function POST(
     }
 
     // === VALIDATION LAYER 2: Session Existence & Authorization ===
+    const supabase = getSupabaseServer();
     const { data: session, error: sessionError } = await supabase
-      .from('tool_sessions')
+      .from('sessions_unified')
       .select('id, created_by, status')
       .eq('id', sessionId)
       .single();
@@ -117,7 +118,7 @@ export async function POST(
       const { count, error: countError } = await supabase
         .from('pf_individual_statements')
         .select('id', { count: 'exact', head: true })
-        .eq('tool_session_id', sessionId);
+        .eq('session_id', sessionId);
 
       if (countError) {
         throw new Error('Failed to verify statements');

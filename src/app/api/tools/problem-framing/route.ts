@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createPFSession } from '@/lib/api/problem-framing';
+import { createPFSession } from '@/lib/api/problem-framing-server';
 import { getSupabaseServer } from '@/lib/supabase/server';
 import type { CreatePFSessionInput } from '@/types';
 
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       const supabase = getSupabaseServer();
 
       const attachmentsToInsert = attachments.map(att => ({
-        tool_session_id: result.sessionId,
+        session_id: result.sessionId,
         type: att.type,
         name: att.name,
         url: att.url,
@@ -59,8 +59,41 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
     console.error('Error creating PF session:', error);
+
+    // Extract detailed error info
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorDetails = (error as any)?.details || (error as any)?.hint || '';
+    const errorCode = (error as any)?.code || '';
+
+    // Log full details for debugging
+    console.error('Error details:', {
+      message: errorMessage,
+      code: errorCode,
+      details: errorDetails,
+      stack: error instanceof Error ? error.stack : undefined
+    });
+
+    // Return more helpful error message
+    let userMessage = 'Failed to create session';
+    if (errorCode === '23503') {
+      userMessage = 'Database constraint violation - please check foreign key references';
+    } else if (errorCode === '42501') {
+      userMessage = 'Permission denied. Please ensure database policies are configured correctly.';
+    } else if (errorMessage.includes('Unable to add facilitator')) {
+      userMessage = 'Failed to add facilitator to session';
+    } else if (errorMessage.includes('required')) {
+      userMessage = errorMessage; // Pass validation errors directly
+    } else if (errorMessage && errorMessage !== 'Unknown error') {
+      userMessage = errorMessage;
+    }
+
     return NextResponse.json(
-      { error: 'Failed to create session' },
+      {
+        error: userMessage,
+        ...(process.env.NODE_ENV === 'development' && {
+          debug: { code: errorCode, details: errorDetails, message: errorMessage }
+        })
+      },
       { status: 500 }
     );
   }

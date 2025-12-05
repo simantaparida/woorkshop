@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { togglePin } from '@/lib/api/problem-framing';
+import { togglePin } from '@/lib/api/problem-framing-server';
 import type { TogglePFPinInput } from '@/types';
 
 /**

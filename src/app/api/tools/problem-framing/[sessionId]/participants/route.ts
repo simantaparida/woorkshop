@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { joinPFSession } from '@/lib/api/problem-framing';
+import { joinPFSession } from '@/lib/api/problem-framing-server';
 import type { JoinPFSessionInput } from '@/types';
 
 /**

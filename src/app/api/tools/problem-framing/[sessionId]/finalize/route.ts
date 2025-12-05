@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { finalizePFStatement } from '@/lib/api/problem-framing';
+import { finalizePFStatement } from '@/lib/api/problem-framing-server';
 import type { FinalizePFStatementInput } from '@/types';
 
 /**

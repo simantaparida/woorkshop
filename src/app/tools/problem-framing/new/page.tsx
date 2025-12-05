@@ -50,7 +50,9 @@ export default function NewProblemFramingPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create session');
+        const errorData = await response.json();
+        const errorMessage = errorData.error || 'Failed to create session';
+        throw new Error(errorMessage);
       }
 
       const { sessionId } = await response.json();
@@ -66,8 +68,11 @@ export default function NewProblemFramingPage() {
       router.push(`/tools/problem-framing/${sessionId}/join`);
     } catch (error) {
       console.error('Error creating session:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create session';
       toast.error('Failed to create session', {
-        description: 'Please try again.',
+        description: errorMessage === 'Failed to create session'
+          ? 'Please try again or contact support if the issue persists.'
+          : errorMessage,
       });
     } finally {
       setLoading(false);

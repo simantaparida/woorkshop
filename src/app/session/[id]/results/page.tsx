@@ -28,6 +28,7 @@ export default function ResultsPage() {
   useEffect(() => {
     if (sessionId) {
       fetchResults();
+      completeSession();
     }
   }, [sessionId]);
 
@@ -50,6 +51,32 @@ export default function ResultsPage() {
       showToast('Failed to load results', 'error');
     } finally {
       setLoading(false);
+    }
+  };
+
+  /**
+   * Mark session as completed when results page loads
+   * This triggers automatically and is idempotent (safe on page refresh)
+   */
+  const completeSession = async () => {
+    try {
+      const response = await fetch(`/api/session/${sessionId}/complete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!response.ok) {
+        // Log error but don't show to user (non-critical operation)
+        const data = await response.json();
+        console.warn('Failed to mark session as completed:', data.error);
+        return;
+      }
+
+      const data = await response.json();
+      console.log('Session marked as completed:', data.completed_at);
+    } catch (error) {
+      // Log error but don't show to user
+      console.warn('Error completing session:', error);
     }
   };
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { submitStatement } from '@/lib/api/problem-framing';
+import { submitStatement } from '@/lib/api/problem-framing-server';
 import type { SubmitPFStatementInput } from '@/types';
 
 /**

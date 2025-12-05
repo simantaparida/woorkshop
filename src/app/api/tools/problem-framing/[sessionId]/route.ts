@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getPFSessionData } from '@/lib/api/problem-framing';
+import { getPFSessionData } from '@/lib/api/problem-framing-server';
 
 /**
  * GET /api/tools/problem-framing/[sessionId]
