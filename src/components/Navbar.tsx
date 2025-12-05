@@ -200,17 +200,6 @@ export function Navbar() {
               Features
             </Link>
 
-            {/* Tools */}
-            <Link
-              href="/tools"
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 ${pathname === '/tools'
-                ? 'text-blue-600 bg-blue-50'
-                : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                }`}
-            >
-              Tools
-            </Link>
-
             {/* Use Cases Dropdown */}
             <div
               className="relative"
@@ -241,44 +230,23 @@ export function Navbar() {
             {/* Pricing */}
             <Link
               href="/pricing"
-              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 ${pathname === '/pricing'
+                ? 'text-blue-600 bg-blue-50'
+                : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                }`}
             >
               Pricing
             </Link>
 
-            {/* Resources Dropdown */}
-            <div
-              className="relative"
-              onMouseEnter={() => handleMouseEnter('resources')}
-              onMouseLeave={handleMouseLeave}
-            >
-              <button
-                onClick={() => toggleDropdown('resources')}
-                onKeyDown={(e) => handleKeyDown(e, 'resources')}
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 flex items-center gap-1"
-                aria-expanded={activeDropdown === 'resources'}
-                aria-haspopup="true"
-                aria-label="Resources menu"
-              >
-                Resources
-                <svg
-                  className={`w-4 h-4 transition-transform ${activeDropdown === 'resources' ? 'rotate-180' : ''
-                    }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Request Demo */}
+            {/* Blog */}
             <Link
-              href="/demo"
-              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+              href="/blog"
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 ${pathname === '/blog'
+                ? 'text-blue-600 bg-blue-50'
+                : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                }`}
             >
-              Request Demo
+              Blog
             </Link>
           </div>
 
@@ -330,7 +298,7 @@ export function Navbar() {
           >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
               <div className="grid grid-cols-2 gap-2 max-w-3xl">
-                {(activeDropdown === 'useCases' ? useCasesItems : resourcesItems).map((item) => (
+                {useCasesItems.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
@@ -377,18 +345,6 @@ export function Navbar() {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Features
-              </Link>
-
-              {/* Tools */}
-              <Link
-                href="/tools"
-                className={`block px-4 py-3 text-sm font-medium rounded-lg transition-colors ${pathname === '/tools'
-                  ? 'text-blue-600 bg-blue-50'
-                  : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                  }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Tools
               </Link>
 
               {/* Use Cases - Collapsible */}
@@ -439,64 +395,25 @@ export function Navbar() {
               {/* Pricing */}
               <Link
                 href="/pricing"
-                className="block px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors"
+                className={`block px-4 py-3 text-sm font-medium rounded-lg transition-colors ${pathname === '/pricing'
+                  ? 'text-blue-600 bg-blue-50'
+                  : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                  }`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Pricing
               </Link>
 
-              {/* Resources - Collapsible */}
-              <div>
-                <button
-                  onClick={() => toggleDropdown('resources')}
-                  className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors"
-                  aria-expanded={activeDropdown === 'resources'}
-                >
-                  Resources
-                  <svg
-                    className={`w-4 h-4 transition-transform ${activeDropdown === 'resources' ? 'rotate-180' : ''
-                      }`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                <AnimatePresence>
-                  {activeDropdown === 'resources' && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="ml-4 mt-1 space-y-1 overflow-hidden"
-                    >
-                      {resourcesItems.map((item) => (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors"
-                          onClick={() => {
-                            setIsMobileMenuOpen(false);
-                            setActiveDropdown(null);
-                          }}
-                        >
-                          <div className="text-blue-600">{item.icon}</div>
-                          {item.label}
-                        </Link>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Request Demo */}
+              {/* Blog */}
               <Link
-                href="/demo"
-                className="block px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors"
+                href="/blog"
+                className={`block px-4 py-3 text-sm font-medium rounded-lg transition-colors ${pathname === '/blog'
+                  ? 'text-blue-600 bg-blue-50'
+                  : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                  }`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Request Demo
+                Blog
               </Link>
             </div>
           </motion.div>
