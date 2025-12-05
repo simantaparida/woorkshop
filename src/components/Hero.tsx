@@ -40,68 +40,37 @@ export function Hero() {
           animate="visible"
           className="text-center"
         >
-          {/* Simple Character Illustrations */}
+          {/* Trust Badges */}
           <motion.div variants={itemVariants} className="flex items-center justify-center mb-8">
-            <div className="inline-flex items-center -space-x-4">
-              {/* Character 1 - Book */}
-              <div className="w-16 h-16 rounded-full bg-blue-500 border-4 border-white flex items-center justify-center shadow-md transform hover:scale-105 transition-transform duration-200">
-                <span className="text-2xl">📚</span>
+            <div className="inline-flex items-center gap-6 flex-wrap justify-center">
+              {/* No Signup Badge */}
+              <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-full border border-blue-200">
+                <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span className="text-sm font-medium text-blue-700">No Signup Required</span>
               </div>
 
-              {/* Character 2 - Glasses Person */}
-              <div className="w-20 h-20 rounded-full bg-white border-4 border-gray-900 flex items-center justify-center shadow-md transform hover:scale-105 transition-transform duration-200">
-                <div className="relative">
-                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-3 border-2 border-gray-900 rounded-full"></div>
-                  <div className="w-1.5 h-1.5 bg-gray-900 rounded-full absolute top-1 left-2"></div>
-                  <div className="w-1.5 h-1.5 bg-gray-900 rounded-full absolute top-1 right-2"></div>
-                  <div className="w-4 h-1 bg-gray-900 rounded-full mt-4"></div>
-                </div>
+              {/* Real-Time Badge */}
+              <div className="flex items-center gap-2 px-4 py-2 bg-purple-50 rounded-full border border-purple-200">
+                <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                <span className="text-sm font-medium text-purple-700">Real-Time Collaboration</span>
               </div>
 
-              {/* Character 3 - Person with curly hair */}
-              <div className="w-20 h-20 rounded-full bg-gray-800 border-4 border-white flex items-center justify-center shadow-md transform hover:scale-105 transition-transform duration-200">
-                <span className="text-2xl">👤</span>
+              {/* Free Forever Badge */}
+              <div className="flex items-center gap-2 px-4 py-2 bg-green-50 rounded-full border border-green-200">
+                <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="text-sm font-medium text-green-700">Free Forever</span>
               </div>
 
-              {/* Character 4 - Lightbulb (Center/Largest) */}
-              <div className="w-24 h-24 rounded-full bg-orange-500 border-4 border-white flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform duration-200 z-10">
-                <span className="text-3xl">💡</span>
-              </div>
-
-              {/* Character 5 - Hard Hat */}
-              <div className="w-22 h-22 rounded-full bg-white border-4 border-gray-900 flex items-center justify-center shadow-md transform hover:scale-105 transition-transform duration-200">
-                <span className="text-3xl">👷</span>
-              </div>
-
-              {/* Character 6 - Headphones */}
-              <div className="w-20 h-20 rounded-full bg-white border-4 border-gray-900 flex items-center justify-center shadow-md transform hover:scale-105 transition-transform duration-200">
-                <div className="relative">
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-10 h-4 border-t-4 border-l-4 border-r-4 border-blue-500 rounded-t-full"></div>
-                  <div className="absolute -left-3 top-0 w-3 h-4 bg-blue-500 rounded"></div>
-                  <div className="absolute -right-3 top-0 w-3 h-4 bg-blue-500 rounded"></div>
-                  <div className="w-1.5 h-1.5 bg-gray-900 rounded-full absolute top-1 left-2"></div>
-                  <div className="w-1.5 h-1.5 bg-gray-900 rounded-full absolute top-1 right-2"></div>
-                  <div className="w-2 h-1 bg-gray-900 rounded-full mt-4"></div>
-                </div>
-              </div>
-
-              {/* Character 7 - Woman */}
-              <div className="w-20 h-20 rounded-full bg-white border-4 border-gray-900 flex items-center justify-center shadow-md transform hover:scale-105 transition-transform duration-200">
-                <span className="text-2xl">👩</span>
-              </div>
-
-              {/* Character 8 - Person */}
-              <div className="w-18 h-18 rounded-full bg-white border-4 border-gray-900 flex items-center justify-center shadow-md transform hover:scale-105 transition-transform duration-200">
-                <div className="relative">
-                  <div className="w-2 h-2 bg-gray-900 rounded-full absolute top-0 left-2"></div>
-                  <div className="w-2 h-2 bg-gray-900 rounded-full absolute top-0 right-2"></div>
-                  <div className="w-3 h-0.5 bg-gray-900 rounded-full mt-5"></div>
-                </div>
-              </div>
-
-              {/* Character 9 - Checklist */}
-              <div className="w-16 h-16 rounded-full bg-yellow-400 border-4 border-white flex items-center justify-center shadow-md transform hover:scale-105 transition-transform duration-200">
-                <span className="text-2xl">✓</span>
+              {/* Secure Badge */}
+              <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-full border border-gray-200">
+                <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <span className="text-sm font-medium text-gray-700">Secure & Private</span>
               </div>
             </div>
           </motion.div>
@@ -175,40 +144,120 @@ export function Hero() {
                 </div>
               </div>
 
-              {/* Video content area - Auto-playing animation */}
+              {/* Video content area - Realistic Voting Interface */}
               <div className="relative aspect-video bg-gradient-to-br from-blue-50 via-white to-purple-50">
-                {/* Animated UI mockup */}
-                <div className="absolute inset-0 p-10">
+                {/* Voting Interface Mockup */}
+                <div className="absolute inset-0 p-8">
+                  {/* Header */}
                   <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: isPlaying ? 1 : 0.5, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                    className="bg-white rounded-xl shadow-lg p-5 mb-4 border border-gray-100"
+                    transition={{ duration: 0.6, delay: 0.1 }}
+                    className="mb-6"
                   >
-                    <div className="h-4 bg-gradient-to-r from-blue-200 to-blue-100 rounded w-2/5 mb-4"></div>
-                    <div className="h-3 bg-gray-100 rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-gray-100 rounded w-1/2"></div>
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <div className="h-5 bg-gray-800 rounded w-48 mb-2"></div>
+                        <div className="h-3 bg-gray-400 rounded w-32"></div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-blue-200 border-2 border-white"></div>
+                        <div className="w-8 h-8 rounded-full bg-purple-200 border-2 border-white -ml-3"></div>
+                        <div className="w-8 h-8 rounded-full bg-green-200 border-2 border-white -ml-3"></div>
+                        <div className="text-xs text-gray-600 ml-2">+5 voting</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: "0%" }}
+                          animate={{ width: isPlaying ? "65%" : "0%" }}
+                          transition={{ duration: 1.5, delay: 0.3 }}
+                          className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
+                        ></motion.div>
+                      </div>
+                      <span className="text-xs font-semibold text-gray-700">35 points left</span>
+                    </div>
                   </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: isPlaying ? 1 : 0.5, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.4 }}
-                    className="bg-white rounded-xl shadow-lg p-5 mb-4 border border-gray-100"
-                  >
-                    <div className="h-4 bg-gradient-to-r from-purple-200 to-purple-100 rounded w-1/3 mb-4"></div>
-                    <div className="h-3 bg-gray-100 rounded w-4/5 mb-2"></div>
-                    <div className="h-3 bg-gray-100 rounded w-2/5"></div>
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: isPlaying ? 1 : 0.5, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.6 }}
-                    className="bg-white rounded-xl shadow-lg p-5 border border-gray-100"
-                  >
-                    <div className="h-4 bg-gradient-to-r from-green-200 to-green-100 rounded w-1/2 mb-4"></div>
-                    <div className="h-3 bg-gray-100 rounded w-full mb-2"></div>
-                    <div className="h-3 bg-gray-100 rounded w-3/5"></div>
-                  </motion.div>
+
+                  {/* Feature Cards */}
+                  <div className="space-y-3">
+                    {/* Feature 1 - High Priority */}
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: isPlaying ? 1 : 0.5, x: 0 }}
+                      transition={{ duration: 0.6, delay: 0.2 }}
+                      className="bg-white rounded-lg shadow-md p-4 border-l-4 border-blue-500"
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex-1">
+                          <div className="h-4 bg-gray-800 rounded w-3/4 mb-2"></div>
+                          <div className="h-3 bg-gray-300 rounded w-full"></div>
+                        </div>
+                        <div className="ml-4 flex items-center gap-2">
+                          <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
+                            <span className="text-lg font-bold text-blue-700">40</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <div className="w-4 h-4 rounded-full bg-blue-200"></div>
+                          <div className="w-4 h-4 rounded-full bg-purple-200 -ml-2"></div>
+                          <span>8 votes</span>
+                        </div>
+                      </div>
+                    </motion.div>
+
+                    {/* Feature 2 - Medium Priority */}
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: isPlaying ? 1 : 0.5, x: 0 }}
+                      transition={{ duration: 0.6, delay: 0.35 }}
+                      className="bg-white rounded-lg shadow-md p-4 border-l-4 border-purple-500"
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex-1">
+                          <div className="h-4 bg-gray-800 rounded w-2/3 mb-2"></div>
+                          <div className="h-3 bg-gray-300 rounded w-5/6"></div>
+                        </div>
+                        <div className="ml-4 flex items-center gap-2">
+                          <div className="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center">
+                            <span className="text-lg font-bold text-purple-700">25</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <div className="w-4 h-4 rounded-full bg-green-200"></div>
+                          <span>6 votes</span>
+                        </div>
+                      </div>
+                    </motion.div>
+
+                    {/* Feature 3 - Lower Priority */}
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: isPlaying ? 1 : 0.5, x: 0 }}
+                      transition={{ duration: 0.6, delay: 0.5 }}
+                      className="bg-white rounded-lg shadow-md p-4 border-l-4 border-green-500"
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex-1">
+                          <div className="h-4 bg-gray-800 rounded w-4/5 mb-2"></div>
+                          <div className="h-3 bg-gray-300 rounded w-3/4"></div>
+                        </div>
+                        <div className="ml-4 flex items-center gap-2">
+                          <div className="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center">
+                            <span className="text-lg font-bold text-green-700">0</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-gray-500">
+                        <span>Not voted yet</span>
+                      </div>
+                    </motion.div>
+                  </div>
                 </div>
 
                 {/* Playing indicator (subtle) */}
