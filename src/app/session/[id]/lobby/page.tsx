@@ -113,7 +113,7 @@ export default function LobbyPage() {
     if (sessionStatus === 'playing') {
       console.log('[Lobby] Redirecting to vote page');
       router.push(ROUTES.VOTE(sessionId));
-    } else if (sessionStatus === 'results') {
+    } else if (sessionStatus === 'results' || sessionStatus === 'completed') {
       console.log('[Lobby] Redirecting to results page');
       router.push(ROUTES.RESULTS(sessionId));
     }

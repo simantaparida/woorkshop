@@ -19,7 +19,8 @@ export default function SessionPage() {
         router.push(ROUTES.LOBBY(sessionId));
       } else if (session.status === 'playing') {
         router.push(ROUTES.VOTE(sessionId));
-      } else if (session.status === 'results') {
+      } else if (session.status === 'results' || session.status === 'completed') {
+        // Both 'results' and 'completed' sessions should show results page
         router.push(ROUTES.RESULTS(sessionId));
       }
     }

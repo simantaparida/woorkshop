@@ -174,7 +174,7 @@ export function RecentSessions() {
                                             
                                             {/* Right side: Action Button */}
                                             <div className="flex items-center gap-3 flex-shrink-0">
-                                                <Link href={`/session/${session.id}/lobby`}>
+                                                <Link href={`/session/${session.id}`}>
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
