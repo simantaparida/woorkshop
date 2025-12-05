@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase/client';
 import { getPFSessionData } from '@/lib/api/problem-framing';
 import type { PFSessionData } from '@/types';
@@ -27,6 +28,7 @@ export function useProblemFramingSession(sessionId: string): UseProblemFramingSe
   const [data, setData] = useState<PFSessionData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const previousDataRef = useRef<PFSessionData | null>(null);
 
   // Fetch session data
   const fetchData = async () => {
@@ -43,6 +45,73 @@ export function useProblemFramingSession(sessionId: string): UseProblemFramingSe
       setLoading(false);
     }
   };
+
+  // Real-time event notifications
+  useEffect(() => {
+    if (!data || !previousDataRef.current) {
+      previousDataRef.current = data;
+      return;
+    }
+
+    const prev = previousDataRef.current;
+
+    // New participant joined
+    if (data.participants.length > prev.participants.length) {
+      const newParticipant = data.participants[data.participants.length - 1];
+      toast.info(`${newParticipant.participant_name} joined the session`, {
+        icon: '👋',
+        duration: 3000,
+      });
+    }
+
+    // Session phase changed
+    if (data.session.status !== prev.session.status) {
+      const phaseNames: Record<string, string> = {
+        'input': 'Individual Input',
+        'review': 'Team Review',
+        'finalize': 'Creating Consensus',
+        'completed': 'Session Complete',
+      };
+      const phaseName = phaseNames[data.session.status] || data.session.status;
+      toast.success(`Advanced to ${phaseName}`, {
+        icon: '🎯',
+        duration: 4000,
+      });
+    }
+
+    // New statement submitted
+    if (data.individual_statements.length > prev.individual_statements.length) {
+      const submittedCount = data.participants.filter(p => p.has_submitted).length;
+      const totalCount = data.participants.filter(p => !p.is_facilitator).length;
+      const progress = totalCount > 0 ? Math.round((submittedCount / totalCount) * 100) : 0;
+
+      toast.info(`New statement submitted (${progress}% complete)`, {
+        icon: '📝',
+        duration: 3000,
+      });
+    }
+
+    // Statement pinned
+    const totalPins = data.individual_statements.reduce((sum, s) => sum + (s.pin_count || 0), 0);
+    const prevTotalPins = prev.individual_statements.reduce((sum, s) => sum + (s.pin_count || 0), 0);
+
+    if (totalPins > prevTotalPins) {
+      toast('Someone pinned a statement', {
+        icon: '⭐',
+        duration: 2500,
+      });
+    }
+
+    // Final statement created
+    if (data.final_statement && !prev.final_statement) {
+      toast.success('Final statement has been created!', {
+        icon: '✨',
+        duration: 4000,
+      });
+    }
+
+    previousDataRef.current = data;
+  }, [data]);
 
   useEffect(() => {
     if (!sessionId) {

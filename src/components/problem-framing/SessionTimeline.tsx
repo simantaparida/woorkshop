@@ -8,10 +8,11 @@ interface SessionTimelineProps {
 
 export function SessionTimeline({ currentStep }: SessionTimelineProps) {
     const steps = [
-        { id: 1, label: 'Define' },
+        { id: 1, label: 'Setup' },
         { id: 2, label: 'Input' },
         { id: 3, label: 'Review' },
-        { id: 4, label: 'Consensus' },
+        { id: 4, label: 'Finalize' },
+        { id: 5, label: 'Complete' },
     ];
 
     return (
@@ -44,7 +45,7 @@ export function SessionTimeline({ currentStep }: SessionTimelineProps) {
                             </div>
 
                             {!isLast && (
-                                <div className={`w-16 sm:w-24 h-0.5 mx-2 transition-colors duration-300 ${isCompleted ? 'bg-green-500' : 'bg-gray-200'
+                                <div className={`w-12 sm:w-16 h-0.5 mx-2 transition-colors duration-300 ${isCompleted ? 'bg-green-500' : 'bg-gray-200'
                                     }`} />
                             )}
                         </div>

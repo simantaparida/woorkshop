@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/Button';
 import { FileCheck } from 'lucide-react';
 
@@ -16,8 +16,19 @@ export function FinalStatementEditor({
   loading,
 }: FinalStatementEditorProps) {
   const [statement, setStatement] = useState(initialValue);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const charCount = statement.length;
   const isValid = charCount >= 10;
+
+  // Handle mobile keyboard appearing
+  const handleFocus = () => {
+    setTimeout(() => {
+      textareaRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }, 300);
+  };
 
   const handleFinalize = () => {
     if (isValid) {
@@ -46,9 +57,11 @@ export function FinalStatementEditor({
           Final Problem Statement
         </label>
         <textarea
+          ref={textareaRef}
           id="final-statement"
           value={statement}
           onChange={(e) => setStatement(e.target.value)}
+          onFocus={handleFocus}
           placeholder="Write the final agreed problem statement..."
           rows={8}
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none text-base"

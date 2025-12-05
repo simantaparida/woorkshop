@@ -158,3 +158,37 @@ export function formatRelativeTime(timestamp: string): string {
   // Fallback to date formatting for older items
   return then.toLocaleDateString();
 }
+
+/**
+ * Retry a function with exponential backoff
+ * @param fn - The async function to retry
+ * @param maxRetries - Maximum number of retry attempts (default: 3)
+ * @param baseDelay - Base delay in milliseconds (default: 1000)
+ * @returns Promise that resolves with the function result or rejects after all retries fail
+ */
+export async function fetchWithRetry<T>(
+  fn: () => Promise<T>,
+  maxRetries: number = 3,
+  baseDelay: number = 1000
+): Promise<T> {
+  let lastError: Error;
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error as Error;
+
+      // Don't retry on the last attempt
+      if (attempt === maxRetries - 1) {
+        break;
+      }
+
+      // Exponential backoff: baseDelay * 2^attempt
+      const delay = baseDelay * Math.pow(2, attempt);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+
+  throw lastError!;
+}
