@@ -66,10 +66,11 @@ export function SocialProof() {
     { bg: 'from-indigo-500 to-indigo-600', initial: 'A' },
   ];
 
-  const metrics = [
-    { value: '12k+', label: 'votes cast' },
-    { value: '800+', label: 'sessions run' },
-    { value: '12 min', label: 'avg session' },
+  // Metrics temporarily removed - will be replaced with real data from Supabase
+  const metrics: Array<{ value: string; label: string }> = [
+    // { value: '12k+', label: 'votes cast' },
+    // { value: '800+', label: 'sessions run' },
+    // { value: '12 min', label: 'avg session' },
   ];
 
   return (

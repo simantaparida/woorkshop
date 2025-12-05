@@ -171,9 +171,8 @@ export function Navbar() {
   return (
     <nav
       ref={navRef}
-      className={`bg-white sticky top-0 z-50 transition-all duration-200 ${
-        isScrolled ? 'border-b border-gray-200 shadow-sm' : ''
-      }`}
+      className={`bg-white sticky top-0 z-50 transition-all duration-200 ${isScrolled ? 'border-b border-gray-200 shadow-sm' : ''
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-[72px]">
@@ -193,13 +192,23 @@ export function Navbar() {
             {/* Features */}
             <Link
               href={ROUTES.FEATURES}
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 ${
-                pathname === '/features'
-                  ? 'text-blue-600 bg-blue-50'
-                  : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-              }`}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 ${pathname === '/features'
+                ? 'text-blue-600 bg-blue-50'
+                : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                }`}
             >
               Features
+            </Link>
+
+            {/* Tools */}
+            <Link
+              href="/tools"
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 ${pathname === '/tools'
+                ? 'text-blue-600 bg-blue-50'
+                : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                }`}
+            >
+              Tools
             </Link>
 
             {/* Use Cases Dropdown */}
@@ -218,9 +227,8 @@ export function Navbar() {
               >
                 Use Cases
                 <svg
-                  className={`w-4 h-4 transition-transform ${
-                    activeDropdown === 'useCases' ? 'rotate-180' : ''
-                  }`}
+                  className={`w-4 h-4 transition-transform ${activeDropdown === 'useCases' ? 'rotate-180' : ''
+                    }`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -254,9 +262,8 @@ export function Navbar() {
               >
                 Resources
                 <svg
-                  className={`w-4 h-4 transition-transform ${
-                    activeDropdown === 'resources' ? 'rotate-180' : ''
-                  }`}
+                  className={`w-4 h-4 transition-transform ${activeDropdown === 'resources' ? 'rotate-180' : ''
+                    }`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -282,7 +289,7 @@ export function Navbar() {
               href={ROUTES.LOGIN}
               className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 shadow-sm"
             >
-              Get started
+              Start Free Session
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
@@ -363,14 +370,25 @@ export function Navbar() {
               {/* Features */}
               <Link
                 href={ROUTES.FEATURES}
-                className={`block px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
-                  pathname === '/features'
-                    ? 'text-blue-600 bg-blue-50'
-                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                }`}
+                className={`block px-4 py-3 text-sm font-medium rounded-lg transition-colors ${pathname === '/features'
+                  ? 'text-blue-600 bg-blue-50'
+                  : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                  }`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Features
+              </Link>
+
+              {/* Tools */}
+              <Link
+                href="/tools"
+                className={`block px-4 py-3 text-sm font-medium rounded-lg transition-colors ${pathname === '/tools'
+                  ? 'text-blue-600 bg-blue-50'
+                  : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                  }`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Tools
               </Link>
 
               {/* Use Cases - Collapsible */}
@@ -382,9 +400,8 @@ export function Navbar() {
                 >
                   Use Cases
                   <svg
-                    className={`w-4 h-4 transition-transform ${
-                      activeDropdown === 'useCases' ? 'rotate-180' : ''
-                    }`}
+                    className={`w-4 h-4 transition-transform ${activeDropdown === 'useCases' ? 'rotate-180' : ''
+                      }`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -437,9 +454,8 @@ export function Navbar() {
                 >
                   Resources
                   <svg
-                    className={`w-4 h-4 transition-transform ${
-                      activeDropdown === 'resources' ? 'rotate-180' : ''
-                    }`}
+                    className={`w-4 h-4 transition-transform ${activeDropdown === 'resources' ? 'rotate-180' : ''
+                      }`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"

@@ -111,7 +111,7 @@ export function Hero() {
             variants={itemVariants}
             className="text-5xl md:text-7xl font-bold text-gray-900 mb-5 leading-[1.1] tracking-tight"
           >
-            Decide what to build next. Together.
+            Prioritize features as a team — in 10 minutes
           </motion.h1>
 
           {/* Subhead - Reduced size */}
@@ -119,7 +119,7 @@ export function Hero() {
             variants={itemVariants}
             className="text-lg md:text-xl text-gray-600 mb-8 mx-auto max-w-3xl leading-relaxed"
           >
-            Padool helps product and design teams align on what matters most. Create a quick session, invite teammates, and get a ranked list of ideas — no signup required.
+            Run voting sessions, RICE scoring, or MoSCoW workshops. No signup, no spreadsheets, no endless meetings.
           </motion.p>
 
           {/* CTA Buttons - Elegant Modern Hover */}
@@ -131,7 +131,7 @@ export function Hero() {
             >
               <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
               <span className="relative flex items-center gap-2">
-                Get started
+                Start Free Session
                 <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                 </svg>
@@ -152,7 +152,7 @@ export function Hero() {
             variants={itemVariants}
             className="text-sm text-gray-500 mb-14"
           >
-            Free forever · No login · Takes 10 minutes
+            Free forever · No signup required · Real-time collaboration
           </motion.p>
 
           {/* Video Placeholder - Auto-playing, no overlay button */}
