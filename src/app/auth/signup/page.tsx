@@ -115,15 +115,26 @@ export default function SignupPage() {
         throw signUpError;
       }
 
+      // Debug logging
+      console.log('Signup response:', {
+        user: data.user?.id,
+        email: data.user?.email,
+        session: !!data.session,
+        emailConfirmation: data.user?.email_confirmed_at,
+        identities: data.user?.identities?.length,
+      });
+
       if (data.user) {
         // Check if email confirmation is required
         if (!data.session) {
           // Email confirmation required
+          console.log('Email confirmation required - showing check email screen');
           setEmailSent(true);
           setSuccessMessage('Please check your email to confirm your account before signing in.');
           setLoading(false);
         } else {
           // User is automatically signed in (no email confirmation required)
+          console.log('Auto sign-in (email confirmation disabled) - redirecting to:', redirectTo);
           router.push(redirectTo);
         }
       }
