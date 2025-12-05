@@ -194,15 +194,15 @@ export default function TeamReviewPage() {
 
         {/* Facilitator Controls */}
         {isFacilitator ? (
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-blue-100/50 p-8 sticky bottom-8">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="flex gap-4">
-                <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 flex-shrink-0">
-                  <AlertCircle className="w-6 h-6" />
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-blue-100/50 p-6 sticky bottom-8">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div className="flex gap-3 flex-1 min-w-0">
+                <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 flex-shrink-0">
+                  <AlertCircle className="w-5 h-5" />
                 </div>
-                <div>
-                  <h3 className="font-bold text-gray-900">Facilitator Actions</h3>
-                  <p className="text-sm text-gray-600">
+                <div className="min-w-0">
+                  <h3 className="font-bold text-gray-900 text-sm">Facilitator Actions</h3>
+                  <p className="text-xs text-gray-600 leading-snug">
                     Once the team has reviewed all perspectives, proceed to create the final agreed problem statement.
                   </p>
                 </div>
@@ -211,7 +211,7 @@ export default function TeamReviewPage() {
                 onClick={handleAdvanceToFinalize}
                 variant="primary"
                 size="lg"
-                className="w-full md:w-auto px-8 py-4 text-lg font-bold shadow-lg shadow-blue-200/50"
+                className="w-full md:w-auto px-6 py-3 text-base font-bold shadow-lg shadow-blue-200/50 whitespace-nowrap flex-shrink-0"
               >
                 Create Final Statement
                 <ArrowRight className="w-5 h-5 ml-2" />

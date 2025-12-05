@@ -17,11 +17,11 @@ import type {
  * Auto-adds the facilitator as the first participant with rollback on failure
  */
 export async function createPFSession(data: CreatePFSessionInput): Promise<{ sessionId: string }> {
-  // Create tool_session record
+  // Create sessions_unified record
   const { data: session, error: sessionError } = await supabase
-    .from('tool_sessions')
+    .from('sessions_unified')
     .insert({
-      tool_slug: 'problem-framing',
+      tool_type: 'problem-framing',
       title: data.title,
       description: data.description || null,
       created_by: data.facilitatorId,
@@ -40,7 +40,7 @@ export async function createPFSession(data: CreatePFSessionInput): Promise<{ ses
   const { error: participantError } = await supabase
     .from('pf_session_participants')
     .insert({
-      tool_session_id: sessionId,
+      session_id: sessionId,
       participant_id: data.facilitatorId,
       participant_name: data.facilitatorName,
       is_facilitator: true,
@@ -53,7 +53,7 @@ export async function createPFSession(data: CreatePFSessionInput): Promise<{ ses
 
     // Rollback: Delete the session
     const { error: deleteError } = await supabase
-      .from('tool_sessions')
+      .from('sessions_unified')
       .delete()
       .eq('id', sessionId);
 
@@ -74,7 +74,7 @@ export async function joinPFSession(input: JoinPFSessionInput): Promise<PFSessio
   const { data, error } = await supabase
     .from('pf_session_participants')
     .insert({
-      tool_session_id: input.sessionId,
+      session_id: input.sessionId,
       participant_id: input.participantId,
       participant_name: input.participantName,
       is_facilitator: false,
@@ -97,7 +97,7 @@ export async function submitStatement(input: SubmitPFStatementInput): Promise<PF
   const { data: statement, error: statementError } = await supabase
     .from('pf_individual_statements')
     .insert({
-      tool_session_id: input.sessionId,
+      session_id: input.sessionId,
       participant_id: input.participantId,
       participant_name: input.participantName,
       statement: input.statement,
@@ -112,7 +112,7 @@ export async function submitStatement(input: SubmitPFStatementInput): Promise<PF
   const { error: updateError } = await supabase
     .from('pf_session_participants')
     .update({ has_submitted: true })
-    .eq('tool_session_id', input.sessionId)
+    .eq('session_id', input.sessionId)
     .eq('participant_id', input.participantId);
 
   if (updateError) throw updateError;
@@ -162,7 +162,7 @@ export async function finalizePFStatement(input: FinalizePFStatementInput): Prom
   const { data, error } = await supabase
     .from('pf_final_statement')
     .upsert({
-      tool_session_id: input.sessionId,
+      session_id: input.sessionId,
       statement: input.statement,
       finalized_by_participant_id: input.participantId,
       finalized_by_participant_name: input.participantName,
@@ -175,7 +175,7 @@ export async function finalizePFStatement(input: FinalizePFStatementInput): Prom
 
   // Update session status to completed
   const { error: statusError } = await supabase
-    .from('tool_sessions')
+    .from('sessions_unified')
     .update({ status: 'completed', completed_at: new Date().toISOString() })
     .eq('id', input.sessionId);
 
@@ -190,7 +190,7 @@ export async function finalizePFStatement(input: FinalizePFStatementInput): Prom
 export async function getPFSessionData(sessionId: string): Promise<PFSessionData> {
   // Fetch session
   const { data: session, error: sessionError } = await supabase
-    .from('tool_sessions')
+    .from('sessions_unified')
     .select('*')
     .eq('id', sessionId)
     .single();
@@ -202,7 +202,7 @@ export async function getPFSessionData(sessionId: string): Promise<PFSessionData
   const { data: participants, error: participantsError } = await supabase
     .from('pf_session_participants')
     .select('*')
-    .eq('tool_session_id', sessionId)
+    .eq('session_id', sessionId)
     .order('joined_at', { ascending: true });
 
   if (participantsError) throw participantsError;
@@ -214,7 +214,7 @@ export async function getPFSessionData(sessionId: string): Promise<PFSessionData
       *,
       pf_statement_pins (*)
     `)
-    .eq('tool_session_id', sessionId)
+    .eq('session_id', sessionId)
     .order('submitted_at', { ascending: true });
 
   if (statementsError) throw statementsError;
@@ -223,7 +223,7 @@ export async function getPFSessionData(sessionId: string): Promise<PFSessionData
   const { data: finalStatement, error: finalError } = await supabase
     .from('pf_final_statement')
     .select('*')
-    .eq('tool_session_id', sessionId)
+    .eq('session_id', sessionId)
     .single();
 
   // finalError is expected if no final statement yet
@@ -232,7 +232,7 @@ export async function getPFSessionData(sessionId: string): Promise<PFSessionData
   const { data: attachments, error: attachmentsError } = await supabase
     .from('pf_attachments')
     .select('*')
-    .eq('tool_session_id', sessionId)
+    .eq('session_id', sessionId)
     .order('created_at', { ascending: true });
 
   if (attachmentsError) {
@@ -285,8 +285,8 @@ export async function advanceStep(sessionId: string, nextStep: number): Promise<
 
   const status = statusMap[nextStep] || 'setup';
 
-  const { error } = await supabase
-    .from('tool_sessions')
+  const { error} = await supabase
+    .from('sessions_unified')
     .update({ status })
     .eq('id', sessionId);
 
