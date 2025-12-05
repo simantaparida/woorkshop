@@ -84,10 +84,7 @@ export function SocialProof() {
           className="text-center mb-16"
         >
           {/* Label */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-200 shadow-sm mb-6">
-            <div className="w-2 h-2 rounded-full bg-green-500"></div>
-            <span className="text-sm font-medium text-gray-700">Trusted by product teams</span>
-          </div>
+
 
           {/* H2 */}
           <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
