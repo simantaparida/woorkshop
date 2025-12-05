@@ -15,7 +15,8 @@
       "Bash(xargs kill -9)",
       "Bash(git checkout:*)",
       "Bash(git push:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

@@ -65,6 +65,18 @@ export async function POST(request: NextRequest) {
     const errorDetails = (error as any)?.details || (error as any)?.hint || '';
     const errorCode = (error as any)?.code || '';
 
+    // Check if error is RLS-related
+    if (errorCode === '42501' || errorMessage.includes('policy')) {
+      console.error('RLS Policy violation detected:', {
+        table: 'pf_session_participants',
+        operation: 'INSERT',
+        errorCode: errorCode,
+        message: errorDetails || errorMessage,
+        suggestedFix: 'Run migration 017 to restore RLS policies with WITH CHECK clause',
+        documentation: 'RLS policies need both USING (true) and WITH CHECK (true) for write operations'
+      });
+    }
+
     // Log full details for debugging
     console.error('Error details:', {
       message: errorMessage,
