@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { useUser } from '@/lib/hooks/useUser';
 import { AppLayout } from '@/components/AppLayout';
 import { TopicForm } from '@/components/problem-framing/TopicForm';
 import { SessionTimeline } from '@/components/problem-framing/SessionTimeline';
@@ -13,6 +14,7 @@ import { Attachment } from '@/components/problem-framing/AttachmentUpload';
 export default function NewProblemFramingPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const { user } = useUser();
 
   async function handleCreateSession(data: {
     title: string;
@@ -103,7 +105,7 @@ export default function NewProblemFramingPage() {
         </div>
 
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 sm:p-8">
-          <TopicForm onSubmit={handleCreateSession} loading={loading} />
+          <TopicForm onSubmit={handleCreateSession} loading={loading} defaultName={user?.name} />
         </div>
 
       </div>

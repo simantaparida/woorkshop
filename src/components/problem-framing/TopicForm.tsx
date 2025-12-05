@@ -13,20 +13,26 @@ interface TopicFormProps {
     attachments: Attachment[];
   }) => void;
   loading?: boolean;
+  defaultName?: string;
 }
 
-export function TopicForm({ onSubmit, loading }: TopicFormProps) {
+export function TopicForm({ onSubmit, loading, defaultName }: TopicFormProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [facilitatorName, setFacilitatorName] = useState('');
   const [attachments, setAttachments] = useState<Attachment[]>([]);
 
   useEffect(() => {
-    const storedName = localStorage.getItem('pf_participant_name');
-    if (storedName) {
-      setFacilitatorName(storedName);
+    // Priority order: defaultName (logged-in user) > localStorage > empty
+    if (defaultName) {
+      setFacilitatorName(defaultName);
+    } else {
+      const storedName = localStorage.getItem('pf_participant_name');
+      if (storedName) {
+        setFacilitatorName(storedName);
+      }
     }
-  }, []);
+  }, [defaultName]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

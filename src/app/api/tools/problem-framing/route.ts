@@ -19,11 +19,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get authenticated user from server-side Supabase
+    const supabase = getSupabaseServer();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // Use authenticated user ID if available, otherwise use facilitatorId (for anonymous users)
+    const createdBy = user?.id || facilitatorId;
+
     // 1. Create the session
     const result = await createPFSession({
       title,
       description,
-      facilitatorId,
+      facilitatorId: createdBy,
       facilitatorName,
     });
 

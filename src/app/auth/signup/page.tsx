@@ -20,6 +20,7 @@ export default function SignupPage() {
       ? 'Authentication failed. Please try again.'
       : null
   );
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -104,6 +105,9 @@ export default function SignupPage() {
         password,
         options: {
           emailRedirectTo: `${window.location.origin}${ROUTES.AUTH_CALLBACK}?redirect=${encodeURIComponent(redirectTo)}`,
+          data: {
+            full_name: fullName.trim() || undefined,
+          },
         },
       });
 
@@ -173,6 +177,7 @@ export default function SignupPage() {
               <button
                 onClick={() => {
                   setEmailSent(false);
+                  setFullName('');
                   setEmail('');
                   setPassword('');
                   setConfirmPassword('');
@@ -271,6 +276,16 @@ export default function SignupPage() {
 
           {/* Email Signup Form */}
           <form onSubmit={handleEmailSignup} className="space-y-4">
+            <Input
+              type="text"
+              placeholder="Full Name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              required
+              disabled={loading || googleLoading}
+              autoComplete="name"
+            />
+
             <Input
               type="email"
               placeholder="Email"
