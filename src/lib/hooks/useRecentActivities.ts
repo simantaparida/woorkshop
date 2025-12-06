@@ -52,6 +52,43 @@ export function useRecentActivities(userId: string | null, limit: number = 10) {
         {
           event: '*',
           schema: 'public',
+          table: 'sessions_unified',
+          filter: `created_by=eq.${userId}`,
+        },
+        () => {
+          console.log('Session activity detected (create/complete), refetching...');
+          fetchActivities();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'pf_session_participants',
+        },
+        () => {
+          console.log('Participant join detected, refetching...');
+          fetchActivities();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'pf_attachments',
+        },
+        () => {
+          console.log('Attachment upload detected, refetching...');
+          fetchActivities();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
           table: 'players',
         },
         () => {

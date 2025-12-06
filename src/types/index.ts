@@ -627,12 +627,21 @@ export interface WorkshopSessionData {
 
 export interface ActivityEntry {
   id: string;
-  type: 'player_joined' | 'statement_submitted' | 'pin_added' | 'vote_cast' | 'finalization';
+  type: 'player_joined'
+      | 'participant_joined'  // Problem-framing participants (facilitators + guests)
+      | 'statement_submitted'
+      | 'pin_added'
+      | 'vote_cast'
+      | 'finalization'
+      | 'session_created'     // Session creation milestone
+      | 'session_completed'   // Session completion milestone
+      | 'attachment_uploaded'; // File uploads
   message: string;
   user_name: string | null;
   timestamp: string;
   session_id?: string;
   session_title?: string;
+  tool_type?: ToolType; // For better contextual messages
 }
 
 // Sessions Module Types

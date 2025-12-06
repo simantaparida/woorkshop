@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     // Get user's session IDs
     const { data: userSessions, error: sessionsError } = await supabase
       .from('sessions_unified')
-      .select('id, title')
+      .select('id, title, tool_type, created_at, completed_at, status')
       .eq('created_by', userId);
 
     if (sessionsError) {
@@ -43,7 +43,46 @@ export async function GET(request: NextRequest) {
 
     const activities: ActivityEntry[] = [];
 
-    // 1. Fetch player joins
+    // Helper function to get friendly tool name
+    const getToolName = (toolType: string) => {
+      const toolNames: Record<string, string> = {
+        'problem-framing': 'Problem Framing',
+        'voting-board': 'Voting Board',
+        'rice': 'RICE',
+        'moscow': 'MoSCoW',
+      };
+      return toolNames[toolType] || toolType;
+    };
+
+    // 1. Add session creation activities
+    (userSessions || []).forEach((session: any) => {
+      activities.push({
+        id: `session_created_${session.id}`,
+        type: 'session_created',
+        message: `Created ${getToolName(session.tool_type)} session: ${session.title}`,
+        user_name: null, // User's own action
+        timestamp: session.created_at,
+        session_id: session.id,
+        session_title: session.title,
+        tool_type: session.tool_type,
+      });
+    });
+
+    // 2. Add session completion activities
+    (userSessions || []).filter((s: any) => s.completed_at).forEach((session: any) => {
+      activities.push({
+        id: `session_completed_${session.id}`,
+        type: 'session_completed',
+        message: `Completed session: ${session.title}`,
+        user_name: null,
+        timestamp: session.completed_at,
+        session_id: session.id,
+        session_title: session.title,
+        tool_type: session.tool_type,
+      });
+    });
+
+    // 3. Fetch player joins
     const { data: playerJoins } = await supabase
       .from('players')
       .select('id, session_id, name, joined_at')
@@ -63,7 +102,28 @@ export async function GET(request: NextRequest) {
       });
     });
 
-    // 2. Fetch statement submissions (Problem Framing)
+    // 4. Fetch problem-framing participant joins (facilitators + guests)
+    const { data: pfParticipants } = await supabase
+      .from('pf_session_participants')
+      .select('id, session_id, participant_name, is_facilitator, joined_at')
+      .in('session_id', sessionIds)
+      .order('joined_at', { ascending: false })
+      .limit(limit);
+
+    (pfParticipants || []).forEach((participant: any) => {
+      const role = participant.is_facilitator ? 'as facilitator' : 'as participant';
+      activities.push({
+        id: `participant_${participant.id}`,
+        type: 'participant_joined',
+        message: `${participant.participant_name} joined ${sessionTitlesMap[participant.session_id] || 'a session'} ${role}`,
+        user_name: participant.participant_name,
+        timestamp: participant.joined_at,
+        session_id: participant.session_id,
+        session_title: sessionTitlesMap[participant.session_id],
+      });
+    });
+
+    // 6. Fetch statement submissions (Problem Framing)
     const { data: statements } = await supabase
       .from('pf_individual_statements')
       .select('id, session_id, participant_name, submitted_at')
@@ -83,7 +143,7 @@ export async function GET(request: NextRequest) {
       });
     });
 
-    // 3. Fetch pin actions (Problem Framing)
+    // 7. Fetch pin actions (Problem Framing)
     const { data: pins } = await supabase
       .from('pf_statement_pins')
       .select(`
@@ -109,7 +169,7 @@ export async function GET(request: NextRequest) {
       });
     });
 
-    // 4. Fetch vote submissions (grouped by player to avoid duplication)
+    // 8. Fetch vote submissions (grouped by player to avoid duplication)
     const { data: votes } = await supabase
       .from('votes')
       .select(`
@@ -143,7 +203,7 @@ export async function GET(request: NextRequest) {
       });
     });
 
-    // 5. Fetch finalizations (Problem Framing)
+    // 9. Fetch finalizations (Problem Framing)
     const { data: finalizations } = await supabase
       .from('pf_final_statement')
       .select('id, session_id, finalized_by_participant_name, finalized_at')
@@ -160,6 +220,26 @@ export async function GET(request: NextRequest) {
         timestamp: final.finalized_at,
         session_id: final.session_id,
         session_title: sessionTitlesMap[final.session_id],
+      });
+    });
+
+    // 10. Fetch attachment uploads (Problem Framing)
+    const { data: attachments } = await supabase
+      .from('pf_attachments')
+      .select('id, session_id, name, type, created_at')
+      .in('session_id', sessionIds)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    (attachments || []).forEach((attachment: any) => {
+      activities.push({
+        id: `attachment_${attachment.id}`,
+        type: 'attachment_uploaded',
+        message: `Uploaded ${attachment.type}: ${attachment.name}`,
+        user_name: null, // System/user upload
+        timestamp: attachment.created_at,
+        session_id: attachment.session_id,
+        session_title: sessionTitlesMap[attachment.session_id],
       });
     });
 
