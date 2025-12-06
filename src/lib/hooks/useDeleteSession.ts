@@ -23,10 +23,15 @@ export function useDeleteSession() {
         const errorData = await response.json();
         const errorMessage = errorData.error || 'Failed to delete session';
 
-        console.error('Delete failed:', errorMessage, {
+        // DEBUG: Enhanced error logging
+        console.error('[DELETE SESSION CLIENT] Request failed:', {
           sessionId,
           status: response.status,
           statusText: response.statusText,
+          errorData,
+          errorMessage,
+          headers: Object.fromEntries(response.headers.entries()),
+          timestamp: new Date().toISOString(),
         });
 
         return {
@@ -34,6 +39,13 @@ export function useDeleteSession() {
           error: errorMessage
         };
       }
+
+      // DEBUG: Success logging
+      console.log('[DELETE SESSION CLIENT] Request succeeded:', {
+        sessionId,
+        status: response.status,
+        timestamp: new Date().toISOString(),
+      });
 
       return { success: true };
     } catch (error) {

@@ -159,7 +159,17 @@ export async function DELETE(
     const supabase = getSupabaseServer();
 
     // Get authenticated user (for new sessions module)
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    // DEBUG: Log authentication state
+    console.log('[DELETE SESSION] Auth state:', {
+      sessionId: id,
+      hasUser: !!user,
+      userId: user?.id,
+      userEmail: user?.email,
+      authError: authError?.message,
+      timestamp: new Date().toISOString(),
+    });
 
     // For backward compatibility, also check for hostToken in query params or body
     const { searchParams } = new URL(request.url);
@@ -181,6 +191,18 @@ export async function DELETE(
       .eq('id', id)
       .single();
 
+    // DEBUG: Log session fetch result
+    console.log('[DELETE SESSION] Session fetch:', {
+      sessionId: id,
+      found: !!session,
+      createdBy: session?.created_by,
+      hasHostToken: !!session?.host_token,
+      hostTokenLength: session?.host_token?.length,
+      fetchError: fetchError?.code,
+      fetchErrorMessage: fetchError?.message,
+      fetchErrorDetails: fetchError?.details,
+    });
+
     if (fetchError) {
       if (fetchError.code === 'PGRST116') {
         return NextResponse.json(
@@ -199,6 +221,29 @@ export async function DELETE(
     const isOwner = user && session.created_by === user.id;
     const hasValidToken = hostToken && session.host_token === hostToken;
 
+    // DEBUG: Log authorization check
+    console.log('[DELETE SESSION] Authorization check:', {
+      sessionId: id,
+      isOwner,
+      ownerCheck: {
+        hasUser: !!user,
+        userId: user?.id,
+        createdBy: session.created_by,
+        matches: user?.id === session.created_by,
+        userIdType: typeof user?.id,
+        createdByType: typeof session.created_by,
+      },
+      hasValidToken,
+      tokenCheck: {
+        hasProvidedToken: !!hostToken,
+        providedTokenLength: hostToken?.length,
+        hasSessionToken: !!session.host_token,
+        sessionTokenLength: session.host_token?.length,
+        tokensMatch: hostToken === session.host_token,
+      },
+      authorized: isOwner || hasValidToken,
+    });
+
     if (!isOwner && !hasValidToken) {
       return NextResponse.json(
         { error: 'Unauthorized to delete this session' },
@@ -207,24 +252,101 @@ export async function DELETE(
     }
 
     // Call cascade delete function
+    console.log('[DELETE SESSION] Calling RPC delete_session_cascade:', {
+      sessionId: id,
+      timestamp: new Date().toISOString(),
+    });
+
     const { data, error: rpcError } = await supabase.rpc('delete_session_cascade', {
       session_id_param: id
     });
 
-    if (rpcError || !data) {
-      console.error('Error deleting session:', rpcError);
+    // DEBUG: Log RPC result
+    console.log('[DELETE SESSION] RPC result:', {
+      sessionId: id,
+      success: !!data,
+      data,
+      hasError: !!rpcError,
+      errorMessage: rpcError?.message,
+      errorCode: rpcError?.code,
+      errorDetails: rpcError?.details,
+      errorHint: rpcError?.hint,
+      timestamp: new Date().toISOString(),
+    });
+
+    // Handle RPC errors
+    if (rpcError) {
+      console.error('[DELETE SESSION] RPC call failed:', {
+        sessionId: id,
+        error: rpcError.message,
+        code: rpcError.code,
+        details: rpcError.details,
+        hint: rpcError.hint,
+      });
+      return NextResponse.json(
+        {
+          error: 'Failed to delete session',
+          debug: process.env.NODE_ENV === 'development' ? {
+            rpcError: rpcError.message,
+            code: rpcError.code,
+          } : undefined,
+        },
+        { status: 500 }
+      );
+    }
+
+    // Check if RPC function returned success (new JSONB format)
+    if (data && typeof data === 'object' && 'success' in data) {
+      if (!data.success) {
+        console.error('[DELETE SESSION] RPC function reported failure:', {
+          sessionId: id,
+          errorStep: data.error_step,
+          errorMessage: data.error_message,
+          sqlState: data.sql_state,
+        });
+
+        return NextResponse.json(
+          {
+            error: 'Failed to delete session',
+            debug: process.env.NODE_ENV === 'development' ? {
+              step: data.error_step,
+              message: data.error_message,
+              sqlState: data.sql_state,
+            } : undefined,
+          },
+          { status: 500 }
+        );
+      }
+    }
+
+    // For backward compatibility with old function (returns boolean TRUE)
+    if (!data || (typeof data === 'boolean' && !data)) {
+      console.error('[DELETE SESSION] RPC returned false or null:', {
+        sessionId: id,
+        data,
+      });
       return NextResponse.json(
         { error: 'Failed to delete session' },
         { status: 500 }
       );
     }
 
+    console.log('[DELETE SESSION] Success:', {
+      sessionId: id,
+      timestamp: new Date().toISOString(),
+    });
+
     return NextResponse.json({
       success: true,
       message: 'Session deleted successfully'
     });
   } catch (error) {
-    console.error('Error in DELETE /api/sessions/[id]:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error in DELETE /api/sessions/[id]:', {
+      sessionId: id,
+      error: errorMessage,
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
