@@ -42,10 +42,12 @@ export function RecentSessions() {
     const [openMenuId, setOpenMenuId] = useState<string | null>(null);
     const [sessionToDelete, setSessionToDelete] = useState<WorkshopSessionData | null>(null);
     const { user } = useUser();
-    const { sessions: workshopSessions, loading, error } = useWorkshopSessions(user?.id || null);
+    const { sessions: workshopSessions, loading, error, refetch } = useWorkshopSessions(user?.id || null);
     const { deleteSession, isDeleting } = useDeleteSession();
 
-    const sessions = workshopSessions;
+    // Limit to 5 sessions for display
+    const sessions = workshopSessions.slice(0, 5);
+    const hasMoreSessions = workshopSessions.length > 5;
 
     const getSessionUrl = (session: WorkshopSessionData) => {
         if (session.tool_type === 'voting-board') {
@@ -87,6 +89,9 @@ export function RecentSessions() {
         if (result.success) {
             toast.success('Session deleted successfully');
             setSessionToDelete(null);
+
+            // Force immediate refetch to update the list
+            refetch();
         } else {
             const errorMessage = result.error || 'Failed to delete session. Please try again.';
             const userMessage = getUserFriendlyError(errorMessage);
@@ -134,7 +139,8 @@ export function RecentSessions() {
                 </div>
             </div>
 
-            <div className="overflow-x-auto">
+            {/* Fixed height container for exactly 5 sessions */}
+            <div className="overflow-x-auto" style={{ minHeight: sessions.length === 0 ? 'auto' : '520px' }}>
                 {sessions.length > 0 ? (
                     <div className="divide-y divide-gray-100">
                         {sessions.map((session) => {
@@ -292,7 +298,8 @@ export function RecentSessions() {
                 )}
             </div>
 
-            {sessions.length > 0 && (
+            {/* Only show "View All Sessions" when there are more than 5 sessions */}
+            {hasMoreSessions && (
                 <div className="p-4 border-t border-gray-100 bg-gray-50/50 text-center">
                     <Link href="/sessions" className="text-sm text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-1">
                         View All Sessions <ArrowRight className="w-3 h-3" />

@@ -12,6 +12,12 @@ export function useWorkshopSessions(userId: string | null) {
   const [sessions, setSessions] = useState<WorkshopSessionData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refetchTrigger, setRefetchTrigger] = useState(0);
+
+  // Expose refetch function
+  const refetch = () => {
+    setRefetchTrigger(prev => prev + 1);
+  };
 
   useEffect(() => {
     if (!userId) {
@@ -114,7 +120,7 @@ export function useWorkshopSessions(userId: string | null) {
       pfParticipantsChannel.unsubscribe();
       clearInterval(pollInterval);
     };
-  }, [userId]);
+  }, [userId, refetchTrigger]);
 
-  return { sessions, loading, error };
+  return { sessions, loading, error, refetch };
 }

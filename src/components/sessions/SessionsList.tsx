@@ -49,12 +49,15 @@ export function SessionsList({
   const handleDelete = async () => {
     if (!sessionToDelete) return;
 
-    const result = await deleteSession(sessionToDelete.id);
+    const sessionId = sessionToDelete.id;
+    const result = await deleteSession(sessionId);
 
     if (result.success) {
       toast.success('Session deleted successfully');
       setSessionToDelete(null);
-      onRefetch();
+
+      // Force immediate refetch to update the list
+      await onRefetch();
     } else {
       const errorMessage = result.error || 'Failed to delete session. Please try again.';
       const userMessage = getUserFriendlyError(errorMessage);
