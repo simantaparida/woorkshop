@@ -26,12 +26,20 @@ export default function NewProblemFramingPage() {
 
     try {
       // Get or create participant ID
-      let participantId = localStorage.getItem('pf_participant_id');
+      // For authenticated users, use their user.id to ensure consistency
+      // For anonymous users, use a UUID stored in localStorage
+      let participantId: string;
 
-      if (!participantId) {
-        participantId = crypto.randomUUID();
-        localStorage.setItem('pf_participant_id', participantId);
+      if (user?.id) {
+        // Authenticated user - use their user ID
+        participantId = user.id;
+      } else {
+        // Anonymous user - get or create UUID
+        participantId = localStorage.getItem('pf_participant_id') || crypto.randomUUID();
       }
+
+      // Always store to ensure sync
+      localStorage.setItem('pf_participant_id', participantId);
 
       // Save name to localStorage
       localStorage.setItem('pf_participant_name', data.facilitatorName);

@@ -147,27 +147,34 @@ export async function PATCH(
   }
 }
 
-// DELETE /api/sessions/[id] - Delete session
+// DELETE /api/sessions/[id] - Delete session with cascade
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const { id } = params;
+
+    // Get authenticated user (for new sessions module)
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // For backward compatibility, also check for hostToken in query params or body
     const { searchParams } = new URL(request.url);
-    const hostToken = searchParams.get('host_token');
+    let hostToken = searchParams.get('host_token');
 
     if (!hostToken) {
-      return NextResponse.json(
-        { error: 'Host token is required' },
-        { status: 401 }
-      );
+      try {
+        const body = await request.json();
+        hostToken = body.hostToken;
+      } catch {
+        // No body, that's okay if we have authenticated user
+      }
     }
 
-    // Verify host token
+    // Fetch session to verify ownership
     const { data: session, error: fetchError } = await supabase
       .from('sessions_unified')
-      .select('id, host_token')
+      .select('id, host_token, created_by')
       .eq('id', id)
       .single();
 
@@ -185,28 +192,34 @@ export async function DELETE(
       );
     }
 
-    if (session.host_token !== hostToken) {
+    // Verify authorization: either user owns session OR has valid host token
+    const isOwner = user && session.created_by === user.id;
+    const hasValidToken = hostToken && session.host_token === hostToken;
+
+    if (!isOwner && !hasValidToken) {
       return NextResponse.json(
-        { error: 'Invalid host token' },
+        { error: 'Unauthorized to delete this session' },
         { status: 403 }
       );
     }
 
-    // Delete session (cascade will handle players, features, votes)
-    const { error: deleteError } = await supabase
-      .from('sessions_unified')
-      .delete()
-      .eq('id', id);
+    // Call cascade delete function
+    const { data, error: rpcError } = await supabase.rpc('delete_session_cascade', {
+      session_id_param: id
+    });
 
-    if (deleteError) {
-      console.error('Error deleting session:', deleteError);
+    if (rpcError || !data) {
+      console.error('Error deleting session:', rpcError);
       return NextResponse.json(
         { error: 'Failed to delete session' },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({
+      success: true,
+      message: 'Session deleted successfully'
+    });
   } catch (error) {
     console.error('Error in DELETE /api/sessions/[id]:', error);
     return NextResponse.json(

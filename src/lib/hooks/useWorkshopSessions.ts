@@ -4,6 +4,10 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import type { WorkshopSessionData } from '@/types';
 
+/**
+ * Hook to fetch recent sessions (last 5) for a user
+ * Replaces workshop-based session fetching with direct session management
+ */
 export function useWorkshopSessions(userId: string | null) {
   const [sessions, setSessions] = useState<WorkshopSessionData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,7 +50,7 @@ export function useWorkshopSessions(userId: string | null) {
 
     // Subscribe to sessions_unified changes for the user
     const sessionsChannel = supabase
-      .channel(`workshop_sessions:${userId}`)
+      .channel(`recent_sessions:${userId}`)
       .on(
         'postgres_changes',
         {
@@ -56,12 +60,12 @@ export function useWorkshopSessions(userId: string | null) {
           filter: `created_by=eq.${userId}`,
         },
         () => {
-          console.log('Session updated, refetching...');
+          console.log('Session updated, refetching recent sessions...');
           fetchSessions();
         }
       )
       .subscribe((status) => {
-        console.log('Workshop sessions subscription status:', status);
+        console.log('Recent sessions subscription status:', status);
       });
 
     // Subscribe to players changes (affects participant counts)
@@ -81,15 +85,33 @@ export function useWorkshopSessions(userId: string | null) {
       )
       .subscribe();
 
-    // Polling fallback every 3 seconds
+    // Subscribe to problem framing participants changes
+    const pfParticipantsChannel = supabase
+      .channel(`pf_participants:${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'pf_session_participants',
+        },
+        () => {
+          console.log('PF participant updated, refetching sessions...');
+          fetchSessions();
+        }
+      )
+      .subscribe();
+
+    // Polling fallback every 30 seconds
     const pollInterval = setInterval(() => {
       fetchSessions();
-    }, 3000);
+    }, 30000);
 
     return () => {
       isSubscribed = false;
       sessionsChannel.unsubscribe();
       playersChannel.unsubscribe();
+      pfParticipantsChannel.unsubscribe();
       clearInterval(pollInterval);
     };
   }, [userId]);

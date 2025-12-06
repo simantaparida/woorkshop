@@ -197,15 +197,15 @@ export function RecentSessions() {
                             <Clock className="w-6 h-6 text-gray-400" />
                         </div>
                         <h3 className="text-sm font-medium text-gray-900">No sessions found</h3>
-                        <p className="text-sm text-gray-500 mt-1">Get started by creating a new workshop</p>
+                        <p className="text-sm text-gray-500 mt-1">Get started by creating a new session</p>
                     </div>
                 )}
             </div>
 
             {sessions.length > 0 && (
                 <div className="p-4 border-t border-gray-100 bg-gray-50/50 text-center">
-                    <Link href="/workshops" className="text-sm text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-1">
-                        View All Workshops <ArrowRight className="w-3 h-3" />
+                    <Link href="/sessions" className="text-sm text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-1">
+                        View All Sessions <ArrowRight className="w-3 h-3" />
                     </Link>
                 </div>
             )}

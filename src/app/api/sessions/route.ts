@@ -1,34 +1,76 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase/client';
-import { nanoid } from 'nanoid';
-import type { ToolType } from '@/types';
+import { getRelativeTime } from '@/lib/utils/date';
+import type { SessionListItem, SessionsResponse, ToolType } from '@/types';
 
-// GET /api/sessions - List sessions (optionally filtered by workshop_id or tool_type)
+// GET /api/sessions - Get user's sessions with filters
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const workshopId = searchParams.get('workshop_id');
-    const toolType = searchParams.get('tool_type');
+    const userId = searchParams.get('userId');
+    const toolType = searchParams.get('toolType') || 'all';
+    const status = searchParams.get('status') || 'all';
+    const search = searchParams.get('search') || '';
+    const sortBy = searchParams.get('sortBy') || 'newest';
+    const limit = parseInt(searchParams.get('limit') || '20');
+    const offset = parseInt(searchParams.get('offset') || '0');
 
-    let query = supabase
-      .from('sessions_unified')
-      .select(`
-        *,
-        workshop:workshops(id, title, project:projects(id, title))
-      `)
-      .order('created_at', { ascending: false });
-
-    // Filter by workshop_id if provided
-    if (workshopId) {
-      query = query.eq('workshop_id', workshopId);
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'User ID is required' },
+        { status: 400 }
+      );
     }
 
-    // Filter by tool_type if provided
-    if (toolType) {
+    // Build base query
+    let query = supabase
+      .from('sessions_unified')
+      .select('*', { count: 'exact' })
+      .eq('created_by', userId);
+
+    // Apply tool type filter
+    if (toolType !== 'all') {
       query = query.eq('tool_type', toolType);
     }
 
-    const { data: sessions, error } = await query;
+    // Apply status filter
+    if (status !== 'all') {
+      // Map UI status to database status
+      const statusMap: Record<string, string[]> = {
+        'open': ['open', 'setup'],
+        'playing': ['playing', 'input', 'review', 'finalize'],
+        'results': ['results', 'summary'],
+        'completed': ['completed']
+      };
+
+      const dbStatuses = statusMap[status] || [status];
+      query = query.in('status', dbStatuses);
+    }
+
+    // Apply search filter
+    if (search) {
+      query = query.ilike('title', `%${search}%`);
+    }
+
+    // Apply sorting
+    switch (sortBy) {
+      case 'oldest':
+        query = query.order('created_at', { ascending: true });
+        break;
+      case 'alphabetical':
+        query = query.order('title', { ascending: true });
+        break;
+      case 'newest':
+      default:
+        query = query.order('updated_at', { ascending: false });
+        break;
+    }
+
+    // Apply pagination
+    query = query.range(offset, offset + limit - 1);
+
+    // Execute query
+    const { data: sessions, error, count } = await query;
 
     if (error) {
       console.error('Error fetching sessions:', error);
@@ -38,129 +80,62 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ sessions });
+    // Enrich sessions with participant counts
+    const enrichedSessions: SessionListItem[] = await Promise.all(
+      (sessions || []).map(async (session: any) => {
+        let participantCount = 0;
+
+        // Get participant count based on tool type
+        if (session.tool_type === 'voting-board') {
+          const { count } = await supabase
+            .from('players')
+            .select('*', { count: 'exact', head: true })
+            .eq('session_id', session.id);
+          participantCount = count || 0;
+        } else if (session.tool_type === 'problem-framing') {
+          const { count } = await supabase
+            .from('pf_session_participants')
+            .select('*', { count: 'exact', head: true })
+            .eq('session_id', session.id);
+          participantCount = count || 0;
+        }
+
+        // Map database status to UI status
+        let uiStatus: 'open' | 'playing' | 'results' | 'completed' = 'open';
+        if (['playing', 'input', 'review', 'finalize'].includes(session.status)) {
+          uiStatus = 'playing';
+        } else if (['results', 'summary'].includes(session.status)) {
+          uiStatus = 'results';
+        } else if (session.status === 'completed') {
+          uiStatus = 'completed';
+        }
+
+        // Calculate relative time
+        const lastActivityTime = getRelativeTime(session.updated_at);
+
+        return {
+          id: session.id,
+          title: session.title,
+          description: session.description,
+          tool_type: session.tool_type,
+          status: uiStatus,
+          created_at: session.created_at,
+          updated_at: session.updated_at,
+          completed_at: session.completed_at,
+          participantCount,
+          lastActivityTime,
+        };
+      })
+    );
+
+    const response: SessionsResponse = {
+      sessions: enrichedSessions,
+      total: count || 0,
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
     console.error('Error in GET /api/sessions:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
-
-// POST /api/sessions - Create a new session
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const {
-      title,
-      description,
-      created_by,
-      workshop_id,
-      tool_type = 'voting-board',
-      session_config = {},
-      host_name,
-    } = body;
-
-    // Validation
-    if (!title || !title.trim()) {
-      return NextResponse.json(
-        { error: 'Session title is required' },
-        { status: 400 }
-      );
-    }
-
-    if (!host_name || !host_name.trim()) {
-      return NextResponse.json(
-        { error: 'Host name is required' },
-        { status: 400 }
-      );
-    }
-
-    // Validate tool_type
-    const validToolTypes: ToolType[] = ['problem-framing', 'voting-board', 'rice', 'moscow'];
-    if (!validToolTypes.includes(tool_type)) {
-      return NextResponse.json(
-        { error: 'Invalid tool type' },
-        { status: 400 }
-      );
-    }
-
-    // If workshop_id is provided, verify it exists
-    if (workshop_id) {
-      const { data: workshop, error: workshopError } = await supabase
-        .from('workshops')
-        .select('id')
-        .eq('id', workshop_id)
-        .single();
-
-      if (workshopError || !workshop) {
-        return NextResponse.json(
-          { error: 'Workshop not found' },
-          { status: 404 }
-        );
-      }
-    }
-
-    // Generate host token
-    const hostToken = nanoid(32);
-
-    // Create session
-    const { data: session, error } = await supabase
-      .from('sessions_unified')
-      .insert({
-        title: title.trim(),
-        description: description?.trim() || null,
-        created_by: created_by?.trim() || null,
-        workshop_id: workshop_id || null,
-        tool_type,
-        session_config,
-        status: 'open',
-        host_token: hostToken,
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error creating session:', error);
-      return NextResponse.json(
-        { error: 'Failed to create session' },
-        { status: 500 }
-      );
-    }
-
-    // Create host player
-    const { data: player, error: playerError } = await supabase
-      .from('players')
-      .insert({
-        session_id: session.id,
-        name: host_name.trim(),
-        is_host: true,
-      })
-      .select()
-      .single();
-
-    if (playerError) {
-      console.error('Error creating host player:', playerError);
-      // Rollback session creation
-      await supabase.from('sessions_unified').delete().eq('id', session.id);
-      return NextResponse.json(
-        { error: 'Failed to create host player' },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json(
-      {
-        session,
-        sessionId: session.id,
-        hostToken,
-        playerId: player.id,
-      },
-      { status: 201 }
-    );
-  } catch (error) {
-    console.error('Error in POST /api/sessions:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

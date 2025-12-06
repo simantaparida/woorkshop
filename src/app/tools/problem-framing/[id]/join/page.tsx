@@ -10,6 +10,7 @@ import { SessionTimeline } from '@/components/problem-framing/SessionTimeline';
 import { Button } from '@/components/ui/Button';
 import { useProblemFramingSession } from '@/lib/hooks/useProblemFramingSession';
 import { Users, ArrowRight, FileText, Link as LinkIcon, Image as ImageIcon, Paperclip, CheckCircle2, ChevronLeft, Copy } from 'lucide-react';
+import { supabase } from '@/lib/supabase/client';
 
 export default function JoinPage() {
   const params = useParams();
@@ -24,6 +25,26 @@ export default function JoinPage() {
 
   useEffect(() => {
     setIsClient(true);
+
+    // Sync localStorage with authenticated user ID
+    const syncParticipantId = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (user?.id) {
+          const storedId = localStorage.getItem('pf_participant_id');
+
+          // If stored ID differs from user ID, update it
+          if (storedId !== user.id) {
+            localStorage.setItem('pf_participant_id', user.id);
+          }
+        }
+      } catch (err) {
+        console.error('Error syncing participant ID:', err);
+      }
+    };
+
+    syncParticipantId();
   }, []);
 
   const participantId = isClient ? localStorage.getItem('pf_participant_id') : null;
@@ -56,6 +77,35 @@ export default function JoinPage() {
       }
     }
   }, [effectiveHasJoined, data, router, sessionId, participantId, isCreator]);
+
+  useEffect(() => {
+    // Migration: Fix existing sessions with mismatched IDs
+    const migrateParticipantId = async () => {
+      if (!data?.session || !isClient) return;
+
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        const storedId = localStorage.getItem('pf_participant_id');
+
+        // If user is authenticated and session creator matches user.id
+        // but localStorage has different ID, fix it
+        if (user?.id && data.session.created_by === user.id && storedId !== user.id) {
+          console.log('Migrating participant ID from', storedId, 'to', user.id);
+          localStorage.setItem('pf_participant_id', user.id);
+
+          // Preserve user name if available
+          const storedName = localStorage.getItem('pf_participant_name');
+          if (!storedName && user.user_metadata?.full_name) {
+            localStorage.setItem('pf_participant_name', user.user_metadata.full_name);
+          }
+        }
+      } catch (err) {
+        console.error('Error migrating participant ID:', err);
+      }
+    };
+
+    migrateParticipantId();
+  }, [data?.session, isClient]);
 
   async function handleJoin(name: string) {
     setJoiningLoading(true);

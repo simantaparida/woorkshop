@@ -634,3 +634,29 @@ export interface ActivityEntry {
   session_id?: string;
   session_title?: string;
 }
+
+// Sessions Module Types
+export interface SessionListItem {
+  id: string;
+  title: string;
+  description: string | null;
+  tool_type: ToolType;
+  status: 'open' | 'playing' | 'results' | 'completed';
+  created_at: string;
+  updated_at: string;
+  completed_at: string | null;
+  participantCount: number;
+  lastActivityTime: string; // Human-readable "2 hours ago"
+}
+
+export interface SessionFilters {
+  toolType: ToolType | 'all';
+  status: 'all' | 'open' | 'playing' | 'results' | 'completed';
+  search: string;
+  sortBy: 'newest' | 'oldest' | 'alphabetical';
+}
+
+export interface SessionsResponse {
+  sessions: SessionListItem[];
+  total: number;
+}

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Home, Users, Wrench, Settings, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { Home, FolderOpen, Wrench, Settings, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
 interface NavItem {
   label: string;
@@ -19,14 +19,14 @@ const navItems: NavItem[] = [
     icon: Home,
   },
   {
+    label: 'Sessions',
+    href: '/sessions',
+    icon: FolderOpen,
+  },
+  {
     label: 'Tools',
     href: '/tools',
     icon: Wrench,
-  },
-  {
-    label: 'Workshops',
-    href: '/workshops',
-    icon: Users,
   },
   {
     label: 'Settings',

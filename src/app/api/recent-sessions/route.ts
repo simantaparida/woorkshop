@@ -16,24 +16,13 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Fetch sessions created by the user with workshop info
+    // Fetch last 5 sessions created by the user (no workshops)
     const { data: sessions, error } = await supabase
       .from('sessions_unified')
-      .select(`
-        id,
-        title,
-        tool_type,
-        status,
-        created_at,
-        updated_at,
-        workshop_id,
-        workshops (
-          title
-        )
-      `)
+      .select('*')
       .eq('created_by', userId)
       .order('updated_at', { ascending: false })
-      .limit(10);
+      .limit(5);
 
     if (error) {
       console.error('Error fetching sessions:', error);
@@ -81,8 +70,8 @@ export async function GET(request: NextRequest) {
           status: uiStatus,
           created_at: session.created_at,
           updated_at: session.updated_at,
-          workshop_id: session.workshop_id,
-          workshop_title: session.workshops?.title,
+          workshop_id: null, // Deprecated - no longer using workshops
+          workshop_title: undefined,
           participantCount: participantCount || 0,
           activitiesCompleted,
           totalActivities,
