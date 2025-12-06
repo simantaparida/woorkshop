@@ -2,13 +2,16 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Vote, BarChart2, Grid2x2, Clock, ArrowRight, MoreVertical, Search, Lightbulb, Users, Radio } from 'lucide-react';
+import { FileText, Vote, BarChart2, Grid2x2, Clock, ArrowRight, MoreVertical, Search, Lightbulb, Users, Radio, ExternalLink, Trash2 } from 'lucide-react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { useUser } from '@/lib/hooks/useUser';
 import { useWorkshopSessions } from '@/lib/hooks/useWorkshopSessions';
+import { useDeleteSession } from '@/lib/hooks/useDeleteSession';
+import { DeleteSessionModal } from '@/components/sessions/DeleteSessionModal';
 import { getToolById } from '@/lib/tools/registry';
-import type { ToolType } from '@/types';
+import type { ToolType, WorkshopSessionData } from '@/types';
 
 type TabType = 'all' | 'workshops' | 'tools';
 
@@ -36,10 +39,60 @@ const getToolColors = (toolType: ToolType) => {
 
 export function RecentSessions() {
     const [activeTab, setActiveTab] = useState<TabType>('all');
+    const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+    const [sessionToDelete, setSessionToDelete] = useState<WorkshopSessionData | null>(null);
     const { user } = useUser();
     const { sessions: workshopSessions, loading, error } = useWorkshopSessions(user?.id || null);
+    const { deleteSession, isDeleting } = useDeleteSession();
 
     const sessions = workshopSessions;
+
+    const getSessionUrl = (session: WorkshopSessionData) => {
+        if (session.tool_type === 'voting-board') {
+            return `/session/${session.id}`;
+        } else if (session.tool_type === 'problem-framing') {
+            return `/tools/problem-framing/${session.id}/join`;
+        }
+        return `/session/${session.id}`;
+    };
+
+    const copyLink = (session: WorkshopSessionData) => {
+        const url = window.location.origin + getSessionUrl(session);
+        navigator.clipboard.writeText(url);
+        toast.success('Link copied to clipboard');
+        setOpenMenuId(null);
+    };
+
+    const getUserFriendlyError = (error: string): string => {
+        if (error.includes('Unauthorized')) {
+            return 'You do not have permission to delete this session.';
+        }
+        if (error.includes('Session not found')) {
+            return 'This session no longer exists.';
+        }
+        if (error.includes('Network error')) {
+            return 'Network error. Please check your connection and try again.';
+        }
+        if (error.includes('Internal server error')) {
+            return 'Server error occurred. Please try again later.';
+        }
+        return error.length < 100 ? error : 'Failed to delete session. Please try again.';
+    };
+
+    const handleDelete = async () => {
+        if (!sessionToDelete) return;
+
+        const result = await deleteSession(sessionToDelete.id);
+
+        if (result.success) {
+            toast.success('Session deleted successfully');
+            setSessionToDelete(null);
+        } else {
+            const errorMessage = result.error || 'Failed to delete session. Please try again.';
+            const userMessage = getUserFriendlyError(errorMessage);
+            toast.error(userMessage);
+        }
+    };
 
     // Loading state
     if (loading) {
@@ -172,18 +225,55 @@ export function RecentSessions() {
                                                 </div>
                                             </div>
                                             
-                                            {/* Right side: Action Button */}
-                                            <div className="flex items-center gap-3 flex-shrink-0">
-                                                <Link href={`/session/${session.id}`}>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        className="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
-                                                    >
-                                                        {session.status === 'completed' ? 'View' : 'Resume'}
-                                                        <ArrowRight className="w-3 h-3 ml-1" />
-                                                    </Button>
-                                                </Link>
+                                            {/* Right side: Actions Menu */}
+                                            <div className="flex items-center gap-3 flex-shrink-0 relative">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        setOpenMenuId(openMenuId === session.id ? null : session.id);
+                                                    }}
+                                                    className="p-1 rounded hover:bg-gray-200 transition-colors"
+                                                >
+                                                    <MoreVertical className="w-4 h-4 text-gray-500" />
+                                                </button>
+
+                                                {openMenuId === session.id && (
+                                                    <>
+                                                        <div
+                                                            className="fixed inset-0 z-10"
+                                                            onClick={() => setOpenMenuId(null)}
+                                                        />
+                                                        <div className="absolute right-0 top-8 z-20 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
+                                                            <Link
+                                                                href={getSessionUrl(session)}
+                                                                className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                                                onClick={() => setOpenMenuId(null)}
+                                                            >
+                                                                <ExternalLink className="w-4 h-4" />
+                                                                {session.status === 'completed' ? 'View' : 'Resume'} Session
+                                                            </Link>
+                                                            <button
+                                                                onClick={() => copyLink(session)}
+                                                                className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 text-left"
+                                                            >
+                                                                <ExternalLink className="w-4 h-4" />
+                                                                Copy Link
+                                                            </button>
+                                                            <hr className="my-1" />
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setOpenMenuId(null);
+                                                                    setSessionToDelete(session);
+                                                                }}
+                                                                className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 text-left"
+                                                            >
+                                                                <Trash2 className="w-4 h-4" />
+                                                                Delete Session
+                                                            </button>
+                                                        </div>
+                                                    </>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -209,6 +299,16 @@ export function RecentSessions() {
                     </Link>
                 </div>
             )}
+
+            {/* Delete confirmation modal */}
+            <DeleteSessionModal
+                isOpen={!!sessionToDelete}
+                onClose={() => setSessionToDelete(null)}
+                onConfirm={handleDelete}
+                sessionTitle={sessionToDelete?.title || ''}
+                participantCount={sessionToDelete?.participantCount || 0}
+                isDeleting={isDeleting}
+            />
         </section>
     );
 }

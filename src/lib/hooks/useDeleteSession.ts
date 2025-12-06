@@ -2,27 +2,54 @@
 
 import { useState } from 'react';
 
+interface DeleteSessionResult {
+  success: boolean;
+  error?: string;
+}
+
 export function useDeleteSession() {
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const deleteSession = async (sessionId: string): Promise<boolean> => {
+  const deleteSession = async (sessionId: string): Promise<DeleteSessionResult> => {
     setIsDeleting(true);
 
     try {
       const response = await fetch(`/api/sessions/${sessionId}`, {
         method: 'DELETE',
+        credentials: 'include',
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        console.error('Delete failed:', error);
-        return false;
+        const errorData = await response.json();
+        const errorMessage = errorData.error || 'Failed to delete session';
+
+        console.error('Delete failed:', errorMessage, {
+          sessionId,
+          status: response.status,
+          statusText: response.statusText,
+        });
+
+        return {
+          success: false,
+          error: errorMessage
+        };
       }
 
-      return true;
+      return { success: true };
     } catch (error) {
-      console.error('Error deleting session:', error);
-      return false;
+      const errorMessage = error instanceof Error
+        ? error.message
+        : 'Network error occurred';
+
+      console.error('Error deleting session:', {
+        sessionId,
+        error: errorMessage,
+      });
+
+      return {
+        success: false,
+        error: errorMessage
+      };
     } finally {
       setIsDeleting(false);
     }

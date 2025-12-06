@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import { MoreVertical, Users, Radio, Check, Clock, Lightbulb, Vote, BarChart2, Grid2x2, ExternalLink, Trash2 } from 'lucide-react';
 import type { SessionListItem } from '@/types';
 
@@ -78,6 +79,7 @@ export function SessionCard({ session, onDelete }: SessionCardProps) {
   const copyLink = () => {
     const url = window.location.origin + getSessionUrl();
     navigator.clipboard.writeText(url);
+    toast.success('Link copied to clipboard');
     setShowMenu(false);
   };
 

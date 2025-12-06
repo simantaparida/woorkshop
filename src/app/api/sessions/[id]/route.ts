@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { getSupabaseServer } from '@/lib/supabase/server';
 
 // GET /api/sessions/[id] - Get session with context (workshop, project)
 export async function GET(
@@ -8,6 +8,7 @@ export async function GET(
 ) {
   try {
     const { id } = params;
+    const supabase = getSupabaseServer();
 
     const { data: session, error } = await supabase
       .from('sessions_unified')
@@ -55,6 +56,7 @@ export async function PATCH(
 ) {
   try {
     const { id } = params;
+    const supabase = getSupabaseServer();
     const body = await request.json();
     const { title, description, status, workshop_id, session_config } = body;
 
@@ -154,6 +156,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = params;
+    const supabase = getSupabaseServer();
 
     // Get authenticated user (for new sessions module)
     const { data: { user } } = await supabase.auth.getUser();
