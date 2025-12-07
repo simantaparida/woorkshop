@@ -8,6 +8,7 @@ import { SessionTimeline } from '@/components/problem-framing/SessionTimeline';
 import { FinalStatementEditor } from '@/components/problem-framing/FinalStatementEditor';
 import { StatementCard } from '@/components/problem-framing/StatementCard';
 import { useProblemFramingSession } from '@/lib/hooks/useProblemFramingSession';
+import { supabase } from '@/lib/supabase/client';
 import { AlertCircle, CheckCircle2, FileText } from 'lucide-react';
 
 export default function FinalizePage() {
@@ -16,9 +17,69 @@ export default function FinalizePage() {
   const sessionId = params.id as string;
   const { data, loading } = useProblemFramingSession(sessionId);
   const [finalizing, setFinalizing] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
-  const participantId = typeof window !== 'undefined' ? localStorage.getItem('pf_participant_id') : null;
-  const participantName = typeof window !== 'undefined' ? localStorage.getItem('pf_participant_name') : null;
+  // Sync localStorage with authenticated user ID on mount
+  useEffect(() => {
+    setIsClient(true);
+
+    const syncParticipantId = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (user?.id) {
+          const storedId = localStorage.getItem('pf_participant_id');
+
+          // If stored ID differs from user ID, update it
+          if (storedId !== user.id) {
+            localStorage.setItem('pf_participant_id', user.id);
+          }
+
+          // Also ensure name is set
+          const storedName = localStorage.getItem('pf_participant_name');
+          if (!storedName && user.user_metadata?.full_name) {
+            localStorage.setItem('pf_participant_name', user.user_metadata.full_name);
+          }
+        }
+      } catch (err) {
+        console.error('Error syncing participant ID:', err);
+      }
+    };
+
+    syncParticipantId();
+  }, []);
+
+  // Also sync when session data loads (in case session was created by this user)
+  useEffect(() => {
+    if (!data?.session || !isClient) return;
+
+    const migrateParticipantId = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        const storedId = localStorage.getItem('pf_participant_id');
+
+        // If user is authenticated and session creator matches user.id
+        // but localStorage has different ID, fix it
+        if (user?.id && data.session.created_by === user.id && storedId !== user.id) {
+          console.log('Migrating participant ID from', storedId, 'to', user.id);
+          localStorage.setItem('pf_participant_id', user.id);
+
+          // Preserve user name if available
+          const storedName = localStorage.getItem('pf_participant_name');
+          if (!storedName && user.user_metadata?.full_name) {
+            localStorage.setItem('pf_participant_name', user.user_metadata.full_name);
+          }
+        }
+      } catch (err) {
+        console.error('Error migrating participant ID:', err);
+      }
+    };
+
+    migrateParticipantId();
+  }, [data?.session, isClient]);
+
+  const participantId = isClient ? localStorage.getItem('pf_participant_id') : null;
+  const participantName = isClient ? localStorage.getItem('pf_participant_name') : null;
 
   const currentParticipant = data?.participants.find(
     (p) => p.participant_id === participantId
@@ -27,15 +88,15 @@ export default function FinalizePage() {
   const isCreator = data?.session?.created_by === participantId;
   const isFacilitator = currentParticipant?.is_facilitator || isCreator || false;
 
-  // Redirect non-facilitators
+  // Redirect non-facilitators (only after client-side sync is complete)
   useEffect(() => {
-    if (!loading && data && !isFacilitator) {
+    if (!loading && data && isClient && !isFacilitator) {
       toast.error('Access restricted', {
         description: 'Only the facilitator can create the final statement.',
       });
       router.push(`/tools/problem-framing/${sessionId}/review`);
     }
-  }, [loading, data, isFacilitator, router, sessionId]);
+  }, [loading, data, isFacilitator, router, sessionId, isClient]);
 
   async function handleFinalize(statement: string) {
     if (!participantId || !participantName) {

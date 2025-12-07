@@ -126,27 +126,27 @@ export function useProblemFramingSession(sessionId: string): UseProblemFramingSe
     // Subscribe to real-time changes
     const channel = supabase
       .channel(`pf_session:${sessionId}`)
-      // Session changes
+      // Session changes (sessions_unified table - renamed from tool_sessions in migration 015)
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'tool_sessions',
+          table: 'sessions_unified',
           filter: `id=eq.${sessionId}`,
         },
         () => {
           fetchData();
         }
       )
-      // Participant changes
+      // Participant changes (column renamed from tool_session_id to session_id in migration 015)
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
           table: 'pf_session_participants',
-          filter: `tool_session_id=eq.${sessionId}`,
+          filter: `session_id=eq.${sessionId}`,
         },
         () => {
           fetchData();
@@ -159,7 +159,7 @@ export function useProblemFramingSession(sessionId: string): UseProblemFramingSe
           event: '*',
           schema: 'public',
           table: 'pf_individual_statements',
-          filter: `tool_session_id=eq.${sessionId}`,
+          filter: `session_id=eq.${sessionId}`,
         },
         () => {
           fetchData();
@@ -184,7 +184,7 @@ export function useProblemFramingSession(sessionId: string): UseProblemFramingSe
           event: '*',
           schema: 'public',
           table: 'pf_final_statement',
-          filter: `tool_session_id=eq.${sessionId}`,
+          filter: `session_id=eq.${sessionId}`,
         },
         () => {
           fetchData();

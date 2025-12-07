@@ -113,6 +113,7 @@ CREATE POLICY "workshops_delete_policy"
 DROP POLICY IF EXISTS "pf_participants_select_policy" ON pf_session_participants;
 DROP POLICY IF EXISTS "pf_participants_insert_policy" ON pf_session_participants;
 DROP POLICY IF EXISTS "pf_participants_update_policy" ON pf_session_participants;
+DROP POLICY IF EXISTS "pf_participants_delete_policy" ON pf_session_participants;
 
 -- SELECT: Anyone can view participants (guests need this)
 CREATE POLICY "pf_participants_select_policy"
