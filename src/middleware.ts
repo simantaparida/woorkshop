@@ -1,13 +1,45 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { rateLimiters, getClientIdentifier, createRateLimitResponse } from '@/lib/rate-limit';
 
 /**
- * Middleware to refresh Supabase auth tokens and pass them to Server Components.
- * This ensures that expired tokens are automatically refreshed without user action.
+ * Middleware to:
+ * 1. Apply rate limiting to protect against abuse
+ * 2. Refresh Supabase auth tokens and pass them to Server Components
  *
  * @see https://supabase.com/docs/guides/auth/server-side/nextjs
  */
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // ==========================================================
+  // RATE LIMITING
+  // ==========================================================
+
+  // Apply strict rate limiting to auth endpoints
+  if (pathname.startsWith('/auth/') || pathname.startsWith('/api/auth/')) {
+    const clientId = getClientIdentifier(request);
+    const rateLimitResult = rateLimiters.auth(clientId);
+
+    if (!rateLimitResult.success) {
+      return createRateLimitResponse(rateLimitResult, { limit: 5, window: 60000 });
+    }
+  }
+
+  // Apply moderate rate limiting to API endpoints
+  if (pathname.startsWith('/api/')) {
+    const clientId = getClientIdentifier(request);
+    const rateLimitResult = rateLimiters.api(clientId);
+
+    if (!rateLimitResult.success) {
+      return createRateLimitResponse(rateLimitResult, { limit: 100, window: 60000 });
+    }
+  }
+
+  // ==========================================================
+  // SUPABASE AUTH TOKEN REFRESH
+  // ==========================================================
+
   let supabaseResponse = NextResponse.next({
     request,
   });

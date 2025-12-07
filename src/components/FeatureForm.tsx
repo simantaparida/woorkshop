@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { nanoid } from 'nanoid';
 import { Input } from './ui/Input';
 import { Button } from './ui/Button';
 import { validateFeatureTitle } from '@/lib/utils/validation';
@@ -29,7 +30,7 @@ export function FeatureForm({ features, onChange, maxFeatures = 10 }: FeatureFor
       onChange([
         ...features,
         {
-          id: Math.random().toString(36).substring(7),
+          id: nanoid(),
           title: '',
           description: '',
           referenceLinks: [],

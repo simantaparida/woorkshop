@@ -1,7 +1,26 @@
 import type { Feature, Vote, FeatureWithVotes } from '@/types';
 
+/**
+ * Generate a cryptographically secure token for session authentication
+ * Uses crypto.randomBytes for secure random generation
+ * @returns A 43-character base64url-encoded token
+ */
 export function generateToken(): string {
-  return `${Math.random().toString(36).substring(2, 15)}${Date.now().toString(36)}`;
+  // Check if we're in a Node.js environment (API routes)
+  if (typeof window === 'undefined') {
+    // Server-side: Use Node.js crypto
+    const crypto = require('crypto');
+    return crypto.randomBytes(32).toString('base64url');
+  } else {
+    // Client-side: Use Web Crypto API
+    const array = new Uint8Array(32);
+    crypto.getRandomValues(array);
+    // Convert to base64url format (URL-safe base64)
+    return btoa(String.fromCharCode(...array))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '');
+  }
 }
 
 export function copyToClipboard(text: string): Promise<void> {
