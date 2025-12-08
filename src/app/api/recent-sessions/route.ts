@@ -35,11 +35,24 @@ export async function GET(request: NextRequest) {
     // Enrich sessions with participant counts and activity progress
     const enrichedSessions: WorkshopSessionData[] = await Promise.all(
       (sessions || []).map(async (session: any) => {
-        // Get participant count
-        const { count: participantCount } = await supabase
-          .from('players')
-          .select('*', { count: 'exact', head: true })
-          .eq('session_id', session.id);
+        // Get participant count based on tool type
+        let participantCount = 0;
+
+        if (session.tool_type === 'problem-framing') {
+          // For problem framing, count participants from pf_session_participants
+          const { count } = await supabase
+            .from('pf_session_participants')
+            .select('*', { count: 'exact', head: true })
+            .eq('session_id', session.id);
+          participantCount = count || 0;
+        } else {
+          // For voting board and other tools, count players
+          const { count } = await supabase
+            .from('players')
+            .select('*', { count: 'exact', head: true })
+            .eq('session_id', session.id);
+          participantCount = count || 0;
+        }
 
         // Calculate activity progress based on tool type and session status
         const toolPhases = getToolPhases(session.tool_type as ToolType);

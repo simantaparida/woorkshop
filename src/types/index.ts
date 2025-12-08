@@ -614,7 +614,7 @@ export interface WorkshopSessionData {
   id: string;
   title: string;
   tool_type: ToolType;
-  status: 'open' | 'playing' | 'results' | 'completed';
+  status: 'live' | 'paused' | 'completed';
   created_at: string;
   updated_at: string;
   workshop_id: string | null;
