@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Vote, BarChart2, Grid2x2, Clock, ArrowRight, Lightbulb, Users, Radio, ExternalLink, Trash2, Eye, Link2 } from 'lucide-react';
+import { FileText, Vote, BarChart2, Grid2x2, Clock, ArrowRight, Lightbulb, Users, Radio, Play, Trash2, Eye, Share2 } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
@@ -235,21 +235,21 @@ export function RecentSessions() {
                                                 <Tooltip content={session.status === 'completed' ? 'View Session' : 'Resume Session'}>
                                                     <Link
                                                         href={getSessionUrl(session)}
-                                                        className="p-2 rounded-lg hover:bg-gray-200 transition-colors text-gray-600 hover:text-gray-900"
+                                                        className="inline-flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-200 transition-colors text-gray-600 hover:text-gray-900"
                                                     >
                                                         {session.status === 'completed' ? (
                                                             <Eye className="w-4 h-4" />
                                                         ) : (
-                                                            <ExternalLink className="w-4 h-4" />
+                                                            <Play className="w-4 h-4" />
                                                         )}
                                                     </Link>
                                                 </Tooltip>
-                                                <Tooltip content="Copy Link">
+                                                <Tooltip content="Share Link">
                                                     <button
                                                         onClick={() => copyLink(session)}
-                                                        className="p-2 rounded-lg hover:bg-gray-200 transition-colors text-gray-600 hover:text-gray-900"
+                                                        className="inline-flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-200 transition-colors text-gray-600 hover:text-gray-900"
                                                     >
-                                                        <Link2 className="w-4 h-4" />
+                                                        <Share2 className="w-4 h-4" />
                                                     </button>
                                                 </Tooltip>
                                                 <Tooltip content="Delete Session">
@@ -258,7 +258,7 @@ export function RecentSessions() {
                                                             e.stopPropagation();
                                                             setSessionToDelete(session);
                                                         }}
-                                                        className="p-2 rounded-lg hover:bg-red-100 transition-colors text-gray-600 hover:text-red-600"
+                                                        className="inline-flex items-center justify-center w-8 h-8 rounded-lg hover:bg-red-100 transition-colors text-gray-600 hover:text-red-600"
                                                     >
                                                         <Trash2 className="w-4 h-4" />
                                                     </button>
