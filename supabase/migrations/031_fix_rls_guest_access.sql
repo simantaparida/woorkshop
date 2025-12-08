@@ -125,16 +125,11 @@ CREATE POLICY "pf_participants_insert_policy"
   ON pf_session_participants FOR INSERT
   WITH CHECK (true);
 
--- UPDATE: Session owners or facilitators can update
+-- UPDATE: Anyone can update (server-side validation in application)
+-- This allows guest users to update their has_submitted status
 CREATE POLICY "pf_participants_update_policy"
   ON pf_session_participants FOR UPDATE
-  USING (
-    is_facilitator = true
-    OR session_id IN (
-      SELECT id FROM sessions_unified
-      WHERE created_by = auth.uid()::text
-    )
-  );
+  USING (true);
 
 -- DELETE: Session owners only
 CREATE POLICY "pf_participants_delete_policy"
