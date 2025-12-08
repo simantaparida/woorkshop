@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Vote, BarChart2, Grid2x2, Clock, ArrowRight, MoreVertical, Search, Lightbulb, Users, Radio, ExternalLink, Trash2 } from 'lucide-react';
+import { FileText, Vote, BarChart2, Grid2x2, Clock, ArrowRight, Lightbulb, Users, Radio, ExternalLink, Trash2, Eye, Link2 } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
+import { Tooltip } from '@/components/ui/Tooltip';
 import { useUser } from '@/lib/hooks/useUser';
 import { useWorkshopSessions } from '@/lib/hooks/useWorkshopSessions';
 import { useDeleteSession } from '@/lib/hooks/useDeleteSession';
@@ -39,7 +40,6 @@ const getToolColors = (toolType: ToolType) => {
 
 export function RecentSessions() {
     const [activeTab, setActiveTab] = useState<TabType>('all');
-    const [openMenuId, setOpenMenuId] = useState<string | null>(null);
     const [sessionToDelete, setSessionToDelete] = useState<WorkshopSessionData | null>(null);
     const { user } = useUser();
     const { sessions: workshopSessions, loading, error, refetch } = useWorkshopSessions(user?.id || null);
@@ -62,7 +62,6 @@ export function RecentSessions() {
         const url = window.location.origin + getSessionUrl(session);
         navigator.clipboard.writeText(url);
         toast.success('Link copied to clipboard');
-        setOpenMenuId(null);
     };
 
     const getUserFriendlyError = (error: string): string => {
@@ -231,55 +230,39 @@ export function RecentSessions() {
                                                 </div>
                                             </div>
                                             
-                                            {/* Right side: Actions Menu */}
-                                            <div className="flex items-center gap-3 flex-shrink-0 relative">
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        setOpenMenuId(openMenuId === session.id ? null : session.id);
-                                                    }}
-                                                    className="p-1 rounded hover:bg-gray-200 transition-colors"
-                                                >
-                                                    <MoreVertical className="w-4 h-4 text-gray-500" />
-                                                </button>
-
-                                                {openMenuId === session.id && (
-                                                    <>
-                                                        <div
-                                                            className="fixed inset-0 z-10"
-                                                            onClick={() => setOpenMenuId(null)}
-                                                        />
-                                                        <div className="absolute right-0 top-8 z-20 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
-                                                            <Link
-                                                                href={getSessionUrl(session)}
-                                                                className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                                                                onClick={() => setOpenMenuId(null)}
-                                                            >
-                                                                <ExternalLink className="w-4 h-4" />
-                                                                {session.status === 'completed' ? 'View' : 'Resume'} Session
-                                                            </Link>
-                                                            <button
-                                                                onClick={() => copyLink(session)}
-                                                                className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 text-left"
-                                                            >
-                                                                <ExternalLink className="w-4 h-4" />
-                                                                Copy Link
-                                                            </button>
-                                                            <hr className="my-1" />
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    setOpenMenuId(null);
-                                                                    setSessionToDelete(session);
-                                                                }}
-                                                                className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 text-left"
-                                                            >
-                                                                <Trash2 className="w-4 h-4" />
-                                                                Delete Session
-                                                            </button>
-                                                        </div>
-                                                    </>
-                                                )}
+                                            {/* Right side: Action Buttons */}
+                                            <div className="flex items-center gap-2 flex-shrink-0">
+                                                <Tooltip content={session.status === 'completed' ? 'View Session' : 'Resume Session'}>
+                                                    <Link
+                                                        href={getSessionUrl(session)}
+                                                        className="p-2 rounded-lg hover:bg-gray-200 transition-colors text-gray-600 hover:text-gray-900"
+                                                    >
+                                                        {session.status === 'completed' ? (
+                                                            <Eye className="w-4 h-4" />
+                                                        ) : (
+                                                            <ExternalLink className="w-4 h-4" />
+                                                        )}
+                                                    </Link>
+                                                </Tooltip>
+                                                <Tooltip content="Copy Link">
+                                                    <button
+                                                        onClick={() => copyLink(session)}
+                                                        className="p-2 rounded-lg hover:bg-gray-200 transition-colors text-gray-600 hover:text-gray-900"
+                                                    >
+                                                        <Link2 className="w-4 h-4" />
+                                                    </button>
+                                                </Tooltip>
+                                                <Tooltip content="Delete Session">
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setSessionToDelete(session);
+                                                        }}
+                                                        className="p-2 rounded-lg hover:bg-red-100 transition-colors text-gray-600 hover:text-red-600"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </Tooltip>
                                             </div>
                                         </div>
                                     </div>
