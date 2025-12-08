@@ -35,48 +35,13 @@ export default function HomePage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 
         {/* Header Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Welcome back, {userName}</h1>
-            <p className="text-gray-500 mt-1">Ready to facilitate your next workshop?</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-              onClick={() => setShowJoinModal(true)}
-            >
-              <Users className="w-4 h-4" />
-              Join Session
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              className="flex items-center gap-2"
-              onClick={() => setShowCreateWorkshopModal(true)}
-            >
-              <Plus className="w-4 h-4" />
-              New Workshop
-            </Button>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Welcome back, {userName}</h1>
+          <p className="text-gray-500 mt-1">Build structured agendas, run activities, and guide your team through productive product workshops.</p>
         </div>
 
         {/* Facilitation Tools */}
         <section>
-          <div className="flex justify-between items-center mb-4">
-            <div>
-              <h2 className="text-xl font-bold text-gray-900">Recommended Tools</h2>
-              <p className="text-gray-500 mt-1">Build structured agendas, run activities, and guide your team through productive product workshops.</p>
-            </div>
-            <Link
-              href="/tools"
-              className="text-sm text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-1"
-            >
-              View All
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
           <ToolsCatalog layout="grid" limit={4} />
         </section>
 

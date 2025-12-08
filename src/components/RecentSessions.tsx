@@ -298,11 +298,11 @@ export function RecentSessions() {
                 )}
             </div>
 
-            {/* Only show "View All Sessions" when there are more than 5 sessions */}
-            {hasMoreSessions && (
+            {/* Always show "View All" button when there are sessions */}
+            {sessions.length > 0 && (
                 <div className="p-4 border-t border-gray-100 bg-gray-50/50 text-center">
                     <Link href="/sessions" className="text-sm text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-1">
-                        View All Sessions <ArrowRight className="w-3 h-3" />
+                        View All <ArrowRight className="w-3 h-3" />
                     </Link>
                 </div>
             )}
