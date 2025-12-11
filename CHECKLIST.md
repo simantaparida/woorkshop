@@ -50,6 +50,8 @@
 
 - [ ] Run `npm run type-check` - no TypeScript errors
 - [ ] Run `npm run lint` - no linting errors
+- [ ] Run `npm run test:run` - all unit tests pass
+- [ ] Run `npm run test:e2e` - all E2E tests pass (optional: requires Playwright setup)
 - [ ] All console.error calls only in catch blocks
 - [ ] No hardcoded URLs or API keys in code
 - [ ] All API routes have proper error handling

@@ -1,5 +1,9 @@
 # UX Works - Feature Prioritization Game
 
+[![CI](https://github.com/YOUR_USERNAME/YOUR_REPO/workflows/CI/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO/actions/workflows/ci.yml)
+[![E2E Tests](https://github.com/YOUR_USERNAME/YOUR_REPO/workflows/E2E%20Tests/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO/actions/workflows/e2e-tests.yml)
+[![Deploy](https://github.com/YOUR_USERNAME/YOUR_REPO/workflows/Deploy%20to%20Vercel/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO/actions/workflows/deploy.yml)
+
 A realtime, multiplayer feature prioritization tool for product and UX teams.
 
 ## Overview
