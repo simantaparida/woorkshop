@@ -5,7 +5,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/Toaster';
 
 const inter = Inter({ subsets: ['latin'] });
-export const comfortaa = Comfortaa({
+const comfortaa = Comfortaa({
   subsets: ['latin'],
   weight: ['700'],
   variable: '--font-comfortaa',

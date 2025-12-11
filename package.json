@@ -51,6 +51,8 @@
     "@vitest/ui": "^4.0.15",
     "autoprefixer": "^10.4.17",
     "dotenv": "^17.2.3",
+    "eslint": "^9.39.1",
+    "eslint-config-next": "^16.0.8",
     "jsdom": "^27.2.0",
     "playwright": "^1.57.0",
     "postcss": "^8.4.33",
