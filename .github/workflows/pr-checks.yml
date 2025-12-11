@@ -1,0 +1,266 @@
+name: PR Quality Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  pr-metadata:
+    name: PR Metadata Check
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+
+    steps:
+      - name: Check PR title
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = context.payload.pull_request.title;
+            const validPrefixes = ['feat:', 'fix:', 'docs:', 'style:', 'refactor:', 'test:', 'chore:', 'perf:'];
+
+            const hasValidPrefix = validPrefixes.some(prefix => title.toLowerCase().startsWith(prefix));
+
+            if (!hasValidPrefix) {
+              core.setFailed(`PR title should start with one of: ${validPrefixes.join(', ')}`);
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `❌ **PR Title Format**\n\nYour PR title should follow conventional commits format:\n\n${validPrefixes.map(p => `- \`${p}\``).join('\n')}\n\nExample: \`feat: add user dashboard\``
+              });
+            } else {
+              core.info('✅ PR title follows conventional commits format');
+            }
+
+      - name: Check PR description
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.pull_request.body || '';
+
+            if (body.length < 20) {
+              core.warning('PR description is very short. Consider adding more details.');
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `⚠️ **PR Description**\n\nYour PR description is quite short. Consider adding:\n\n- 📝 What changes were made\n- 🎯 Why these changes were needed\n- 🧪 How to test the changes\n- 📸 Screenshots (if UI changes)`
+              });
+            }
+
+  size-check:
+    name: PR Size Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check PR size
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+
+            const additions = pr.additions;
+            const deletions = pr.deletions;
+            const changedFiles = pr.changed_files;
+
+            let size = 'small';
+            let label = 'size/S';
+            let emoji = '🟢';
+
+            if (additions + deletions > 1000 || changedFiles > 30) {
+              size = 'extra large';
+              label = 'size/XL';
+              emoji = '🔴';
+            } else if (additions + deletions > 500 || changedFiles > 20) {
+              size = 'large';
+              label = 'size/L';
+              emoji = '🟠';
+            } else if (additions + deletions > 200 || changedFiles > 10) {
+              size = 'medium';
+              label = 'size/M';
+              emoji = '🟡';
+            }
+
+            core.info(`${emoji} PR size: ${size} (+${additions}/-${deletions}, ${changedFiles} files)`);
+
+            // Add size label
+            try {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: [label]
+              });
+            } catch (error) {
+              core.warning('Could not add size label. Labels may not be configured.');
+            }
+
+            // Warn on large PRs
+            if (size === 'extra large') {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `🔴 **Large PR Detected**\n\nThis PR is quite large (+${additions}/-${deletions} lines, ${changedFiles} files).\n\nConsider:\n- Breaking it into smaller PRs\n- Reviewing the scope\n- Adding comprehensive tests\n\nLarge PRs are harder to review and more likely to introduce bugs.`
+              });
+            }
+
+  dependency-check:
+    name: Dependency Changes Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for dependency changes
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+
+            const dependencyFiles = files.filter(file =>
+              file.filename === 'package.json' ||
+              file.filename === 'package-lock.json'
+            );
+
+            if (dependencyFiles.length > 0) {
+              core.info('⚠️  Dependency files changed');
+
+              const comment = `## 📦 Dependency Changes Detected
+
+              The following dependency files were modified:
+              ${dependencyFiles.map(f => `- \`${f.filename}\``).join('\n')}
+
+              **Please ensure:**
+              - [ ] Dependencies are necessary for the feature/fix
+              - [ ] No security vulnerabilities introduced (\`npm audit\`)
+              - [ ] Package versions are pinned appropriately
+              - [ ] Lock file is committed (\`package-lock.json\`)
+
+              **Reviewer:** Pay special attention to new dependencies.`;
+
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }
+
+  test-coverage-check:
+    name: Test Coverage Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for test files
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+
+            const sourceFiles = files.filter(f =>
+              (f.filename.endsWith('.ts') || f.filename.endsWith('.tsx')) &&
+              f.filename.startsWith('src/') &&
+              !f.filename.includes('__tests__') &&
+              !f.filename.includes('.test.') &&
+              !f.filename.includes('.spec.')
+            );
+
+            const testFiles = files.filter(f =>
+              f.filename.includes('__tests__') ||
+              f.filename.includes('.test.') ||
+              f.filename.includes('.spec.')
+            );
+
+            if (sourceFiles.length > 0 && testFiles.length === 0) {
+              core.warning('Source files changed but no test files added');
+
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `⚠️ **Test Coverage Check**\n\n${sourceFiles.length} source file(s) were modified, but no test files were added or updated.\n\nConsider adding tests for:\n${sourceFiles.slice(0, 5).map(f => `- \`${f.filename}\``).join('\n')}${sourceFiles.length > 5 ? `\n- ...and ${sourceFiles.length - 5} more` : ''}`
+              });
+            } else if (testFiles.length > 0) {
+              core.info(`✅ ${testFiles.length} test file(s) included in PR`);
+            }
+
+  conflict-check:
+    name: Merge Conflict Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check for merge conflicts
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+
+            if (pr.mergeable === false) {
+              core.setFailed('This PR has merge conflicts that must be resolved.');
+
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `❌ **Merge Conflicts Detected**\n\nThis PR has merge conflicts with the base branch.\n\nTo resolve:\n\`\`\`bash\ngit checkout ${pr.head.ref}\ngit merge origin/${pr.base.ref}\n# Resolve conflicts\ngit push\n\`\`\``
+              });
+            } else if (pr.mergeable === true) {
+              core.info('✅ No merge conflicts');
+            }
+
+  pr-summary:
+    name: PR Summary
+    runs-on: ubuntu-latest
+    needs: [pr-metadata, size-check, dependency-check, test-coverage-check, conflict-check]
+    if: always()
+
+    steps:
+      - name: Create PR summary
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const jobs = {
+              'PR Metadata': '${{ needs.pr-metadata.result }}',
+              'Size Check': '${{ needs.size-check.result }}',
+              'Dependency Check': '${{ needs.dependency-check.result }}',
+              'Test Coverage': '${{ needs.test-coverage-check.result }}',
+              'Conflict Check': '${{ needs.conflict-check.result }}'
+            };
+
+            let summary = '## 🔍 PR Quality Checks Summary\n\n';
+
+            for (const [job, result] of Object.entries(jobs)) {
+              const emoji = result === 'success' ? '✅' : result === 'failure' ? '❌' : '⚠️';
+              summary += `- ${emoji} ${job}: ${result}\n`;
+            }
+
+            core.summary.addRaw(summary).write();

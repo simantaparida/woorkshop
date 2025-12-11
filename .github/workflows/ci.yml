@@ -1,0 +1,207 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+
+# Cancel in-progress runs of the same workflow
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run TypeScript type check
+        run: npm run type-check
+
+      - name: Check for console errors
+        run: |
+          # Check for console.log in source files (except test files)
+          if grep -r "console\\.log" src --include="*.ts" --include="*.tsx" --exclude-dir=__tests__ | grep -v "// console.log"; then
+            echo "::warning::Found console.log statements in source code"
+          fi
+
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm run test:run
+
+      - name: Generate coverage report
+        run: npm run test:coverage
+
+      - name: Upload coverage to artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 14
+
+      - name: Comment coverage on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            if (fs.existsSync('coverage/coverage-summary.json')) {
+              const coverage = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
+              const total = coverage.total;
+
+              const comment = `## 📊 Test Coverage Report
+
+              | Metric | Coverage |
+              |--------|----------|
+              | **Lines** | ${total.lines.pct}% |
+              | **Statements** | ${total.statements.pct}% |
+              | **Functions** | ${total.functions.pct}% |
+              | **Branches** | ${total.branches.pct}% |
+
+              ${total.lines.pct >= 70 ? '✅' : '⚠️'} Overall coverage: ${total.lines.pct}%
+              `;
+
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }
+
+  build:
+    name: Build Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+      - name: Check build output
+        run: |
+          if [ -d ".next" ]; then
+            echo "✅ Build successful"
+            ls -lh .next
+          else
+            echo "❌ Build failed - .next directory not found"
+            exit 1
+          fi
+
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: Check for vulnerable dependencies
+        run: |
+          npm audit --json > audit-report.json || true
+          if [ -f audit-report.json ]; then
+            CRITICAL=$(cat audit-report.json | jq '.metadata.vulnerabilities.critical // 0')
+            HIGH=$(cat audit-report.json | jq '.metadata.vulnerabilities.high // 0')
+
+            echo "🔒 Security Audit Results:"
+            echo "Critical: $CRITICAL"
+            echo "High: $HIGH"
+
+            if [ "$CRITICAL" -gt "0" ]; then
+              echo "::error::Found $CRITICAL critical vulnerabilities"
+              exit 1
+            fi
+          fi
+
+  all-checks:
+    name: All Checks Passed
+    runs-on: ubuntu-latest
+    needs: [lint, unit-tests, build, security]
+    if: always()
+
+    steps:
+      - name: Check all jobs status
+        run: |
+          if [[ "${{ needs.lint.result }}" == "success" &&
+                "${{ needs.unit-tests.result }}" == "success" &&
+                "${{ needs.build.result }}" == "success" &&
+                "${{ needs.security.result }}" == "success" ]]; then
+            echo "✅ All CI checks passed!"
+            echo "## ✅ All Checks Passed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Linting & Type Check" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Unit Tests" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Build Check" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Security Audit" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Some CI checks failed"
+            echo "## ❌ CI Checks Failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "- Lint: ${{ needs.lint.result }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Unit Tests: ${{ needs.unit-tests.result }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Build: ${{ needs.build.result }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Security: ${{ needs.security.result }}" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
