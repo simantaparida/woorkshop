@@ -15,6 +15,7 @@ export function usePlayers(sessionId: string | null) {
       return;
     }
 
+    const activeSessionId = sessionId; // Capture non-null value
     let isSubscribed = true;
 
     async function fetchPlayers() {
@@ -22,7 +23,7 @@ export function usePlayers(sessionId: string | null) {
         const { data, error } = await supabase
           .from('players')
           .select('*')
-          .eq('session_id', sessionId)
+          .eq('session_id', activeSessionId)
           .order('joined_at', { ascending: true });
 
         if (error) throw error;
@@ -44,14 +45,14 @@ export function usePlayers(sessionId: string | null) {
 
     // Subscribe to realtime updates
     const channel = supabase
-      .channel(`players:${sessionId}`)
+      .channel(`players:${activeSessionId}`)
       .on(
         'postgres_changes',
         {
           event: 'INSERT',
           schema: 'public',
           table: 'players',
-          filter: `session_id=eq.${sessionId}`,
+          filter: `session_id=eq.${activeSessionId}`,
         },
         (payload) => {
           console.log('Player joined:', payload.new);
@@ -70,7 +71,7 @@ export function usePlayers(sessionId: string | null) {
           event: 'DELETE',
           schema: 'public',
           table: 'players',
-          filter: `session_id=eq.${sessionId}`,
+          filter: `session_id=eq.${activeSessionId}`,
         },
         (payload) => {
           console.log('Player left:', payload.old);
@@ -83,7 +84,7 @@ export function usePlayers(sessionId: string | null) {
           event: 'UPDATE',
           schema: 'public',
           table: 'players',
-          filter: `session_id=eq.${sessionId}`,
+          filter: `session_id=eq.${activeSessionId}`,
         },
         (payload) => {
           console.log('Player updated:', payload.new);
@@ -125,12 +126,14 @@ export function usePlayerProgress(sessionId: string | null): {
       return;
     }
 
+    const activeSessionId = sessionId; // Capture non-null value
+
     async function fetchProgress() {
       try {
         const { data: votes, error } = await supabase
           .from('votes')
           .select('player_id, points_allocated')
-          .eq('session_id', sessionId);
+          .eq('session_id', activeSessionId);
 
         if (error) throw error;
 

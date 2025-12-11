@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
       category: feature.category || null,
       effort: null,
       impact: null,
-      reference_links: feature.referenceLinks || [],
+      reference_links: (feature.referenceLinks || []) as any,
     }));
 
     const { error: featuresInsertError } = await supabase

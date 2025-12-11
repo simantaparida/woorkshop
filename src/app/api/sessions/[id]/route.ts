@@ -154,8 +154,8 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const { id } = params;
   try {
-    const { id } = params;
     const supabase = getSupabaseServer();
 
     // Get authenticated user (for new sessions module)

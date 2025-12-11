@@ -51,9 +51,9 @@ export function SessionNav({
   const { showToast } = useToast();
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
 
-  const goal = getSessionGoalById(sessionGoal);
-  const isExpired = isSessionExpired(expiresAt);
-  const timeRemaining = formatTimeRemaining(expiresAt);
+  const goal = getSessionGoalById(sessionGoal ?? null);
+  const isExpired = isSessionExpired(expiresAt ?? null);
+  const timeRemaining = formatTimeRemaining(expiresAt ?? null);
   const currentPhase = currentPhaseProp || getPhaseFromPath(pathname);
 
   // Default phases for voting board - can be customized per tool type

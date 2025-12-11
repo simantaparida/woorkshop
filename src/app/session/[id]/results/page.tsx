@@ -104,7 +104,7 @@ export default function ResultsPage() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${session?.project_name.replace(/[^a-z0-9]/gi, '_')}_results.csv`;
+      a.download = `${(session?.project_name || 'session').replace(/[^a-z0-9]/gi, '_')}_results.csv`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -147,7 +147,7 @@ export default function ResultsPage() {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${session?.project_name.replace(/[^a-z0-9]/gi, '_')}_results.json`;
+    a.download = `${(session?.project_name || 'session').replace(/[^a-z0-9]/gi, '_')}_results.json`;
     document.body.appendChild(a);
     a.click();
     window.URL.revokeObjectURL(url);
@@ -187,7 +187,7 @@ export default function ResultsPage() {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${session?.project_name.replace(/[^a-z0-9]/gi, '_')}_results.md`;
+    a.download = `${(session?.project_name || 'session').replace(/[^a-z0-9]/gi, '_')}_results.md`;
     document.body.appendChild(a);
     a.click();
     window.URL.revokeObjectURL(url);

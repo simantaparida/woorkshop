@@ -15,6 +15,7 @@ export function useSession(sessionId: string | null) {
       return;
     }
 
+    const activeSessionId = sessionId; // Capture non-null value
     let isSubscribed = true;
 
     async function fetchSession() {
@@ -22,7 +23,7 @@ export function useSession(sessionId: string | null) {
         const { data, error} = await supabase
           .from('sessions_unified')
           .select('*')
-          .eq('id', sessionId)
+          .eq('id', activeSessionId)
           .single();
 
         if (error) throw error;
