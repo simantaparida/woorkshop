@@ -1,3 +1,7 @@
+// Import and re-export Database type from generated Supabase types
+import type { Database } from './supabase';
+export type { Database };
+
 // Database types matching Supabase schema
 export type SessionStatus = 'open' | 'playing' | 'results';
 export type WorkshopPhase = 'introduction' | 'discussion' | 'voting' | 'results';
@@ -21,7 +25,8 @@ export interface Workshop {
   updated_at: string;
 }
 
-export interface Database {
+// Removed old Database interface - now imported from supabase.ts
+/* export interface Database {
   public: {
     Tables: {
       sessions: {
@@ -400,7 +405,7 @@ export interface Database {
       };
     };
   };
-}
+} */
 
 // Application types
 export type Session = Database['public']['Tables']['sessions_unified']['Row'];
