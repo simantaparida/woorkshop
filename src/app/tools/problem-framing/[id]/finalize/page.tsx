@@ -9,7 +9,7 @@ import { FinalStatementEditor } from '@/components/problem-framing/FinalStatemen
 import { StatementCard } from '@/components/problem-framing/StatementCard';
 import { useProblemFramingSession } from '@/lib/hooks/useProblemFramingSession';
 import { supabase } from '@/lib/supabase/client';
-import { AlertCircle, FileText } from 'lucide-react';
+import { AlertCircle, FileText, X } from 'lucide-react';
 
 export default function FinalizePage() {
   const params = useParams();
@@ -18,6 +18,7 @@ export default function FinalizePage() {
   const { data, loading } = useProblemFramingSession(sessionId);
   const [finalizing, setFinalizing] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [showTips, setShowTips] = useState(true);
   const hasRedirected = useRef(false);
 
   // Sync localStorage with authenticated user ID on mount
@@ -182,27 +183,63 @@ export default function FinalizePage() {
         </div>
 
         {/* Header */}
-        <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-gray-900 mb-3">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">
             Final Consensus
           </h1>
-          <p className="text-base text-gray-600 max-w-2xl mx-auto">
-            Based on all individual perspectives, craft a final statement that captures the team's shared understanding of the problem.
-          </p>
         </div>
+
+        {/* Tips Section */}
+        {showTips && (
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-8 relative">
+            <button
+              onClick={() => setShowTips(false)}
+              className="absolute top-4 right-4 text-blue-600 hover:text-blue-800 transition-colors"
+              aria-label="Dismiss tips"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="flex gap-3 pr-8">
+              <div className="w-9 h-9 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 text-blue-600">
+                <AlertCircle className="w-5 h-5" />
+              </div>
+              <div className="text-sm text-blue-900">
+                <p className="font-semibold text-sm mb-2">Tips for a great problem statement:</p>
+                <ul className="space-y-1.5 text-xs">
+                  <li className="flex gap-2">
+                    <span className="text-blue-500">•</span>
+                    Synthesize common themes from individual perspectives
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-blue-500">•</span>
+                    Be specific and actionable
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-blue-500">•</span>
+                    Focus on the problem, not the solution
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-blue-500">•</span>
+                    Ensure it resonates with the whole team
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="grid lg:grid-cols-2 gap-8 items-start">
 
           {/* Left: Reference Statements */}
-          <div className="space-y-5">
-            <div className="flex items-center gap-2 pb-3 border-b border-gray-200">
+          <div className="bg-white rounded-xl border border-gray-200 p-5 flex flex-col h-[550px]">
+            <div className="flex items-center gap-2 mb-4">
               <FileText className="w-5 h-5 text-gray-600" />
               <h3 className="text-lg font-semibold text-gray-900">
                 Individual Perspectives ({statements.length})
               </h3>
             </div>
 
-            <div className="bg-gray-50 rounded-xl p-5 border border-gray-200 max-h-[700px] overflow-y-auto">
+            <div className="flex-1 overflow-y-auto pr-2">
               <div className="space-y-4">
                 {statements.map((statement) => (
                   <StatementCard
@@ -218,49 +255,13 @@ export default function FinalizePage() {
           </div>
 
           {/* Right: Final Statement Editor */}
-          <div className="lg:sticky lg:top-8 space-y-5">
-            <div className="mb-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-2">Create the Team's Agreed Problem Statement</h2>
-              <p className="text-gray-600 text-sm">
-                Based on all individual submissions, craft a final statement that captures the team's shared understanding of the problem.
-              </p>
-            </div>
-
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <div className="lg:sticky lg:top-8">
+            <div className="bg-white rounded-xl border border-gray-200 p-5 h-[550px] flex flex-col">
               <FinalStatementEditor
                 initialValue={initialValue}
                 onFinalize={handleFinalize}
                 loading={finalizing}
               />
-            </div>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-5">
-              <div className="flex gap-3">
-                <div className="w-9 h-9 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 text-blue-600">
-                  <AlertCircle className="w-5 h-5" />
-                </div>
-                <div className="text-sm text-blue-900">
-                  <p className="font-semibold text-sm mb-2">Tips for a great problem statement:</p>
-                  <ul className="space-y-1.5 text-xs">
-                    <li className="flex gap-2">
-                      <span className="text-blue-500">•</span>
-                      Synthesize common themes from individual perspectives
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-blue-500">•</span>
-                      Be specific and actionable
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-blue-500">•</span>
-                      Focus on the problem, not the solution
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-blue-500">•</span>
-                      Ensure it resonates with the whole team
-                    </li>
-                  </ul>
-                </div>
-              </div>
             </div>
           </div>
 
