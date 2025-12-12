@@ -553,8 +553,97 @@ export default function LobbyPage() {
             </AnimatePresence>
           )}
 
-          {/* Session Overview & Players - 2 Column Layout (60:40 ratio) */}
-          <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-4 items-start">
+          {/* Session Overview & Players - Single Column Layout */}
+          <div className="space-y-4">
+            {/* Players List */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.4 }}
+              className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col"
+            >
+            <h3 className="text-base font-semibold text-gray-900 mb-3 flex-shrink-0">
+              Players ({players.length})
+            </h3>
+
+            {/* Everyone Ready Message - Host only */}
+            {isHost && currentPlayerId && (() => {
+              const allPlayersReady = players.length > 0 && players.every(p => p.is_ready);
+
+              if (!allPlayersReady) return null;
+
+              return (
+                <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
+                    <p className="text-sm text-green-800 font-medium">
+                      Everyone is ready. Start the voting round.
+                    </p>
+                  </div>
+                </div>
+              );
+            })()}
+
+            <PlayerList players={players} showReadyStatus={true} showTitle={false} />
+
+            {/* Ready Toggle integrated below player list */}
+            {currentPlayerId && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.3 }}
+                className="mt-4 pt-4 border-t border-gray-200 flex-shrink-0"
+              >
+                <div className="flex items-start gap-2.5 mb-3">
+                  <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                    isReady ? 'bg-green-500' : 'bg-gray-300'
+                  }`}>
+                    {isReady && (
+                      <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 mb-0.5">
+                      {isReady ? 'You\'re all set!' : 'Get ready to vote'}
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      {isReady
+                        ? isHost
+                          ? 'All players need to be ready before you can start voting.'
+                          : 'Waiting for the host to begin the voting round.'
+                          : 'Review the features above and mark yourself as ready when you\'re prepared to vote.'}
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={handleToggleReady}
+                  isLoading={togglingReady}
+                  variant={isReady ? 'secondary' : 'primary'}
+                  size="sm"
+                  className="w-full"
+                >
+                  {isReady ? (
+                    <>
+                      <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                      Mark as Not Ready
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      I'm Ready to Vote
+                    </>
+                  )}
+                </Button>
+              </motion.div>
+            )}
+            </motion.div>
+
             {/* Session Details & Features Card */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -708,95 +797,6 @@ export default function LobbyPage() {
                 </div>
               )}
             </div>
-            </motion.div>
-
-            {/* Players List */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.4 }}
-              className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col"
-            >
-            <h3 className="text-base font-semibold text-gray-900 mb-3 flex-shrink-0">
-              Players ({players.length})
-            </h3>
-
-            {/* Everyone Ready Message - Host only */}
-            {isHost && currentPlayerId && (() => {
-              const allPlayersReady = players.length > 0 && players.every(p => p.is_ready);
-              
-              if (!allPlayersReady) return null;
-              
-              return (
-                <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
-                    <p className="text-sm text-green-800 font-medium">
-                      Everyone is ready. Start the voting round.
-                    </p>
-                  </div>
-                </div>
-              );
-            })()}
-
-            <PlayerList players={players} showReadyStatus={true} showTitle={false} />
-
-            {/* Ready Toggle integrated below player list */}
-            {currentPlayerId && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.3 }}
-                className="mt-4 pt-4 border-t border-gray-200 flex-shrink-0"
-              >
-                <div className="flex items-start gap-2.5 mb-3">
-                  <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                    isReady ? 'bg-green-500' : 'bg-gray-300'
-                  }`}>
-                    {isReady && (
-                      <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 mb-0.5">
-                      {isReady ? 'You\'re all set!' : 'Get ready to vote'}
-                    </p>
-                    <p className="text-xs text-gray-600">
-                      {isReady
-                        ? isHost
-                          ? 'All players need to be ready before you can start voting.'
-                          : 'Waiting for the host to begin the voting round.'
-                          : 'Review the features above and mark yourself as ready when you\'re prepared to vote.'}
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  onClick={handleToggleReady}
-                  isLoading={togglingReady}
-                  variant={isReady ? 'secondary' : 'primary'}
-                  size="sm"
-                  className="w-full"
-                >
-                  {isReady ? (
-                    <>
-                      <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                      Mark as Not Ready
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      I'm Ready to Vote
-                    </>
-                  )}
-                </Button>
-              </motion.div>
-            )}
             </motion.div>
           </div>
 
