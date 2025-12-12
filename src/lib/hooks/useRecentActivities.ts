@@ -10,6 +10,12 @@ export function useRecentActivities(userId: string | null, limit: number = 10) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (userId === null) {
+      // Keep loading true if userId hasn't been determined yet
+      // Only set loading to false when userId is explicitly null after user check
+      return;
+    }
+
     if (!userId) {
       setLoading(false);
       setActivities([]);

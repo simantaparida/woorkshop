@@ -20,6 +20,12 @@ export function useWorkshopSessions(userId: string | null) {
   };
 
   useEffect(() => {
+    if (userId === null) {
+      // Keep loading true if userId hasn't been determined yet
+      // Only set loading to false when userId is explicitly null after user check
+      return;
+    }
+
     if (!userId) {
       setLoading(false);
       setSessions([]);
