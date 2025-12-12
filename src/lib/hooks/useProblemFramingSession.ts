@@ -208,6 +208,6 @@ export function useProblemFramingSession(sessionId: string): UseProblemFramingSe
     data,
     loading,
     error,
-    refresh: fetchData,
+    refresh: (async () => { await fetchData(); }) as () => Promise<void>,
   };
 }

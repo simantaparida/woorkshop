@@ -205,7 +205,7 @@ export default function FinalizePage() {
                     key={statement.id}
                     statement={statement}
                     currentParticipantId={participantId || ''}
-                    onPin={() => { }} // No pin functionality on this page
+                    onPin={async () => { }} // No pin functionality on this page
                     showPin={false}
                   />
                 ))}

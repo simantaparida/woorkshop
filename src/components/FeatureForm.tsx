@@ -199,7 +199,7 @@ export function FeatureForm({ features, onChange, maxFeatures = 10 }: FeatureFor
                             e.currentTarget.style.display = 'none';
                           }}
                         />
-                        <span className="text-sm flex-shrink-0">{getLinkTypeIcon(link.type)}</span>
+                        <span className="text-sm flex-shrink-0">{getLinkTypeIcon(link.type as any)}</span>
                         <a
                           href={link.url}
                           target="_blank"

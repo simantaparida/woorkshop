@@ -88,8 +88,8 @@ export default function SettingsPage() {
                                     placeholder="e.g., Alex"
                                     value={hostName}
                                     onChange={(e) => setHostName(e.target.value)}
-                                    helperText="This name will be pre-filled when you create new sessions."
                                 />
+                                <p className="mt-1 text-sm text-gray-500">This name will be pre-filled when you create new sessions.</p>
                             </div>
                             <Button type="submit" size="sm">
                                 <Save className="w-4 h-4 mr-2" />

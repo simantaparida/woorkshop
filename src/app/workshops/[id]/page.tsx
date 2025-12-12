@@ -174,7 +174,7 @@ export default function WorkshopDetailPage() {
             <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
               <div className="divide-y divide-gray-100">
                 {sessions.map((session) => {
-                  const tool = getToolById(session.tool_type);
+                  const tool = getToolById(session.tool_type as any);
                   const activitiesCompleted = session.activitiesCompleted || 1;
                   const totalActivities = session.totalActivities || 3;
                   const participantCount = session.participantCount || 0;

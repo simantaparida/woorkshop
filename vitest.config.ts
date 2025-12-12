@@ -23,11 +23,12 @@ export default defineConfig({
         'dist/**',
       ],
       include: ['src/lib/**/*.ts', 'src/components/**/*.tsx'],
-      all: true,
-      lines: 70,
-      functions: 70,
-      branches: 70,
-      statements: 70,
+      thresholds: {
+        lines: 70,
+        functions: 70,
+        branches: 70,
+        statements: 70,
+      },
     },
   },
   resolve: {
