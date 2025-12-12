@@ -237,28 +237,71 @@ export default function IndividualInputPage() {
         {isFacilitator ? (
           <div className="space-y-6">
 
-            {/* Share Link - Prominent at Top */}
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-5">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-semibold text-blue-900">Invite Your Team</h3>
+            {/* Header */}
+            <div className="text-center">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                Individual Input Phase
+              </h1>
+              <p className="text-base text-gray-600">
+                Monitor participant submissions and advance when ready.
+              </p>
+            </div>
+
+            {/* Session Content: Problem Title, Description, and Attachments */}
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-5">
+                <h2 className="text-lg font-semibold text-gray-900 mb-2">{data.topic_title}</h2>
+                {data.topic_description && (
+                  <p className="text-sm text-gray-700">{data.topic_description}</p>
+                )}
               </div>
-              <ShareLink sessionId={sessionId} />
+
+              {/* Attachments */}
+              {data?.attachments && data.attachments.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Paperclip className="w-4 h-4 text-gray-500" />
+                    <h3 className="text-sm font-semibold text-gray-900">Session Context & Attachments</h3>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    {data.attachments.map((att) => (
+                      <div key={att.id} className="flex items-start gap-2.5 p-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 transition-colors">
+                        <div className="mt-0.5 p-1.5 bg-white rounded-lg border border-gray-100 shadow-sm">
+                          {att.type === 'link' && <LinkIcon className="w-4 h-4 text-blue-500" />}
+                          {att.type === 'image' && <ImageIcon className="w-4 h-4 text-purple-500" />}
+                          {att.type === 'document' && <FileText className="w-4 h-4 text-orange-500" />}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-semibold text-gray-900 truncate mb-1">{att.name}</p>
+                          {att.type === 'link' ? (
+                            <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-[11px] text-blue-600 hover:underline truncate block flex items-center">
+                              {att.url} <ArrowRight className="w-2.5 h-2.5 ml-1 inline" />
+                            </a>
+                          ) : (
+                            <div className="text-[11px] text-gray-500">
+                              {att.type === 'image' ? 'Image Attachment' : 'Document Attachment'}
+                            </div>
+                          )}
+
+                          {/* Image Preview */}
+                          {att.type === 'image' && (
+                            <div className="mt-2 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
+                              <img src={att.url} alt={att.name} className="w-full h-24 object-cover" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Facilitator's Own Input (Optional) */}
             <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-blue-100/50 p-6">
               {!hasSubmitted ? (
                 <div>
-                  {/* Header */}
-                  <div className="text-center mb-5">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                      Individual Input Phase
-                    </h1>
-                    <p className="text-base text-gray-600">
-                      Monitor participant submissions and advance when ready.
-                    </p>
-                  </div>
-
                   <div className="mb-5">
                     <h2 className="text-lg font-bold text-gray-900 mb-1.5">
                       Your Input (Optional)
@@ -318,6 +361,12 @@ export default function IndividualInputPage() {
                     }}
                   />
                 </div>
+              </div>
+
+              {/* Share Link - Now inside Participant Progress */}
+              <div className="mb-5 pb-5 border-b border-gray-100">
+                <p className="text-sm font-medium text-gray-700 mb-2">Share this link with participants:</p>
+                <ShareLink sessionId={sessionId} />
               </div>
 
               {/* Participant List */}
@@ -408,47 +457,6 @@ export default function IndividualInputPage() {
                 )}
               </div>
             </div>
-
-            {/* Attachments Section for Facilitator */}
-            {data?.attachments && data.attachments.length > 0 && (
-              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
-                <div className="flex items-center gap-2 mb-3">
-                  <Paperclip className="w-4 h-4 text-gray-500" />
-                  <h3 className="text-sm font-semibold text-gray-900">Session Context & Attachments</h3>
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-3">
-                  {data.attachments.map((att) => (
-                    <div key={att.id} className="flex items-start gap-2.5 p-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 transition-colors">
-                      <div className="mt-0.5 p-1.5 bg-white rounded-lg border border-gray-100 shadow-sm">
-                        {att.type === 'link' && <LinkIcon className="w-4 h-4 text-blue-500" />}
-                        {att.type === 'image' && <ImageIcon className="w-4 h-4 text-purple-500" />}
-                        {att.type === 'document' && <FileText className="w-4 h-4 text-orange-500" />}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-xs font-semibold text-gray-900 truncate mb-1">{att.name}</p>
-                        {att.type === 'link' ? (
-                          <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-[11px] text-blue-600 hover:underline truncate block flex items-center">
-                            {att.url} <ArrowRight className="w-2.5 h-2.5 ml-1 inline" />
-                          </a>
-                        ) : (
-                          <div className="text-[11px] text-gray-500">
-                            {att.type === 'image' ? 'Image Attachment' : 'Document Attachment'}
-                          </div>
-                        )}
-
-                        {/* Image Preview */}
-                        {att.type === 'image' && (
-                          <div className="mt-2 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
-                            <img src={att.url} alt={att.name} className="w-full h-24 object-cover" />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         ) : (
           /* PARTICIPANT VIEW */
