@@ -110,7 +110,7 @@ export function FeatureForm({ features, onChange, maxFeatures = 10 }: FeatureFor
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95, x: -20 }}
             transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-            className="relative bg-gradient-to-br from-white to-gray-50/50 border-2 border-gray-200/80 rounded-xl p-4 hover:border-primary/40 hover:shadow-md transition-all duration-300 group overflow-hidden"
+            className="relative bg-white border border-gray-200 rounded-xl p-4 hover:border-primary/40 transition-all duration-300 group"
           >
             {/* Subtle gradient background */}
             <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-blue-500/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
@@ -119,7 +119,7 @@ export function FeatureForm({ features, onChange, maxFeatures = 10 }: FeatureFor
             <div className="relative">
               {/* Header Row: Number, Title, Remove Button */}
               <div className="flex items-start gap-3 mb-3">
-                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-primary via-blue-600 to-indigo-600 text-white text-xs font-bold flex items-center justify-center shadow-sm ring-2 ring-white mt-0.5">
+                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center mt-0.5">
                   {index + 1}
                 </div>
 
@@ -130,7 +130,7 @@ export function FeatureForm({ features, onChange, maxFeatures = 10 }: FeatureFor
                     value={feature.title}
                     onChange={(e) => updateFeature(feature.id, 'title', e.target.value)}
                     onBlur={(e) => validateField(feature.id, 'title', e.target.value)}
-                    className="w-full px-3 py-2 bg-white/80 border-2 border-gray-200 rounded-lg text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary focus:bg-white shadow-sm transition-all"
+                    className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
                   />
                   {errors[`title-${feature.id}`] && (
                     <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
@@ -148,7 +148,7 @@ export function FeatureForm({ features, onChange, maxFeatures = 10 }: FeatureFor
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => removeFeature(feature.id)}
-                    className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100 mt-0.5 shadow-sm"
+                    className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100 mt-0.5"
                     title="Remove feature"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -170,7 +170,7 @@ export function FeatureForm({ features, onChange, maxFeatures = 10 }: FeatureFor
                   }}
                   maxLength={500}
                   rows={2}
-                  className="w-full px-3 py-2 bg-white/80 border-2 border-gray-200 rounded-lg text-xs text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary focus:bg-white shadow-sm transition-all resize-none"
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-xs text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all resize-none"
                 />
               </div>
 
@@ -189,7 +189,7 @@ export function FeatureForm({ features, onChange, maxFeatures = 10 }: FeatureFor
                     {feature.referenceLinks.map((link, linkIndex) => (
                       <div
                         key={linkIndex}
-                        className="flex items-center gap-2 p-2 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 rounded-lg border border-blue-200/50 group hover:border-blue-300 hover:shadow-sm transition-all"
+                        className="flex items-center gap-2 p-2 bg-blue-50 rounded-lg border border-blue-200 group hover:border-blue-300 transition-all"
                       >
                         <img
                           src={link.favicon}
@@ -228,7 +228,7 @@ export function FeatureForm({ features, onChange, maxFeatures = 10 }: FeatureFor
                   <input
                     type="url"
                     placeholder="🔗 Paste URL (Jira, Figma, etc.)"
-                    className="flex-1 px-3 py-1.5 bg-white border-2 border-gray-200 rounded-lg text-xs text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 shadow-sm transition-all"
+                    className="flex-1 px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-xs text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
@@ -247,7 +247,7 @@ export function FeatureForm({ features, onChange, maxFeatures = 10 }: FeatureFor
                         input.value = '';
                       }
                     }}
-                    className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold rounded-lg transition-colors shadow-sm hover:shadow flex items-center gap-1"
+                    className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-1"
                   >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -268,7 +268,7 @@ export function FeatureForm({ features, onChange, maxFeatures = 10 }: FeatureFor
         disabled={features.length >= maxFeatures}
         whileHover={{ scale: features.length >= maxFeatures ? 1 : 1.01 }}
         whileTap={{ scale: features.length >= maxFeatures ? 1 : 0.98 }}
-        className="relative w-full py-3.5 border-2 border-dashed border-primary/40 bg-gradient-to-br from-primary/5 via-blue-500/5 to-indigo-500/5 rounded-xl text-sm font-bold text-primary hover:bg-primary/10 hover:border-primary hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:border-gray-300 disabled:bg-gray-50 disabled:text-gray-400 flex items-center justify-center gap-2 overflow-hidden group"
+        className="relative w-full py-3.5 border-2 border-dashed border-primary/40 bg-blue-50/30 rounded-xl text-sm font-bold text-primary hover:bg-primary/10 hover:border-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:border-gray-300 disabled:bg-gray-50 disabled:text-gray-400 flex items-center justify-center gap-2 group"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-blue-500/10 to-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
         <svg className="w-5 h-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -405,23 +405,41 @@ export default function NewVotingBoardPage() {
                 Add items you want your team to vote on (max 10). Each participant gets 100 points to distribute across these items.
               </p>
 
-              {/* Info Box */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-5">
-                <h3 className="text-sm font-semibold text-blue-900 mb-2">How it works:</h3>
-                <ul className="text-sm text-blue-800 space-y-1.5">
-                  <li className="flex gap-2">
-                    <span className="text-blue-500">•</span>
-                    <span>Each participant gets 100 points to distribute</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-blue-500">•</span>
-                    <span>Allocate points based on effort or priority</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-blue-500">•</span>
-                    <span>See ranked results based on total points</span>
-                  </li>
-                </ul>
+              {/* Info Box - Collapsible */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg mb-5">
+                <button
+                  type="button"
+                  onClick={() => setShowHowItWorks(!showHowItWorks)}
+                  className="w-full flex items-center justify-between p-4 text-left hover:bg-blue-100/50 transition-colors rounded-lg"
+                >
+                  <h3 className="text-sm font-semibold text-blue-900">How it works:</h3>
+                  <svg
+                    className={`w-4 h-4 text-blue-700 transition-transform ${showHowItWorks ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {showHowItWorks && (
+                  <div className="px-4 pb-4">
+                    <ul className="text-sm text-blue-800 space-y-1.5">
+                      <li className="flex gap-2">
+                        <span className="text-blue-500">•</span>
+                        <span>Each participant gets 100 points to distribute</span>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-blue-500">•</span>
+                        <span>Allocate points based on effort or priority</span>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-blue-500">•</span>
+                        <span>See ranked results based on total points</span>
+                      </li>
+                    </ul>
+                  </div>
+                )}
               </div>
 
               <FeatureForm features={features} onChange={setFeatures} />
@@ -443,11 +461,12 @@ export default function NewVotingBoardPage() {
             </motion.div>
 
             {/* Submit Button - Sticky Bottom */}
-            <div className="sticky bottom-6 z-10 bg-white border border-gray-200 rounded-xl p-4 shadow-lg">
-              <div className="flex items-center justify-between gap-4">
+            <div className="sticky bottom-6 z-10 bg-white border border-gray-200 rounded-xl p-3 shadow-lg">
+              <div className="flex items-center justify-between gap-3">
                 <Button
                   type="button"
                   variant="outline"
+                  size="md"
                   onClick={() => router.push('/tools')}
                   disabled={loading}
                 >
@@ -456,7 +475,7 @@ export default function NewVotingBoardPage() {
                 <Button
                   type="submit"
                   variant="primary"
-                  size="lg"
+                  size="md"
                   isLoading={loading}
                   disabled={loading}
                   className="flex-1 sm:flex-none"

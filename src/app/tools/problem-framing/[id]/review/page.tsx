@@ -9,7 +9,7 @@ import { StatementCard } from '@/components/problem-framing/StatementCard';
 import { Button } from '@/components/ui/Button';
 import { useProblemFramingSession } from '@/lib/hooks/useProblemFramingSession';
 import { supabase } from '@/lib/supabase/client';
-import { ArrowRight, Eye, AlertCircle, Star } from 'lucide-react';
+import { ArrowRight, Eye, AlertCircle, Star, X, Lightbulb } from 'lucide-react';
 
 export default function TeamReviewPage() {
   const params = useParams();
@@ -17,6 +17,7 @@ export default function TeamReviewPage() {
   const sessionId = params.id as string;
   const { data, loading } = useProblemFramingSession(sessionId);
   const [isClient, setIsClient] = useState(false);
+  const [showTips, setShowTips] = useState(true);
 
   // Sync localStorage with authenticated user ID on mount
   useEffect(() => {
@@ -193,7 +194,7 @@ export default function TeamReviewPage() {
 
   return (
     <AppLayout>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* Timeline */}
         <div className="mb-12">
@@ -201,23 +202,62 @@ export default function TeamReviewPage() {
         </div>
 
         {/* Header */}
-        <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-gray-900 mb-3">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
             Team Review
           </h1>
           <p className="text-base text-gray-600 max-w-2xl mx-auto">
-            Review all problem statements submitted by the team. Read through different perspectives and pin the ones that resonate most.
+            Review all problem statements submitted by the team
           </p>
         </div>
 
+        {/* Tips Section - Dismissible */}
+        {showTips && (
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-8 relative">
+            <button
+              onClick={() => setShowTips(false)}
+              className="absolute top-4 right-4 text-blue-600 hover:text-blue-800 transition-colors"
+              aria-label="Dismiss tips"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="flex gap-3 pr-8">
+              <div className="w-9 h-9 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 text-blue-600">
+                <Lightbulb className="w-5 h-5" />
+              </div>
+              <div className="text-sm text-blue-900">
+                <p className="font-semibold text-sm mb-2">Review Tips:</p>
+                <ul className="space-y-1.5 text-xs">
+                  <li className="flex gap-2">
+                    <span className="text-blue-500">•</span>
+                    Read each perspective carefully to understand different viewpoints
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-blue-500">•</span>
+                    Pin statements that capture key insights or resonate strongly
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-blue-500">•</span>
+                    Look for common themes across multiple submissions
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-blue-500">•</span>
+                    Note unique perspectives that add valuable context
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Topic Display */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-8">
-          <div className="flex items-start gap-4">
-            <div className="w-11 h-11 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0 text-blue-600">
+        <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0 text-blue-600">
               <Eye className="w-5 h-5" />
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="text-lg font-semibold text-gray-900 mb-1">{data.topic_title}</h2>
+              <h2 className="text-base font-bold text-gray-900 mb-1">{data.topic_title}</h2>
               {data.topic_description && (
                 <p className="text-sm text-gray-600 leading-relaxed">{data.topic_description}</p>
               )}
@@ -227,20 +267,18 @@ export default function TeamReviewPage() {
 
         {/* Statements Grid */}
         {statements.length > 0 ? (
-          <div className="space-y-6 mb-10">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-gray-200">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Individual Perspectives ({statements.length})
-                </h3>
-              </div>
-              <div className="text-xs text-gray-600 bg-blue-50 px-3 py-2 rounded-lg border border-blue-100 flex items-center gap-2">
+          <div className="space-y-5 mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <h3 className="text-lg font-bold text-gray-900">
+                Individual Perspectives ({statements.length})
+              </h3>
+              <div className="text-xs text-gray-600 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200 flex items-center gap-1.5">
                 <Star className="w-3.5 h-3.5 text-blue-600" />
-                <span>Click stars to pin insights</span>
+                <span className="font-medium">Click stars to pin</span>
               </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-5">
+            <div className="grid md:grid-cols-2 gap-4">
               {statements.map((statement) => (
                 <StatementCard
                   key={statement.id}
@@ -260,37 +298,43 @@ export default function TeamReviewPage() {
 
         {/* Facilitator Controls */}
         {isFacilitator ? (
-          <div className="bg-white rounded-xl border border-gray-200 shadow-lg p-6 sticky bottom-6">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-              <div className="flex gap-3 flex-1 min-w-0">
-                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 flex-shrink-0">
-                  <AlertCircle className="w-5 h-5" />
+          <div className="bg-white rounded-xl border border-gray-200 shadow-lg p-4 sticky bottom-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex gap-2.5 flex-1 min-w-0">
+                <div className="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 flex-shrink-0">
+                  <AlertCircle className="w-4 h-4" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="font-semibold text-gray-900 text-base mb-1">
+                  <h3 className="font-bold text-gray-900 text-sm mb-0.5">
                     Facilitator Actions
                   </h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    Once the team has reviewed all perspectives, proceed to create the final agreed problem statement.
+                  <p className="text-xs text-gray-600">
+                    Proceed to create the final problem statement
                   </p>
                 </div>
               </div>
               <Button
                 onClick={handleAdvanceToFinalize}
                 variant="primary"
-                size="lg"
-                className="w-full md:w-auto px-5 py-3 text-base font-semibold shadow-lg whitespace-nowrap flex-shrink-0"
+                size="md"
+                className="w-full sm:w-auto whitespace-nowrap flex-shrink-0"
               >
                 Create Final Statement
-                <ArrowRight className="w-5 h-5 ml-2" />
+                <ArrowRight className="w-4 h-4 ml-1.5" />
               </Button>
             </div>
           </div>
         ) : (
           /* Info Box for Participants */
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 text-center">
-            <p className="text-sm text-blue-800 font-medium">
-              Waiting for facilitator to advance to the final consensus step...
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <div className="w-5 h-5 rounded-full border-2 border-blue-600 border-t-transparent animate-spin" />
+              <p className="text-sm text-blue-900 font-semibold">
+                Waiting for facilitator
+              </p>
+            </div>
+            <p className="text-xs text-blue-700">
+              The facilitator will advance to the final consensus step when ready
             </p>
           </div>
         )}
