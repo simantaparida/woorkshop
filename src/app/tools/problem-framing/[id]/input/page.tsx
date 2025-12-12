@@ -237,56 +237,53 @@ export default function IndividualInputPage() {
         {isFacilitator ? (
           <div className="space-y-6">
 
-            {/* Header */}
-            <div className="text-center">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                Individual Input Phase
-              </h1>
-              <p className="text-base text-gray-600">
-                Monitor participant submissions and advance when ready.
-              </p>
-            </div>
-
             {/* Session Content: Problem Title, Description, and Attachments */}
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-5">
-                <h2 className="text-lg font-semibold text-gray-900 mb-2">{data.topic_title}</h2>
-                {data.topic_description && (
-                  <p className="text-sm text-gray-700">{data.topic_description}</p>
-                )}
+              {/* Problem Title */}
+              <div className="mb-4">
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Problem</h3>
+                <p className="text-base font-semibold text-gray-900">{data.topic_title}</p>
               </div>
+
+              {/* Problem Description */}
+              {data.topic_description && (
+                <div className="mb-5 pb-5 border-b border-gray-100">
+                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Description</h3>
+                  <p className="text-sm text-gray-700">{data.topic_description}</p>
+                </div>
+              )}
 
               {/* Attachments */}
               {data?.attachments && data.attachments.length > 0 && (
                 <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Paperclip className="w-4 h-4 text-gray-500" />
-                    <h3 className="text-sm font-semibold text-gray-900">Session Context & Attachments</h3>
-                  </div>
+                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 flex items-center gap-2">
+                    <Paperclip className="w-3.5 h-3.5" />
+                    Session Context & Attachments
+                  </h3>
 
-                  <div className="grid sm:grid-cols-2 gap-3">
+                  <div className="space-y-2">
                     {data.attachments.map((att) => (
-                      <div key={att.id} className="flex items-start gap-2.5 p-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 transition-colors">
-                        <div className="mt-0.5 p-1.5 bg-white rounded-lg border border-gray-100 shadow-sm">
+                      <div key={att.id} className="flex items-start gap-2.5">
+                        <div className="mt-0.5">
                           {att.type === 'link' && <LinkIcon className="w-4 h-4 text-blue-500" />}
                           {att.type === 'image' && <ImageIcon className="w-4 h-4 text-purple-500" />}
                           {att.type === 'document' && <FileText className="w-4 h-4 text-orange-500" />}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs font-semibold text-gray-900 truncate mb-1">{att.name}</p>
+                          <p className="text-sm font-medium text-gray-900 mb-0.5">{att.name}</p>
                           {att.type === 'link' ? (
-                            <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-[11px] text-blue-600 hover:underline truncate block flex items-center">
-                              {att.url} <ArrowRight className="w-2.5 h-2.5 ml-1 inline" />
+                            <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline truncate block">
+                              {att.url}
                             </a>
                           ) : (
-                            <div className="text-[11px] text-gray-500">
+                            <p className="text-xs text-gray-500">
                               {att.type === 'image' ? 'Image Attachment' : 'Document Attachment'}
-                            </div>
+                            </p>
                           )}
 
                           {/* Image Preview */}
                           {att.type === 'image' && (
-                            <div className="mt-2 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
+                            <div className="mt-2 rounded-lg overflow-hidden border border-gray-200">
                               <img src={att.url} alt={att.name} className="w-full h-24 object-cover" />
                             </div>
                           )}
@@ -352,7 +349,7 @@ export default function IndividualInputPage() {
               </div>
 
               {/* Progress Bar */}
-              <div className="mb-5">
+              <div className="mb-4">
                 <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
                   <div
                     className="bg-blue-600 h-3 rounded-full transition-all duration-500 ease-out"
@@ -365,7 +362,6 @@ export default function IndividualInputPage() {
 
               {/* Share Link - Now inside Participant Progress */}
               <div className="mb-5 pb-5 border-b border-gray-100">
-                <p className="text-sm font-medium text-gray-700 mb-2">Share this link with participants:</p>
                 <ShareLink sessionId={sessionId} />
               </div>
 
@@ -460,92 +456,95 @@ export default function IndividualInputPage() {
           </div>
         ) : (
           /* PARTICIPANT VIEW */
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-3xl mx-auto space-y-6">
+            {/* Privacy Mode Alert - Top */}
+            <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 flex gap-2.5">
+              <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0 text-amber-600">
+                <AlertCircle className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-amber-900 mb-1">Privacy Mode Active</h3>
+                <p className="text-xs text-amber-800">
+                  Your statement will be hidden from others until the review step to prevent groupthink.
+                </p>
+              </div>
+            </div>
+
+            {/* Session Content: Problem Title, Description, and Attachments */}
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+              {/* Problem Title */}
+              <div className="mb-4">
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Problem</h3>
+                <p className="text-base font-semibold text-gray-900">{data.topic_title}</p>
+              </div>
+
+              {/* Problem Description */}
+              {data.topic_description && (
+                <div className="mb-5 pb-5 border-b border-gray-100">
+                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Description</h3>
+                  <p className="text-sm text-gray-700">{data.topic_description}</p>
+                </div>
+              )}
+
+              {/* Attachments */}
+              {data?.attachments && data.attachments.length > 0 && (
+                <div>
+                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 flex items-center gap-2">
+                    <Paperclip className="w-3.5 h-3.5" />
+                    Session Context & Attachments
+                  </h3>
+
+                  <div className="space-y-2">
+                    {data.attachments.map((att) => (
+                      <div key={att.id} className="flex items-start gap-2.5">
+                        <div className="mt-0.5">
+                          {att.type === 'link' && <LinkIcon className="w-4 h-4 text-blue-500" />}
+                          {att.type === 'image' && <ImageIcon className="w-4 h-4 text-purple-500" />}
+                          {att.type === 'document' && <FileText className="w-4 h-4 text-orange-500" />}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-gray-900 mb-0.5">{att.name}</p>
+                          {att.type === 'link' ? (
+                            <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline truncate block">
+                              {att.url}
+                            </a>
+                          ) : (
+                            <p className="text-xs text-gray-500">
+                              {att.type === 'image' ? 'Image Attachment' : 'Document Attachment'}
+                            </p>
+                          )}
+
+                          {/* Image Preview */}
+                          {att.type === 'image' && (
+                            <div className="mt-2 rounded-lg overflow-hidden border border-gray-200">
+                              <img src={att.url} alt={att.name} className="w-full h-24 object-cover" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Input Form Section */}
             <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-blue-100/50 p-6">
               {!hasSubmitted ? (
-                <>
-                  {/* Header */}
-                  <div className="text-center mb-5">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                      Define the Problem
-                    </h1>
-                    <p className="text-base text-gray-600">
+                <div>
+                  <div className="mb-4">
+                    <h2 className="text-lg font-bold text-gray-900 mb-1.5">Your Perspective</h2>
+                    <p className="text-sm text-gray-600">
                       Describe the problem from your perspective. Be specific and focus on the "what" and "why".
                     </p>
                   </div>
-
-                  {/* Privacy Mode Alert - Top */}
-                  <div className="mb-6 bg-amber-50 border border-amber-100 rounded-xl p-4 flex gap-2.5">
-                    <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0 text-amber-600">
-                      <AlertCircle className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-amber-900 mb-1">Privacy Mode Active</h3>
-                      <p className="text-xs text-amber-800">
-                        Your statement will be hidden from others until the review step to prevent groupthink.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Topic Title & Description */}
-                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-5">
-                    <h2 className="text-lg font-semibold text-gray-900 mb-2">{data.topic_title}</h2>
-                    {data.topic_description && (
-                      <p className="text-sm text-gray-700">{data.topic_description}</p>
-                    )}
-                  </div>
-
-                  {/* Session Context & Attachments - Right after topic */}
-                  {data?.attachments && data.attachments.length > 0 && (
-                    <div className="mb-6 pb-5 border-b border-gray-200">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Paperclip className="w-4 h-4 text-gray-500" />
-                        <h3 className="text-sm font-semibold text-gray-900">Session Context & Attachments</h3>
-                      </div>
-
-                      <div className="grid sm:grid-cols-2 gap-3">
-                        {data.attachments.map((att) => (
-                          <div key={att.id} className="flex items-start gap-2.5 p-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 transition-colors">
-                            <div className="mt-0.5 p-1.5 bg-white rounded-lg border border-gray-100 shadow-sm">
-                              {att.type === 'link' && <LinkIcon className="w-4 h-4 text-blue-500" />}
-                              {att.type === 'image' && <ImageIcon className="w-4 h-4 text-purple-500" />}
-                              {att.type === 'document' && <FileText className="w-4 h-4 text-orange-500" />}
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <p className="text-xs font-semibold text-gray-900 truncate mb-1">{att.name}</p>
-                              {att.type === 'link' ? (
-                                <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-[11px] text-blue-600 hover:underline truncate block flex items-center">
-                                  {att.url} <ArrowRight className="w-2.5 h-2.5 ml-1 inline" />
-                                </a>
-                              ) : (
-                                <div className="text-[11px] text-gray-500">
-                                  {att.type === 'image' ? 'Image Attachment' : 'Document Attachment'}
-                                </div>
-                              )}
-
-                              {/* Image Preview */}
-                              {att.type === 'image' && (
-                                <div className="mt-2 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
-                                  <img src={att.url} alt={att.name} className="w-full h-24 object-cover" />
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Input Form */}
-                  <div>
-                    <StatementInput
-                      topicTitle={data.topic_title}
-                      topicDescription={data.topic_description || undefined}
-                      onSubmit={handleSubmit}
-                      loading={submitting}
-                    />
-                  </div>
-                </>
+                  <StatementInput
+                    topicTitle={data.topic_title}
+                    topicDescription={data.topic_description || undefined}
+                    onSubmit={handleSubmit}
+                    loading={submitting}
+                  />
+                </div>
               ) : (
                 <div className="text-center py-10">
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5 animate-bounce">
@@ -573,47 +572,6 @@ export default function IndividualInputPage() {
                 </div>
               )}
             </div>
-
-            {/* Remove separate attachments section since it's now integrated above */}
-            {false && data?.attachments && data.attachments.length > 0 && (
-              <div className="mt-5 bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
-                <div className="flex items-center gap-2 mb-3">
-                  <Paperclip className="w-4 h-4 text-gray-500" />
-                  <h3 className="text-sm font-semibold text-gray-900">Session Context & Attachments</h3>
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-3">
-                  {data.attachments.map((att) => (
-                    <div key={att.id} className="flex items-start gap-2.5 p-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 transition-colors">
-                      <div className="mt-0.5 p-1.5 bg-white rounded-lg border border-gray-100 shadow-sm">
-                        {att.type === 'link' && <LinkIcon className="w-4 h-4 text-blue-500" />}
-                        {att.type === 'image' && <ImageIcon className="w-4 h-4 text-purple-500" />}
-                        {att.type === 'document' && <FileText className="w-4 h-4 text-orange-500" />}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-xs font-semibold text-gray-900 truncate mb-1">{att.name}</p>
-                        {att.type === 'link' ? (
-                          <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-[11px] text-blue-600 hover:underline truncate block flex items-center">
-                            {att.url} <ArrowRight className="w-2.5 h-2.5 ml-1 inline" />
-                          </a>
-                        ) : (
-                          <div className="text-[11px] text-gray-500">
-                            {att.type === 'image' ? 'Image Attachment' : 'Document Attachment'}
-                          </div>
-                        )}
-
-                        {/* Image Preview */}
-                        {att.type === 'image' && (
-                          <div className="mt-2 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
-                            <img src={att.url} alt={att.name} className="w-full h-24 object-cover" />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         )}
       </div>
