@@ -402,55 +402,54 @@ export default function LobbyPage() {
           )}
 
           {/* Header */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-          <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                  {session.title || session.project_name || 'Voting Session'}
-            </h1>
-                <div className="flex items-center gap-4 text-sm text-gray-600">
-                  <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span className="font-medium">Time in lobby: {formatTime(timeInLobby)}</span>
-                  </div>
-                  {currentPlayerId && (
-                    <div className="flex items-center gap-2">
-                      <div className={`w-2 h-2 rounded-full ${isReady ? 'bg-green-500' : 'bg-gray-400'}`} />
-                      <span>{isReady ? 'You\'re ready' : 'Mark yourself as ready'}</span>
-                    </div>
-                  )}
+          <div className="space-y-3">
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1.5">
+                {session.title || session.project_name || 'Voting Session'}
+              </h1>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
+                <div className="flex items-center gap-2">
+                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="font-medium">Time in lobby: {formatTime(timeInLobby)}</span>
                 </div>
+                {currentPlayerId && (
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full ${isReady ? 'bg-green-500' : 'bg-gray-400'}`} />
+                    <span>{isReady ? 'You\'re ready' : 'Mark yourself as ready'}</span>
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Invite Others Section */}
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                     Invite team members
                   </label>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <input
                       type="text"
                       value={getSessionLink(sessionId)}
                       readOnly
-                      className="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-sm font-mono"
+                      className="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-xs sm:text-sm font-mono"
                     />
                     <Button
                       onClick={handleCopyLink}
                       variant="secondary"
                       size="sm"
+                      className="w-full sm:w-auto"
                     >
-                      <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                       </svg>
                       Copy Link
                     </Button>
                   </div>
-                  <p className="mt-2 text-xs text-gray-500">
+                  <p className="mt-2 text-[10px] sm:text-xs text-gray-500">
                     Share this link with your team to let them join the session
                   </p>
                 </div>
@@ -465,9 +464,9 @@ export default function LobbyPage() {
                   isLoading={starting}
                   disabled={!canStartGame}
                   size="lg"
-                  className="min-w-[200px]"
+                  className="w-full sm:w-auto sm:min-w-[200px]"
                 >
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
                   Begin Voting Round
