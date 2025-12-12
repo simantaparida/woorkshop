@@ -651,12 +651,6 @@ export default function LobbyPage() {
               transition={{ delay: 0.2, duration: 0.4 }}
               className="bg-white rounded-lg border border-gray-200 p-4 sm:p-5"
             >
-            {session.session_goal && (
-              <div className="mb-4 sm:mb-5">
-                <p className="text-xs sm:text-sm text-gray-600 mb-4">{session.session_goal}</p>
-              </div>
-            )}
-
             <div className="mb-4 sm:mb-5">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 sm:mb-4">
                 <h3 className="text-sm sm:text-base font-semibold text-gray-900">

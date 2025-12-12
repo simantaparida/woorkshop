@@ -276,12 +276,12 @@ export default function VotePage() {
 
   return (
     <AppLayout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-          className="space-y-8"
+          className="space-y-4"
         >
           {/* Session Timeline Progress */}
           {(() => {
@@ -314,7 +314,7 @@ export default function VotePage() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1, duration: 0.4 }}
-                className="flex items-center justify-center w-full mb-8"
+                className="flex items-center justify-center w-full mb-5"
               >
                 <div className="flex items-center relative z-10">
                   {steps.map((step, index) => {
@@ -326,16 +326,16 @@ export default function VotePage() {
                       <div key={step.id} className="flex items-center">
                         <div className="flex flex-col items-center relative">
                           <div
-                            className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-300 border-2 ${
+                            className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold transition-all duration-300 border-2 ${
                               isActive
-                                ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200'
+                                ? 'bg-blue-600 text-white border-blue-600'
                                 : isCompleted
                                 ? 'bg-green-500 text-white border-green-500'
                                 : 'bg-white text-gray-400 border-gray-200'
                             }`}
                           >
                             {isCompleted ? (
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                               </svg>
                             ) : (
@@ -343,7 +343,7 @@ export default function VotePage() {
                             )}
                           </div>
                           <span
-                            className={`absolute top-8 text-[10px] font-medium whitespace-nowrap transition-colors duration-300 ${
+                            className={`absolute top-6 text-[9px] font-medium whitespace-nowrap transition-colors duration-300 ${
                               isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-400'
                             }`}
                           >
@@ -353,7 +353,7 @@ export default function VotePage() {
 
                         {!isLast && (
                           <div
-                            className={`w-12 sm:w-16 h-0.5 mx-1.5 transition-colors duration-300 ${
+                            className={`w-10 sm:w-12 h-0.5 mx-1 transition-colors duration-300 ${
                               isCompleted ? 'bg-green-500' : 'bg-gray-200'
                             }`}
                           />
@@ -367,23 +367,39 @@ export default function VotePage() {
           })()}
 
           {/* Header */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1.5">
                 {session?.title || session?.project_name || 'Voting Session'}
               </h1>
-              <p className="text-gray-600">
+              <p className="text-xs sm:text-sm text-gray-600">
                 Allocate your {TOTAL_POINTS} points across the features
               </p>
             </div>
           </div>
 
-          {/* Main Content Grid */}
-          <div className="grid lg:grid-cols-[2fr_1fr] gap-6 items-start">
-            {/* Left Column - Features */}
-            <div className="space-y-6">
+          {/* Main Content - Single Column Layout */}
+          <div className="space-y-4">
+            {/* Players Progress */}
+            <div className="bg-white rounded-lg border border-gray-200 p-4">
+              <ProgressIndicator
+                current={votedPlayerIds.size}
+                total={players.length}
+              />
+
+              <div className="mt-4">
+                <PlayerList
+                  players={players}
+                  votedPlayerIds={votedPlayerIds}
+                  showVoteStatus
+                />
+              </div>
+            </div>
+
+            {/* Features Section */}
+            <div className="space-y-4">
               {/* Points Remaining Card */}
-              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+              <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-5">
                 <div className="text-center mb-4">
                   <div className="text-5xl font-bold mb-2">
                     <span className={remainingPoints < 0 ? 'text-red-600' : 'text-primary'}>
@@ -408,106 +424,6 @@ export default function VotePage() {
                     </p>
                   </div>
                 </div>
-
-                {/* Smart Distribution Buttons */}
-                {!hasSubmitted && (
-                  <div className="border-t border-gray-200 pt-4">
-                    <p className="text-xs text-gray-500 mb-2 text-center">Quick actions:</p>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  <Tooltip
-                    content={
-                      <div>
-                        <div className="font-semibold mb-1">Even Distribution</div>
-                        <div className="text-xs opacity-90">
-                          Divides points equally across all {features.length} features.
-                          <br />
-                          Each feature gets ~{Math.floor(TOTAL_POINTS / features.length)} points.
-                        </div>
-                      </div>
-                    }
-                    position="bottom"
-                  >
-                    <button
-                      type="button"
-                      onClick={distributeEvenly}
-                      className="w-full px-3 py-2 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                    >
-                      ⚖️ Even
-                    </button>
-                  </Tooltip>
-
-                  <Tooltip
-                    content={
-                      <div>
-                        <div className="font-semibold mb-1">Top 3 Priority</div>
-                        <div className="text-xs opacity-90">
-                          Focus on your top 3 features:
-                          <br />
-                          1st: {Math.floor(TOTAL_POINTS * 0.5)} pts (50%)
-                          <br />
-                          2nd: {Math.floor(TOTAL_POINTS * 0.3)} pts (30%)
-                          <br />
-                          3rd: {Math.floor(TOTAL_POINTS * 0.2)} pts (20%)
-                        </div>
-                      </div>
-                    }
-                    position="bottom"
-                  >
-                    <button
-                      type="button"
-                      onClick={distributeTopThree}
-                      className="w-full px-3 py-2 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                    >
-                      🏆 Top 3
-                    </button>
-                  </Tooltip>
-
-                  <Tooltip
-                    content={
-                      <div>
-                        <div className="font-semibold mb-1">Pyramid Distribution</div>
-                        <div className="text-xs opacity-90">
-                          Weighted descending allocation.
-                          <br />
-                          First feature gets the most, each subsequent feature gets less in a declining pattern.
-                        </div>
-                      </div>
-                    }
-                    position="bottom"
-                  >
-                    <button
-                      type="button"
-                      onClick={distributePyramid}
-                      className="w-full px-3 py-2 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                    >
-                      📊 Pyramid
-                    </button>
-                  </Tooltip>
-
-                  <Tooltip
-                    content={
-                      <div>
-                        <div className="font-semibold mb-1">Clear All</div>
-                        <div className="text-xs opacity-90">
-                          Reset all feature allocations to 0 points.
-                          <br />
-                          Start fresh with your voting.
-                        </div>
-                      </div>
-                    }
-                    position="bottom"
-                  >
-                    <button
-                      type="button"
-                      onClick={clearAllVotes}
-                      className="w-full px-3 py-2 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
-                    >
-                      🗑️ Clear
-                    </button>
-                  </Tooltip>
-                    </div>
-                  </div>
-                )}
               </div>
 
               {/* Features List */}
@@ -585,24 +501,6 @@ export default function VotePage() {
                     </div>
                   </div>
                 )}
-              </div>
-            </div>
-
-            {/* Right Sidebar - Players */}
-            <div className="space-y-6">
-              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm sticky top-4">
-                <ProgressIndicator
-                  current={votedPlayerIds.size}
-                  total={players.length}
-                />
-
-                <div className="mt-6">
-                  <PlayerList
-                    players={players}
-                    votedPlayerIds={votedPlayerIds}
-                    showVoteStatus
-                  />
-                </div>
               </div>
             </div>
           </div>
