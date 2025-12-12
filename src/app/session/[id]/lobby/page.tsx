@@ -481,14 +481,14 @@ export default function LobbyPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2, duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-              className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm"
+              className="bg-white rounded-lg border border-gray-200 p-4 sm:p-5"
             >
-              <h2 className="text-xl font-semibold mb-2">Join the Voting Session</h2>
-              <p className="text-sm text-gray-600 mb-4">
+              <h2 className="text-base sm:text-lg font-semibold mb-2">Join the Voting Session</h2>
+              <p className="text-xs sm:text-sm text-gray-600 mb-4">
                 Enter your details to participate in this voting session
               </p>
               <form onSubmit={handleJoin}>
-                <div className="flex gap-3 mb-4">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-4">
                   <Input
                     placeholder="Your name"
                     value={playerName}
@@ -499,7 +499,7 @@ export default function LobbyPage() {
                   <select
                     value={playerRole}
                     onChange={(e) => setPlayerRole(e.target.value)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="px-3 sm:px-4 py-2 border border-gray-300 rounded-lg bg-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-full sm:w-auto"
                   >
                     <option value="">Select role (optional)</option>
                     {PLAYER_ROLES.map((role) => (
@@ -522,7 +522,7 @@ export default function LobbyPage() {
               animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-                  className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-5 shadow-sm relative"
+                  className="bg-green-50 border border-green-200 rounded-lg p-4 relative"
                 >
                   <button
                     onClick={() => setDismissedJoinMessage(true)}
@@ -554,60 +554,60 @@ export default function LobbyPage() {
           )}
 
           {/* Session Overview & Players - 2 Column Layout (60:40 ratio) */}
-          <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-6 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-4 items-start">
             {/* Session Details & Features Card */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.4 }}
-              className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm"
+              className="bg-white rounded-lg border border-gray-200 p-4 sm:p-5"
             >
             {session.session_goal && (
-              <div className="mb-6">
-                <p className="text-sm text-gray-600 mb-4">{session.session_goal}</p>
+              <div className="mb-4 sm:mb-5">
+                <p className="text-xs sm:text-sm text-gray-600 mb-4">{session.session_goal}</p>
               </div>
             )}
 
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
+            <div className="mb-4 sm:mb-5">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 sm:mb-4">
+                <h3 className="text-sm sm:text-base font-semibold text-gray-900">
                   Features to Vote On ({features.length})
                 </h3>
-                <div className="flex items-center gap-2 text-xs text-gray-500">
+                <div className="flex items-center gap-2 text-[10px] sm:text-xs text-gray-500">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
                   <span className="font-medium">Locked for voting</span>
                 </div>
               </div>
-              
+
               {features.length > 0 ? (
                 <>
-                  <p className="text-sm text-gray-600 mb-4">
+                  <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4">
                     Review these features before voting begins. Once voting starts, features cannot be modified.
                   </p>
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {features.map((feature) => {
                       const category = getFeatureCategoryById(feature.category);
                       return (
                         <div
                           key={feature.id}
-                          className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
+                          className="p-3 bg-gray-50 rounded border border-gray-200 hover:border-gray-300 transition-colors"
                         >
-                          <div className="flex items-start justify-between gap-3 mb-2">
-                            <h4 className="font-semibold text-gray-900 flex-1">{feature.title}</h4>
+                          <div className="flex items-start justify-between gap-3 mb-1.5">
+                            <h4 className="font-medium text-gray-900 flex-1 text-sm">{feature.title}</h4>
                             {category && (
-                              <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium border flex-shrink-0 ${category.badgeClasses}`}>
+                              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium border flex-shrink-0 ${category.badgeClasses}`}>
                                 <span>{category.icon}</span>
                                 <span>{category.label}</span>
                               </span>
                             )}
                           </div>
                           {feature.description && (
-                            <p className="text-sm text-gray-600 mb-2">{feature.description}</p>
+                            <p className="text-xs text-gray-600 mb-1.5">{feature.description}</p>
                           )}
                           {(feature.effort !== null || feature.impact !== null) && (
-                            <div className="flex gap-4 mt-2 text-sm text-gray-600">
+                            <div className="flex gap-3 mt-1.5 text-xs text-gray-600">
                               {feature.effort !== null && (
                                 <span className="flex items-center gap-1">
                                   <span className="font-medium">Effort:</span>
@@ -662,14 +662,14 @@ export default function LobbyPage() {
                             }
                             
                             return (
-                              <div className="flex flex-wrap gap-2 mt-3">
+                              <div className="flex flex-wrap gap-1.5 mt-2">
                                 {validLinks.map((link: any, linkIndex: number) => (
                                   <a
                                     key={linkIndex}
                                     href={link.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-gray-300 rounded-md text-xs text-gray-700 hover:border-primary hover:text-primary transition-colors"
+                                    className="inline-flex items-center gap-1 px-2 py-1 bg-white border border-gray-300 rounded text-[10px] text-gray-700 hover:border-primary hover:text-primary transition-colors"
                                     title={link.title || link.url}
                                   >
                                     {link.favicon && (
@@ -698,11 +698,11 @@ export default function LobbyPage() {
                   </div>
                 </>
               ) : (
-                <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
-                  <svg className="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="text-center py-6 bg-gray-50 rounded border border-gray-200">
+                  <svg className="w-10 h-10 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-xs text-gray-600">
                     No features added yet. {isHost ? 'Add features before starting the voting round.' : 'The host will add features before starting.'}
                   </p>
                 </div>
@@ -715,9 +715,9 @@ export default function LobbyPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.4 }}
-              className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm flex flex-col"
+              className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col"
             >
-            <h3 className="text-[18px] font-medium text-gray-900 mb-3 flex-shrink-0">
+            <h3 className="text-base font-semibold text-gray-900 mb-3 flex-shrink-0">
               Players ({players.length})
             </h3>
 
@@ -809,10 +809,10 @@ export default function LobbyPage() {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   onClick={(e) => e.stopPropagation()}
-                  className="bg-white rounded-xl shadow-xl max-w-md w-full p-6"
+                  className="bg-white rounded-xl border border-gray-200 max-w-md w-full p-6"
                 >
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold text-gray-900">Invite Others</h2>
+                  <h2 className="text-base font-semibold text-gray-900">Invite Others</h2>
                   <button
                     onClick={() => setShowInviteModal(false)}
                     className="text-gray-400 hover:text-gray-600 transition-colors"
