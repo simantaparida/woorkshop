@@ -628,6 +628,8 @@ export interface WorkshopSessionData {
   activitiesCompleted: number;
   totalActivities: number;
   lastActivity: string;
+  // For problem-framing sessions, the actual session status
+  actualStatus?: string;
 }
 
 export interface ActivityEntry {

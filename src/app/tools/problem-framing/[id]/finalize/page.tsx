@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { AppLayout } from '@/components/AppLayout';
@@ -9,7 +9,7 @@ import { FinalStatementEditor } from '@/components/problem-framing/FinalStatemen
 import { StatementCard } from '@/components/problem-framing/StatementCard';
 import { useProblemFramingSession } from '@/lib/hooks/useProblemFramingSession';
 import { supabase } from '@/lib/supabase/client';
-import { AlertCircle, CheckCircle2, FileText } from 'lucide-react';
+import { AlertCircle, FileText } from 'lucide-react';
 
 export default function FinalizePage() {
   const params = useParams();
@@ -18,6 +18,7 @@ export default function FinalizePage() {
   const { data, loading } = useProblemFramingSession(sessionId);
   const [finalizing, setFinalizing] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const hasRedirected = useRef(false);
 
   // Sync localStorage with authenticated user ID on mount
   useEffect(() => {
@@ -90,7 +91,8 @@ export default function FinalizePage() {
 
   // Redirect non-facilitators (only after client-side sync is complete)
   useEffect(() => {
-    if (!loading && data && isClient && !isFacilitator) {
+    if (!loading && data && isClient && !isFacilitator && !hasRedirected.current) {
+      hasRedirected.current = true;
       toast.error('Access restricted', {
         description: 'Only the facilitator can create the final statement.',
       });
@@ -172,17 +174,19 @@ export default function FinalizePage() {
 
   return (
     <AppLayout>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* Timeline */}
-        <SessionTimeline currentStep={4} />
+        <div className="mb-12">
+          <SessionTimeline currentStep={4} size="compact" />
+        </div>
 
         {/* Header */}
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold text-gray-900 mb-3">
             Final Consensus
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-base text-gray-600 max-w-2xl mx-auto">
             Based on all individual perspectives, craft a final statement that captures the team's shared understanding of the problem.
           </p>
         </div>
@@ -190,15 +194,15 @@ export default function FinalizePage() {
         <div className="grid lg:grid-cols-2 gap-8 items-start">
 
           {/* Left: Reference Statements */}
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-gray-500" />
+          <div className="space-y-5">
+            <div className="flex items-center gap-2 pb-3 border-b border-gray-200">
+              <FileText className="w-5 h-5 text-gray-600" />
+              <h3 className="text-lg font-semibold text-gray-900">
                 Individual Perspectives ({statements.length})
               </h3>
             </div>
 
-            <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100 max-h-[800px] overflow-y-auto custom-scrollbar">
+            <div className="bg-gray-50 rounded-xl p-5 border border-gray-200 max-h-[700px] overflow-y-auto">
               <div className="space-y-4">
                 {statements.map((statement) => (
                   <StatementCard
@@ -214,18 +218,15 @@ export default function FinalizePage() {
           </div>
 
           {/* Right: Final Statement Editor */}
-          <div className="lg:sticky lg:top-8 space-y-6">
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-blue-100/50 p-8">
-              <div className="mb-6">
-                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center text-green-600 mb-4">
-                  <CheckCircle2 className="w-6 h-6" />
-                </div>
-                <h2 className="text-xl font-bold text-gray-900">Final Problem Statement</h2>
-                <p className="text-gray-600 text-sm mt-1">
-                  This will be the official output of this session.
-                </p>
-              </div>
+          <div className="lg:sticky lg:top-8 space-y-5">
+            <div className="mb-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-2">Create the Team's Agreed Problem Statement</h2>
+              <p className="text-gray-600 text-sm">
+                Based on all individual submissions, craft a final statement that captures the team's shared understanding of the problem.
+              </p>
+            </div>
 
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
               <FinalStatementEditor
                 initialValue={initialValue}
                 onFinalize={handleFinalize}
@@ -233,14 +234,14 @@ export default function FinalizePage() {
               />
             </div>
 
-            <div className="bg-blue-50 border border-blue-100 rounded-xl p-6">
-              <div className="flex gap-4">
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 text-blue-600">
-                  <AlertCircle className="w-6 h-6" />
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-5">
+              <div className="flex gap-3">
+                <div className="w-9 h-9 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 text-blue-600">
+                  <AlertCircle className="w-5 h-5" />
                 </div>
                 <div className="text-sm text-blue-900">
-                  <p className="font-bold text-base mb-2">Tips for a great problem statement:</p>
-                  <ul className="space-y-2">
+                  <p className="font-semibold text-sm mb-2">Tips for a great problem statement:</p>
+                  <ul className="space-y-1.5 text-xs">
                     <li className="flex gap-2">
                       <span className="text-blue-500">•</span>
                       Synthesize common themes from individual perspectives

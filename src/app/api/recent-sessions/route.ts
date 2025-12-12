@@ -89,6 +89,7 @@ export async function GET(request: NextRequest) {
           activitiesCompleted,
           totalActivities,
           lastActivity,
+          actualStatus: session.status, // Include the actual session status for routing
         };
       })
     );

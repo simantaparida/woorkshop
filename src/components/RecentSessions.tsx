@@ -53,7 +53,16 @@ export function RecentSessions() {
         if (session.tool_type === 'voting-board') {
             return `/session/${session.id}`;
         } else if (session.tool_type === 'problem-framing') {
-            return `/tools/problem-framing/${session.id}/join`;
+            // Route based on the actual session status
+            const statusToRoute: Record<string, string> = {
+                'setup': `/tools/problem-framing/${session.id}/join`,
+                'input': `/tools/problem-framing/${session.id}/input`,
+                'review': `/tools/problem-framing/${session.id}/review`,
+                'finalize': `/tools/problem-framing/${session.id}/finalize`,
+                'summary': `/tools/problem-framing/${session.id}/summary`,
+                'completed': `/tools/problem-framing/${session.id}/summary`,
+            };
+            return statusToRoute[session.actualStatus || 'setup'] || `/tools/problem-framing/${session.id}/join`;
         }
         return `/session/${session.id}`;
     };
