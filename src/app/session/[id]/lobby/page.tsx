@@ -269,12 +269,12 @@ export default function LobbyPage() {
 
   return (
     <AppLayout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-          className="space-y-8"
+          className="space-y-4"
         >
           {/* Session Timeline Progress */}
           {(() => {
@@ -327,7 +327,7 @@ export default function LobbyPage() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1, duration: 0.4 }}
-                className="flex items-center justify-center w-full mb-8"
+                className="flex items-center justify-center w-full mb-5"
               >
                 <div className="flex items-center relative z-10">
                   {steps.map((step, index) => {
@@ -339,16 +339,16 @@ export default function LobbyPage() {
                       <div key={step.id} className="flex items-center">
                         <div className="flex flex-col items-center relative">
                           <div
-                            className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-300 border-2 ${
+                            className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold transition-all duration-300 border-2 ${
                               isActive
-                                ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200'
+                                ? 'bg-blue-600 text-white border-blue-600'
                                 : isCompleted
                                 ? 'bg-green-500 text-white border-green-500'
                                 : 'bg-white text-gray-400 border-gray-200'
                             }`}
                           >
                             {isCompleted ? (
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                               </svg>
                             ) : (
@@ -356,7 +356,7 @@ export default function LobbyPage() {
                             )}
                           </div>
                           <span
-                            className={`absolute top-8 text-[10px] font-medium whitespace-nowrap transition-colors duration-300 ${
+                            className={`absolute top-6 text-[9px] font-medium whitespace-nowrap transition-colors duration-300 ${
                               isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-400'
                             }`}
                           >
@@ -366,7 +366,7 @@ export default function LobbyPage() {
 
                         {!isLast && (
                           <div
-                            className={`w-12 sm:w-16 h-0.5 mx-1.5 transition-colors duration-300 ${
+                            className={`w-10 sm:w-12 h-0.5 mx-1 transition-colors duration-300 ${
                               isCompleted ? 'bg-green-500' : 'bg-gray-200'
                             }`}
                           />
@@ -385,17 +385,17 @@ export default function LobbyPage() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.4 }}
-              className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-5"
+              className="bg-blue-50 border border-blue-200 rounded-lg p-4"
             >
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
                   <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-sm font-semibold text-blue-900 mb-1">Session Goal</h3>
-                  <p className="text-base text-blue-800">{session.session_goal}</p>
+                  <h3 className="text-xs font-semibold text-blue-900 mb-1">Session Goal</h3>
+                  <p className="text-sm text-blue-800">{session.session_goal}</p>
                 </div>
               </div>
             </motion.div>
