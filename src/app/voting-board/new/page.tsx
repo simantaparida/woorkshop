@@ -36,6 +36,7 @@ export default function NewVotingBoardPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loadingUser, setLoadingUser] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showHowItWorks, setShowHowItWorks] = useState(true);
 
   // Check authentication and get current user
   useEffect(() => {
