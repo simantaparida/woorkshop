@@ -209,58 +209,86 @@ export default function JoinPage() {
         </div>
 
         {/* Timeline - Step 1 (Setup/Join) */}
-        <SessionTimeline currentStep={1} />
+        <SessionTimeline currentStep={1} size="compact" />
 
-        {/* Header Section */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            {data?.topic_title || 'Problem Framing Session'}
-          </h1>
-          {data?.topic_description && (
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              {data.topic_description}
-            </p>
-          )}
-        </div>
+        {/* Unified Header Card - Only show when NOT joined (title/description only) */}
+        {!effectiveHasJoined && (
+          <div className="text-center mb-6">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {data?.topic_title || 'Problem Framing Session'}
+            </h1>
+            {data?.topic_description && (
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                {data.topic_description}
+              </p>
+            )}
+          </div>
+        )}
 
-        {/* Session Context / Attachments - Below Topic Description */}
-        {data?.attachments && data.attachments.length > 0 && (
+        {/* Unified Header Card - For joined state with compact badge */}
+        {effectiveHasJoined && (
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Paperclip className="w-5 h-5 text-gray-500" />
-              <h3 className="font-semibold text-gray-900">Session Context & Attachments</h3>
+            {/* Success Badge + Title - Responsive Layout */}
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+              <div className="flex-1">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                  {data?.topic_title || 'Problem Framing Session'}
+                </h1>
+              </div>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200 rounded-full text-green-700 self-start flex-shrink-0 whitespace-nowrap" role="status" aria-live="polite">
+                <CheckCircle2 className="w-4 h-4" />
+                <span className="text-sm font-semibold">You're in!</span>
+              </div>
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-4">
-              {data.attachments.map((att) => (
-                <div key={att.id} className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 transition-colors">
-                  <div className="mt-1 p-2 bg-white rounded-lg border border-gray-100 shadow-sm">
-                    {att.type === 'link' && <LinkIcon className="w-5 h-5 text-blue-500" />}
-                    {att.type === 'image' && <ImageIcon className="w-5 h-5 text-purple-500" />}
-                    {att.type === 'document' && <FileText className="w-5 h-5 text-orange-500" />}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-gray-900 truncate mb-1">{att.name}</p>
-                    {att.type === 'link' ? (
-                      <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline truncate block flex items-center">
-                        {att.url} <ArrowRight className="w-3 h-3 ml-1 inline" />
-                      </a>
-                    ) : (
-                      <div className="text-xs text-gray-500">
-                        {att.type === 'image' ? 'Image Attachment' : 'Document Attachment'}
-                      </div>
-                    )}
+            {/* Description */}
+            {data?.topic_description && (
+              <p className="text-base text-gray-600 mb-4">
+                {data.topic_description}
+              </p>
+            )}
 
-                    {/* Image Preview */}
-                    {att.type === 'image' && (
-                      <div className="mt-3 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
-                        <img src={att.url} alt={att.name} className="w-full h-32 object-cover" />
-                      </div>
-                    )}
-                  </div>
+            {/* Session Context & Attachments - Inline with border-top */}
+            {data?.attachments && data.attachments.length > 0 && (
+              <div className="pt-4 mt-4 border-t border-gray-100">
+                <div className="flex items-center gap-2 mb-3">
+                  <Paperclip className="w-4 h-4 text-gray-500" />
+                  <h3 className="text-sm font-semibold text-gray-700">
+                    Session Context ({data.attachments.length})
+                  </h3>
                 </div>
-              ))}
-            </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {data.attachments.map((att) => (
+                    <div key={att.id} className="flex items-start gap-2.5 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-blue-200 transition-colors">
+                      <div className="mt-1 p-1.5 bg-white rounded-lg border border-gray-100 shadow-sm">
+                        {att.type === 'link' && <LinkIcon className="w-4 h-4 text-blue-500" />}
+                        {att.type === 'image' && <ImageIcon className="w-4 h-4 text-purple-500" />}
+                        {att.type === 'document' && <FileText className="w-4 h-4 text-orange-500" />}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-semibold text-gray-900 truncate mb-1">{att.name}</p>
+                        {att.type === 'link' ? (
+                          <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline truncate block flex items-center">
+                            {att.url} <ArrowRight className="w-3 h-3 ml-1 inline" />
+                          </a>
+                        ) : (
+                          <div className="text-xs text-gray-500">
+                            {att.type === 'image' ? 'Image Attachment' : 'Document Attachment'}
+                          </div>
+                        )}
+
+                        {/* Image Preview */}
+                        {att.type === 'image' && (
+                          <div className="mt-3 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
+                            <img src={att.url} alt={att.name} className="w-full h-32 object-cover" loading="lazy" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -269,7 +297,7 @@ export default function JoinPage() {
 
           {/* Join / Lobby Card */}
           <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-blue-100/50 overflow-hidden">
-            <div className="p-8">
+            <div className="p-6">
               {!effectiveHasJoined ? (
                 <div className="max-w-md mx-auto space-y-6">
                   <div className="text-center mb-6">
@@ -279,26 +307,15 @@ export default function JoinPage() {
                   <JoinForm onJoin={handleJoin} loading={joiningLoading} />
                 </div>
               ) : (
-                <div className="space-y-8">
-                  <div className="text-center">
-                    <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
-                      <CheckCircle2 className="w-10 h-10 text-green-600" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                      You're in!
-                    </h2>
-                    <p className="text-gray-600">
-                      Waiting for the facilitator to start the session...
-                    </p>
-                  </div>
+                <div className="space-y-6">
 
                   {/* Share Link - Prominent */}
-                  <div className="bg-blue-50 border border-blue-100 rounded-xl p-6 text-center">
+                  <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-center">
                     <p className="text-sm font-semibold text-blue-900 mb-3">
                       Invite your team to join
                     </p>
                     <div className="flex items-center justify-center gap-2 max-w-md mx-auto">
-                      <code className="flex-1 bg-white px-4 py-3 rounded-lg border border-blue-200 text-sm text-gray-600 truncate font-mono">
+                      <code className="flex-1 bg-white px-4 py-2.5 rounded-lg border border-blue-200 text-sm text-gray-600 truncate font-mono">
                         {typeof window !== 'undefined' ? window.location.href : ''}
                       </code>
                       <Button
@@ -318,7 +335,7 @@ export default function JoinPage() {
                   </div>
 
                   {/* Participants List */}
-                  <div className="bg-gray-50 rounded-xl p-6 border border-gray-100">
+                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
                     <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
                       <Users className="w-5 h-5 text-gray-500" />
                       Participants ({data?.participants.length})
@@ -355,17 +372,17 @@ export default function JoinPage() {
 
                   {/* Facilitator Controls */}
                   {isFacilitator && (
-                    <div className="pt-4 border-t border-gray-100">
+                    <div className="pt-4 mt-2 border-t border-gray-100">
                       <Button
                         onClick={handleStart}
                         variant="primary"
                         size="lg"
-                        className="w-full py-4 text-lg font-semibold shadow-lg shadow-blue-200/50 hover:shadow-blue-300/50 transition-all"
+                        className="w-full py-3.5 text-lg font-semibold shadow-lg shadow-blue-200/50 hover:shadow-blue-300/50 transition-all"
                       >
                         Start Session
                         <ArrowRight className="w-5 h-5 ml-2" />
                       </Button>
-                      <p className="text-sm text-center text-gray-500 mt-3">
+                      <p className="text-sm text-center text-gray-500 mt-2">
                         Click when everyone has joined
                       </p>
                     </div>
