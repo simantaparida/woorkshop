@@ -62,21 +62,8 @@ export function StatementInput({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">{topicTitle}</h2>
-        {topicDescription && (
-          <p className="text-gray-700">{topicDescription}</p>
-        )}
-      </div>
-
+    <div className="space-y-4">
       <div>
-        <label htmlFor="statement" className="block text-lg font-medium text-gray-900 mb-2">
-          How do you frame this problem?
-        </label>
-        <p className="text-sm text-gray-600 mb-4">
-          Describe the problem as you see it. Your response will remain hidden from other participants until the review step.
-        </p>
         <textarea
           ref={textareaRef}
           id="statement"

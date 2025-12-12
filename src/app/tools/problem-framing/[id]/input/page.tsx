@@ -10,7 +10,7 @@ import { ShareLink } from '@/components/problem-framing/ShareLink';
 import { Button } from '@/components/ui/Button';
 import { useProblemFramingSession } from '@/lib/hooks/useProblemFramingSession';
 import { supabase } from '@/lib/supabase/client';
-import { ArrowRight, Users, CheckCircle2, Clock, AlertCircle, Paperclip, FileText, Link as LinkIcon, Image as ImageIcon } from 'lucide-react';
+import { ArrowRight, Users, CheckCircle2, Clock, AlertCircle, Paperclip, FileText, Link as LinkIcon, Image as ImageIcon, ChevronLeft } from 'lucide-react';
 
 export default function IndividualInputPage() {
   const params = useParams();
@@ -191,7 +191,7 @@ export default function IndividualInputPage() {
   if (loading) {
     return (
       <AppLayout>
-        <div className="max-w-4xl mx-auto px-4 py-12 text-center">
+        <div className="max-w-3xl mx-auto px-4 py-8 text-center">
           <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto" />
           <p className="mt-4 text-gray-600">Loading session...</p>
         </div>
@@ -202,7 +202,7 @@ export default function IndividualInputPage() {
   if (!data) {
     return (
       <AppLayout>
-        <div className="max-w-4xl mx-auto px-4 py-12 text-center">
+        <div className="max-w-3xl mx-auto px-4 py-8 text-center">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertCircle className="w-8 h-8 text-red-600" />
           </div>
@@ -215,44 +215,55 @@ export default function IndividualInputPage() {
 
   return (
     <AppLayout>
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        {/* Back Button */}
+        <div className="mb-6">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.push('/tools')}
+            className="text-gray-500 hover:text-gray-900"
+          >
+            <ChevronLeft className="w-4 h-4 mr-1" />
+            Back to Tools
+          </Button>
+        </div>
 
         {/* Timeline */}
-        <SessionTimeline currentStep={2} />
-
-        {/* Header */}
-        <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-gray-900 mb-3">
-            {isFacilitator ? 'Individual Input Phase' : 'Define the Problem'}
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            {isFacilitator
-              ? 'Monitor participant submissions and advance when ready.'
-              : 'Describe the problem from your perspective. Be specific and focus on the "what" and "why".'}
-          </p>
-        </div>
+        <SessionTimeline currentStep={2} size="compact" />
 
         {/* FACILITATOR VIEW */}
         {isFacilitator ? (
-          <div className="space-y-8">
+          <div className="space-y-6">
 
             {/* Share Link - Prominent at Top */}
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-              <div className="flex items-center justify-between mb-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-5">
+              <div className="flex items-center justify-between mb-3">
                 <h3 className="font-semibold text-blue-900">Invite Your Team</h3>
               </div>
               <ShareLink sessionId={sessionId} />
             </div>
 
             {/* Facilitator's Own Input (Optional) */}
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-blue-100/50 p-8">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-blue-100/50 p-6">
               {!hasSubmitted ? (
                 <div>
-                  <div className="mb-6">
-                    <h2 className="text-xl font-bold text-gray-900 mb-2">
+                  {/* Header */}
+                  <div className="text-center mb-5">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                      Individual Input Phase
+                    </h1>
+                    <p className="text-base text-gray-600">
+                      Monitor participant submissions and advance when ready.
+                    </p>
+                  </div>
+
+                  <div className="mb-5">
+                    <h2 className="text-lg font-bold text-gray-900 mb-1.5">
                       Your Input (Optional)
                     </h2>
-                    <p className="text-gray-600">
+                    <p className="text-sm text-gray-600">
                       As facilitator, you can optionally add your own perspective.
                     </p>
                   </div>
@@ -264,44 +275,44 @@ export default function IndividualInputPage() {
                   />
                 </div>
               ) : (
-                <div className="flex items-center gap-4 text-green-600 bg-green-50 p-4 rounded-xl border border-green-100">
-                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <CheckCircle2 className="w-6 h-6" />
+                <div className="flex items-center gap-3 text-green-600 bg-green-50 p-3 rounded-xl border border-green-100">
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <CheckCircle2 className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="font-bold">You've submitted your input</p>
-                    <p className="text-sm text-green-700">Your perspective has been added to the session</p>
+                    <p className="font-bold text-sm">You've submitted your input</p>
+                    <p className="text-xs text-green-700">Your perspective has been added to the session</p>
                   </div>
                 </div>
               )}
             </div>
 
             {/* Participant Status Card */}
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
-              <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
-                    <Users className="w-6 h-6" />
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                    <Users className="w-5 h-5" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900">
+                    <h2 className="text-lg font-bold text-gray-900">
                       Participant Progress
                     </h2>
-                    <p className="text-gray-600">
+                    <p className="text-sm text-gray-600">
                       {submittedCount} of {totalRegularParticipants} submitted
                     </p>
                   </div>
                 </div>
-                <div className="text-4xl font-bold text-blue-600">
+                <div className="text-3xl font-bold text-blue-600">
                   {totalRegularParticipants > 0 ? Math.round((submittedCount / totalRegularParticipants) * 100) : 0}%
                 </div>
               </div>
 
               {/* Progress Bar */}
-              <div className="mb-8">
-                <div className="w-full bg-gray-100 rounded-full h-4 overflow-hidden">
+              <div className="mb-5">
+                <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
                   <div
-                    className="bg-blue-600 h-4 rounded-full transition-all duration-500 ease-out"
+                    className="bg-blue-600 h-3 rounded-full transition-all duration-500 ease-out"
                     style={{
                       width: `${totalRegularParticipants > 0 ? (submittedCount / totalRegularParticipants) * 100 : 0}%`
                     }}
@@ -310,11 +321,11 @@ export default function IndividualInputPage() {
               </div>
 
               {/* Participant List */}
-              <div className="space-y-3 mb-8">
+              <div className="space-y-2.5 mb-6">
                 {allParticipants.length === 0 ? (
-                  <div className="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-200">
-                    <p className="text-gray-500 font-medium">No participants yet</p>
-                    <p className="text-sm text-gray-400 mt-1">Share the link to invite others</p>
+                  <div className="text-center py-6 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                    <p className="text-sm text-gray-500 font-medium">No participants yet</p>
+                    <p className="text-xs text-gray-400 mt-1">Share the link to invite others</p>
                   </div>
                 ) : (
                   allParticipants.map((participant) => {
@@ -323,34 +334,34 @@ export default function IndividualInputPage() {
                     return (
                       <div
                         key={participant.id}
-                        className={`flex items-center justify-between px-5 py-4 rounded-xl border transition-colors ${
+                        className={`flex items-center justify-between px-4 py-3 rounded-xl border transition-colors ${
                           isCurrentUser
                             ? 'bg-blue-50 border-blue-200 hover:bg-blue-100'
                             : 'bg-gray-50 border-gray-100 hover:bg-gray-100'
                         }`}
                       >
                         <div className="flex items-center gap-2">
-                          <span className="text-gray-900 font-medium">
+                          <span className="text-sm text-gray-900 font-medium">
                             {participant.participant_name}
                             {isCurrentUser && (
                               <span className="ml-2 text-xs text-blue-600">(You)</span>
                             )}
                           </span>
                           {participant.is_facilitator && (
-                            <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-bold uppercase tracking-wide">
+                            <span className="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold uppercase tracking-wide">
                               Host
                             </span>
                           )}
                         </div>
                         {participant.has_submitted ? (
-                          <div className="flex items-center gap-2 text-green-600 bg-green-100 px-3 py-1 rounded-full">
-                            <CheckCircle2 className="w-4 h-4" />
-                            <span className="text-sm font-bold">Submitted</span>
+                          <div className="flex items-center gap-1.5 text-green-600 bg-green-100 px-2.5 py-1 rounded-full">
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <span className="text-xs font-bold">Submitted</span>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-2 text-amber-600 bg-amber-100 px-3 py-1 rounded-full">
-                            <Clock className="w-4 h-4" />
-                            <span className="text-sm font-bold">Thinking...</span>
+                          <div className="flex items-center gap-1.5 text-amber-600 bg-amber-100 px-2.5 py-1 rounded-full">
+                            <Clock className="w-3.5 h-3.5" />
+                            <span className="text-xs font-bold">Thinking...</span>
                           </div>
                         )}
                       </div>
@@ -360,10 +371,10 @@ export default function IndividualInputPage() {
               </div>
 
               {/* Facilitator Actions */}
-              <div className="pt-6 border-t border-gray-100">
-                <div className="bg-blue-50 border border-blue-100 rounded-xl p-5 mb-6">
-                  <p className="text-blue-800 flex gap-2">
-                    <AlertCircle className="w-5 h-5 flex-shrink-0" />
+              <div className="pt-5 border-t border-gray-100">
+                <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-5">
+                  <p className="text-sm text-blue-800 flex gap-2">
+                    <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                     <span>
                       <strong>Facilitator Note:</strong> Advance to the next step when you feel enough inputs have been gathered. You don't need to wait for everyone.
                     </span>
@@ -374,24 +385,24 @@ export default function IndividualInputPage() {
                   onClick={handleAdvanceToReview}
                   variant="primary"
                   size="lg"
-                  className="w-full py-4 text-lg font-bold shadow-lg shadow-blue-200/50"
+                  className="w-full py-3 text-base font-bold shadow-lg shadow-blue-200/50"
                   disabled={submittedCount === 0 || advancing}
                 >
                   {advancing ? (
                     <>
-                      <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full mr-2" />
+                      <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2" />
                       Advancing...
                     </>
                   ) : (
                     <>
                       Proceed to Team Review
-                      <ArrowRight className="w-5 h-5 ml-2" />
+                      <ArrowRight className="w-4 h-4 ml-2" />
                     </>
                   )}
                 </Button>
 
                 {submittedCount === 0 && (
-                  <p className="text-sm text-center text-gray-500 mt-3">
+                  <p className="text-xs text-center text-gray-500 mt-2">
                     Waiting for at least one submission...
                   </p>
                 )}
@@ -400,36 +411,36 @@ export default function IndividualInputPage() {
 
             {/* Attachments Section for Facilitator */}
             {data?.attachments && data.attachments.length > 0 && (
-              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <Paperclip className="w-5 h-5 text-gray-500" />
-                  <h3 className="font-semibold text-gray-900">Session Context & Attachments</h3>
+              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <Paperclip className="w-4 h-4 text-gray-500" />
+                  <h3 className="text-sm font-semibold text-gray-900">Session Context & Attachments</h3>
                 </div>
 
-                <div className="grid sm:grid-cols-2 gap-4">
+                <div className="grid sm:grid-cols-2 gap-3">
                   {data.attachments.map((att) => (
-                    <div key={att.id} className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 transition-colors">
-                      <div className="mt-1 p-2 bg-white rounded-lg border border-gray-100 shadow-sm">
-                        {att.type === 'link' && <LinkIcon className="w-5 h-5 text-blue-500" />}
-                        {att.type === 'image' && <ImageIcon className="w-5 h-5 text-purple-500" />}
-                        {att.type === 'document' && <FileText className="w-5 h-5 text-orange-500" />}
+                    <div key={att.id} className="flex items-start gap-2.5 p-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 transition-colors">
+                      <div className="mt-0.5 p-1.5 bg-white rounded-lg border border-gray-100 shadow-sm">
+                        {att.type === 'link' && <LinkIcon className="w-4 h-4 text-blue-500" />}
+                        {att.type === 'image' && <ImageIcon className="w-4 h-4 text-purple-500" />}
+                        {att.type === 'document' && <FileText className="w-4 h-4 text-orange-500" />}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold text-gray-900 truncate mb-1">{att.name}</p>
+                        <p className="text-xs font-semibold text-gray-900 truncate mb-1">{att.name}</p>
                         {att.type === 'link' ? (
-                          <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline truncate block flex items-center">
-                            {att.url} <ArrowRight className="w-3 h-3 ml-1 inline" />
+                          <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-[11px] text-blue-600 hover:underline truncate block flex items-center">
+                            {att.url} <ArrowRight className="w-2.5 h-2.5 ml-1 inline" />
                           </a>
                         ) : (
-                          <div className="text-xs text-gray-500">
+                          <div className="text-[11px] text-gray-500">
                             {att.type === 'image' ? 'Image Attachment' : 'Document Attachment'}
                           </div>
                         )}
 
                         {/* Image Preview */}
                         {att.type === 'image' && (
-                          <div className="mt-3 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
-                            <img src={att.url} alt={att.name} className="w-full h-32 object-cover" />
+                          <div className="mt-2 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
+                            <img src={att.url} alt={att.name} className="w-full h-24 object-cover" />
                           </div>
                         )}
                       </div>
@@ -442,48 +453,112 @@ export default function IndividualInputPage() {
         ) : (
           /* PARTICIPANT VIEW */
           <div className="max-w-3xl mx-auto">
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-blue-100/50 p-8">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-blue-100/50 p-6">
               {!hasSubmitted ? (
                 <>
-                  <StatementInput
-                    topicTitle={data.topic_title}
-                    topicDescription={data.topic_description || undefined}
-                    onSubmit={handleSubmit}
-                    loading={submitting}
-                  />
-                  <div className="mt-8 bg-amber-50 border border-amber-100 rounded-xl p-5 flex gap-3">
-                    <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0 text-amber-600">
-                      <AlertCircle className="w-6 h-6" />
+                  {/* Header */}
+                  <div className="text-center mb-5">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                      Define the Problem
+                    </h1>
+                    <p className="text-base text-gray-600">
+                      Describe the problem from your perspective. Be specific and focus on the "what" and "why".
+                    </p>
+                  </div>
+
+                  {/* Privacy Mode Alert - Top */}
+                  <div className="mb-6 bg-amber-50 border border-amber-100 rounded-xl p-4 flex gap-2.5">
+                    <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0 text-amber-600">
+                      <AlertCircle className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-amber-900 mb-1">Privacy Mode Active</h3>
-                      <p className="text-sm text-amber-800">
+                      <h3 className="text-sm font-bold text-amber-900 mb-1">Privacy Mode Active</h3>
+                      <p className="text-xs text-amber-800">
                         Your statement will be hidden from others until the review step to prevent groupthink.
                       </p>
                     </div>
                   </div>
+
+                  {/* Topic Title & Description */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-5">
+                    <h2 className="text-lg font-semibold text-gray-900 mb-2">{data.topic_title}</h2>
+                    {data.topic_description && (
+                      <p className="text-sm text-gray-700">{data.topic_description}</p>
+                    )}
+                  </div>
+
+                  {/* Session Context & Attachments - Right after topic */}
+                  {data?.attachments && data.attachments.length > 0 && (
+                    <div className="mb-6 pb-5 border-b border-gray-200">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Paperclip className="w-4 h-4 text-gray-500" />
+                        <h3 className="text-sm font-semibold text-gray-900">Session Context & Attachments</h3>
+                      </div>
+
+                      <div className="grid sm:grid-cols-2 gap-3">
+                        {data.attachments.map((att) => (
+                          <div key={att.id} className="flex items-start gap-2.5 p-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 transition-colors">
+                            <div className="mt-0.5 p-1.5 bg-white rounded-lg border border-gray-100 shadow-sm">
+                              {att.type === 'link' && <LinkIcon className="w-4 h-4 text-blue-500" />}
+                              {att.type === 'image' && <ImageIcon className="w-4 h-4 text-purple-500" />}
+                              {att.type === 'document' && <FileText className="w-4 h-4 text-orange-500" />}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-xs font-semibold text-gray-900 truncate mb-1">{att.name}</p>
+                              {att.type === 'link' ? (
+                                <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-[11px] text-blue-600 hover:underline truncate block flex items-center">
+                                  {att.url} <ArrowRight className="w-2.5 h-2.5 ml-1 inline" />
+                                </a>
+                              ) : (
+                                <div className="text-[11px] text-gray-500">
+                                  {att.type === 'image' ? 'Image Attachment' : 'Document Attachment'}
+                                </div>
+                              )}
+
+                              {/* Image Preview */}
+                              {att.type === 'image' && (
+                                <div className="mt-2 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
+                                  <img src={att.url} alt={att.name} className="w-full h-24 object-cover" />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Input Form */}
+                  <div>
+                    <StatementInput
+                      topicTitle={data.topic_title}
+                      topicDescription={data.topic_description || undefined}
+                      onSubmit={handleSubmit}
+                      loading={submitting}
+                    />
+                  </div>
                 </>
               ) : (
-                <div className="text-center py-12">
-                  <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
-                    <CheckCircle2 className="w-10 h-10 text-green-600" />
+                <div className="text-center py-10">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5 animate-bounce">
+                    <CheckCircle2 className="w-8 h-8 text-green-600" />
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                  <h2 className="text-xl font-bold text-gray-900 mb-2">
                     Input Submitted!
                   </h2>
-                  <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto">
+                  <p className="text-base text-gray-600 mb-6 max-w-md mx-auto">
                     Great job! Sit tight while the rest of the team finishes up.
                   </p>
 
-                  <div className="inline-flex items-center gap-3 px-6 py-3 bg-gray-50 border border-gray-200 rounded-full">
+                  <div className="inline-flex items-center gap-2.5 px-5 py-2.5 bg-gray-50 border border-gray-200 rounded-full">
                     <div className="flex -space-x-2">
                       {[...Array(Math.min(3, submittedCount))].map((_, i) => (
-                        <div key={i} className="w-8 h-8 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center text-xs font-bold text-blue-600">
+                        <div key={i} className="w-7 h-7 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center text-xs font-bold text-blue-600">
                           {i + 1}
                         </div>
                       ))}
                     </div>
-                    <span className="font-medium text-gray-700">
+                    <span className="text-sm font-medium text-gray-700">
                       {submittedCount} of {totalRegularParticipants} ready
                     </span>
                   </div>
@@ -491,38 +566,38 @@ export default function IndividualInputPage() {
               )}
             </div>
 
-            {/* Attachments Section for Participants */}
-            {data?.attachments && data.attachments.length > 0 && (
-              <div className="mt-6 bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <Paperclip className="w-5 h-5 text-gray-500" />
-                  <h3 className="font-semibold text-gray-900">Session Context & Attachments</h3>
+            {/* Remove separate attachments section since it's now integrated above */}
+            {false && data?.attachments && data.attachments.length > 0 && (
+              <div className="mt-5 bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <Paperclip className="w-4 h-4 text-gray-500" />
+                  <h3 className="text-sm font-semibold text-gray-900">Session Context & Attachments</h3>
                 </div>
 
-                <div className="grid sm:grid-cols-2 gap-4">
+                <div className="grid sm:grid-cols-2 gap-3">
                   {data.attachments.map((att) => (
-                    <div key={att.id} className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 transition-colors">
-                      <div className="mt-1 p-2 bg-white rounded-lg border border-gray-100 shadow-sm">
-                        {att.type === 'link' && <LinkIcon className="w-5 h-5 text-blue-500" />}
-                        {att.type === 'image' && <ImageIcon className="w-5 h-5 text-purple-500" />}
-                        {att.type === 'document' && <FileText className="w-5 h-5 text-orange-500" />}
+                    <div key={att.id} className="flex items-start gap-2.5 p-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 transition-colors">
+                      <div className="mt-0.5 p-1.5 bg-white rounded-lg border border-gray-100 shadow-sm">
+                        {att.type === 'link' && <LinkIcon className="w-4 h-4 text-blue-500" />}
+                        {att.type === 'image' && <ImageIcon className="w-4 h-4 text-purple-500" />}
+                        {att.type === 'document' && <FileText className="w-4 h-4 text-orange-500" />}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold text-gray-900 truncate mb-1">{att.name}</p>
+                        <p className="text-xs font-semibold text-gray-900 truncate mb-1">{att.name}</p>
                         {att.type === 'link' ? (
-                          <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline truncate block flex items-center">
-                            {att.url} <ArrowRight className="w-3 h-3 ml-1 inline" />
+                          <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-[11px] text-blue-600 hover:underline truncate block flex items-center">
+                            {att.url} <ArrowRight className="w-2.5 h-2.5 ml-1 inline" />
                           </a>
                         ) : (
-                          <div className="text-xs text-gray-500">
+                          <div className="text-[11px] text-gray-500">
                             {att.type === 'image' ? 'Image Attachment' : 'Document Attachment'}
                           </div>
                         )}
 
                         {/* Image Preview */}
                         {att.type === 'image' && (
-                          <div className="mt-3 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
-                            <img src={att.url} alt={att.name} className="w-full h-32 object-cover" />
+                          <div className="mt-2 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
+                            <img src={att.url} alt={att.name} className="w-full h-24 object-cover" />
                           </div>
                         )}
                       </div>
