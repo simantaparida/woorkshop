@@ -211,35 +211,83 @@ export default function JoinPage() {
         {/* Timeline - Step 1 (Setup/Join) */}
         <SessionTimeline currentStep={1} size="compact" />
 
-        {/* Header Section - Only show when NOT joined */}
-        {!effectiveHasJoined && (
-          <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              {data?.topic_title || 'Problem Framing Session'}
-            </h1>
-            {data?.topic_description && (
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                {data.topic_description}
-              </p>
-            )}
-          </div>
-        )}
-
         {/* Main Content Area */}
         <div className="space-y-6">
 
-          {/* Join / Lobby Card */}
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-blue-100/50 overflow-hidden">
-            <div className="p-6">
-              {!effectiveHasJoined ? (
-                <div className="max-w-md mx-auto space-y-6">
-                  <div className="text-center mb-6">
-                    <h2 className="text-2xl font-bold text-gray-900">Join the Session</h2>
-                    <p className="text-gray-500">Enter your name to join the team</p>
-                  </div>
+          {/* Join Card - Show first when NOT joined */}
+          {!effectiveHasJoined && (
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-blue-100/50 overflow-hidden">
+              <div className="p-6">
+                <div className="max-w-md mx-auto">
                   <JoinForm onJoin={handleJoin} loading={joiningLoading} />
                 </div>
-              ) : (
+              </div>
+            </div>
+          )}
+
+          {/* Content Details Section - Show below join when NOT joined */}
+          {!effectiveHasJoined && (
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+              {/* Title */}
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
+                {data?.topic_title || 'Problem Framing Session'}
+              </h1>
+
+              {/* Description */}
+              {data?.topic_description && (
+                <p className="text-base text-gray-600 mb-4">
+                  {data.topic_description}
+                </p>
+              )}
+
+              {/* Session Context & Attachments */}
+              {data?.attachments && data.attachments.length > 0 && (
+                <div className="pt-4 mt-4 border-t border-gray-100">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Paperclip className="w-4 h-4 text-gray-500" />
+                    <h3 className="text-sm font-semibold text-gray-700">
+                      Session Context ({data.attachments.length})
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {data.attachments.map((att) => (
+                      <div key={att.id} className="flex items-start gap-2.5 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-blue-200 transition-colors">
+                        <div className="mt-1 p-1.5 bg-white rounded-lg border border-gray-100 shadow-sm">
+                          {att.type === 'link' && <LinkIcon className="w-4 h-4 text-blue-500" />}
+                          {att.type === 'image' && <ImageIcon className="w-4 h-4 text-purple-500" />}
+                          {att.type === 'document' && <FileText className="w-4 h-4 text-orange-500" />}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-semibold text-gray-900 truncate mb-1">{att.name}</p>
+                          {att.type === 'link' ? (
+                            <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline truncate block flex items-center">
+                              {att.url} <ArrowRight className="w-3 h-3 ml-1 inline" />
+                            </a>
+                          ) : (
+                            <div className="text-xs text-gray-500">
+                              {att.type === 'image' ? 'Image Attachment' : 'Document Attachment'}
+                            </div>
+                          )}
+
+                          {/* Image Preview */}
+                          {att.type === 'image' && (
+                            <div className="mt-3 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
+                              <img src={att.url} alt={att.name} className="w-full h-32 object-cover" loading="lazy" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Joined State - Lobby Card */}
+          {effectiveHasJoined && (
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-xl shadow-blue-100/50 overflow-hidden">
+              <div className="p-6">
                 <div className="space-y-6">
 
                   {/* You're in! Badge + Invite Section */}
@@ -389,9 +437,9 @@ export default function JoinPage() {
                     </div>
                   )}
                 </div>
-              )}
+              </div>
             </div>
-          </div>
+          )}
 
         </div>
       </div>
