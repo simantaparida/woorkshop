@@ -231,123 +231,96 @@ export default function NewVotingBoardPage() {
     <AppLayout>
       {ToastContainer}
 
-      <div className="p-8">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-          className="space-y-8"
+          className="space-y-6"
         >
           {/* Session Timeline Progress */}
-          {(() => {
-            const currentStep = 1; // Create step is active
-            const steps = [
-              { id: 1, label: 'Create' },
-              { id: 2, label: 'Join' },
-              { id: 3, label: 'Review' },
-              { id: 4, label: 'Ready' },
-              { id: 5, label: 'Vote' },
-              { id: 6, label: 'Results' },
-            ];
+          <div className="mb-8">
+            <div className="flex items-center justify-center w-full">
+              <div className="flex items-center gap-2">
+                {[
+                  { id: 1, label: 'Create' },
+                  { id: 2, label: 'Join' },
+                  { id: 3, label: 'Review' },
+                  { id: 4, label: 'Ready' },
+                  { id: 5, label: 'Vote' },
+                  { id: 6, label: 'Results' },
+                ].map((step, index, arr) => {
+                  const isActive = step.id === 1;
+                  const isCompleted = step.id < 1;
+                  const isLast = index === arr.length - 1;
 
-            return (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1, duration: 0.4 }}
-                className="flex items-center justify-center w-full mb-8"
-              >
-                <div className="flex items-center relative z-10">
-                  {steps.map((step, index) => {
-                    const isActive = step.id === currentStep;
-                    const isCompleted = step.id < currentStep;
-                    const isLast = index === steps.length - 1;
-
-                    return (
-                      <div key={step.id} className="flex items-center">
-                        <div className="flex flex-col items-center relative">
-                          <div
-                            className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-300 border-2 ${
-                              isActive
-                                ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200'
-                                : isCompleted
-                                ? 'bg-green-500 text-white border-green-500'
-                                : 'bg-white text-gray-400 border-gray-200'
-                            }`}
-                          >
-                            {isCompleted ? (
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                              </svg>
-                            ) : (
-                              step.id
-                            )}
-                          </div>
-                          <span
-                            className={`absolute top-8 text-[10px] font-medium whitespace-nowrap transition-colors duration-300 ${
-                              isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-400'
-                            }`}
-                          >
-                            {step.label}
-                          </span>
+                  return (
+                    <div key={step.id} className="flex items-center">
+                      <div className="flex flex-col items-center relative">
+                        <div
+                          className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                            isActive
+                              ? 'bg-blue-600 text-white shadow-md shadow-blue-200/50'
+                              : isCompleted
+                              ? 'bg-green-500 text-white'
+                              : 'bg-white text-gray-400 border-2 border-gray-200'
+                          }`}
+                        >
+                          {isCompleted ? (
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            </svg>
+                          ) : (
+                            step.id
+                          )}
                         </div>
-
-                        {!isLast && (
-                          <div
-                            className={`w-12 sm:w-16 h-0.5 mx-1.5 transition-colors duration-300 ${
-                              isCompleted ? 'bg-green-500' : 'bg-gray-200'
-                            }`}
-                          />
-                        )}
+                        <span
+                          className={`absolute -bottom-5 text-xs font-medium whitespace-nowrap ${
+                            isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-400'
+                          }`}
+                        >
+                          {step.label}
+                        </span>
                       </div>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            );
-          })()}
 
-          {/* Page Header with Actions */}
-          <div className="flex items-start justify-between mb-8">
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <button
-                  onClick={() => router.push('/tools')}
-                  className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 transition-colors"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                  Back to Tools
-                </button>
+                      {!isLast && (
+                        <div
+                          className={`w-12 sm:w-16 h-0.5 mx-2 transition-colors ${
+                            isCompleted ? 'bg-green-500' : 'bg-gray-200'
+                          }`}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Create Voting Board
-              </h1>
-              <p className="text-gray-600">
-                Set up a 100-point effort scoring session for your team
-              </p>
             </div>
+          </div>
 
-            {/* Action Buttons - Top Right */}
-            <div className="flex gap-3">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => router.push('/tools')}
-                disabled={loading}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                variant="primary"
-                isLoading={loading}
-                onClick={handleSubmit}
-              >
-                Create Voting Board →
-              </Button>
-            </div>
+          {/* Back Button */}
+          <div className="mb-6">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => router.push('/tools')}
+              className="inline-flex items-center gap-1.5"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Back to Tools
+            </Button>
+          </div>
+
+          {/* Page Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+              Create Voting Board
+            </h1>
+            <p className="text-base text-gray-600">
+              Set up a 100-point effort scoring session for your team
+            </p>
           </div>
 
           {/* Form */}
@@ -357,15 +330,15 @@ export default function NewVotingBoardPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.4 }}
-              className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm"
+              className="bg-white rounded-xl border border-gray-200 p-6"
             >
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
-                  <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex items-center gap-2.5 mb-5">
+                <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <h2 className="text-lg font-semibold text-gray-900">Session Details</h2>
+                <h2 className="text-lg font-bold text-gray-900">Session Details</h2>
               </div>
 
               <div className="grid sm:grid-cols-2 gap-4">
@@ -411,16 +384,16 @@ export default function NewVotingBoardPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.4 }}
-              className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm"
+              className="bg-white rounded-xl border border-gray-200 p-6"
             >
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
-                    <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
                   </div>
-                  <h2 className="text-lg font-semibold text-gray-900">Items to Vote On</h2>
+                  <h2 className="text-lg font-bold text-gray-900">Items to Vote On</h2>
                 </div>
                 <span className="text-sm text-gray-500">
                   {features.filter(f => f.title.trim()).length} / 10 items
@@ -432,12 +405,21 @@ export default function NewVotingBoardPage() {
               </p>
 
               {/* Info Box */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                <h3 className="font-semibold text-blue-900 mb-2">How it works:</h3>
-                <ul className="text-sm text-blue-800 space-y-1">
-                  <li>• Each participant gets 100 points to distribute</li>
-                  <li>• Allocate points based on effort or priority</li>
-                  <li>• See ranked results based on total points</li>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-5">
+                <h3 className="text-sm font-semibold text-blue-900 mb-2">How it works:</h3>
+                <ul className="text-sm text-blue-800 space-y-1.5">
+                  <li className="flex gap-2">
+                    <span className="text-blue-500">•</span>
+                    <span>Each participant gets 100 points to distribute</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-blue-500">•</span>
+                    <span>Allocate points based on effort or priority</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-blue-500">•</span>
+                    <span>See ranked results based on total points</span>
+                  </li>
                 </ul>
               </div>
 
@@ -458,6 +440,30 @@ export default function NewVotingBoardPage() {
                 </motion.div>
               )}
             </motion.div>
+
+            {/* Submit Button - Sticky Bottom */}
+            <div className="sticky bottom-6 z-10 bg-white border border-gray-200 rounded-xl p-4 shadow-lg">
+              <div className="flex items-center justify-between gap-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => router.push('/tools')}
+                  disabled={loading}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="lg"
+                  isLoading={loading}
+                  disabled={loading}
+                  className="flex-1 sm:flex-none"
+                >
+                  {loading ? 'Creating...' : 'Create Voting Board'}
+                </Button>
+              </div>
+            </div>
           </form>
         </motion.div>
       </div>
