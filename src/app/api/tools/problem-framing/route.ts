@@ -2,17 +2,25 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createPFSession } from '@/lib/api/problem-framing-server';
 import { getSupabaseServer } from '@/lib/supabase/server';
 import type { CreatePFSessionInput } from '@/types';
+import { createApiLogger, logError } from '@/lib/logger';
 
 /**
  * POST /api/tools/problem-framing
  * Create a new Problem Framing session
  */
 export async function POST(request: NextRequest) {
+  const requestId = request.headers.get('x-request-id') || 'unknown';
+  const log = createApiLogger(requestId, '/api/tools/problem-framing', 'POST');
+  const startTime = Date.now();
+
   try {
     const body = await request.json();
     const { title, description, facilitatorId, facilitatorName, attachments }: CreatePFSessionInput & { attachments?: any[] } = body;
 
+    log.info({ title, facilitatorId, facilitatorName, hasAttachments: !!attachments?.length }, 'Creating problem framing session');
+
     if (!title || !facilitatorId || !facilitatorName) {
+      log.warn({ title, facilitatorId, facilitatorName }, 'Missing required fields');
       return NextResponse.json(
         { error: 'Missing required fields: title, facilitatorId, facilitatorName' },
         { status: 400 }
@@ -51,14 +59,22 @@ export async function POST(request: NextRequest) {
         .insert(attachmentsToInsert as any);
 
       if (attachmentError) {
-        console.warn('Attachments table not found or save failed:', attachmentError);
+        log.warn({ sessionId: result.sessionId, attachmentCount: attachments.length }, 'Failed to save attachments');
         // We don't fail the whole request if attachments fail, but we log it
       }
     }
 
+    const duration = Date.now() - startTime;
+    log.info({
+      sessionId: result.sessionId,
+      facilitatorToken: result.facilitatorToken ? 'generated' : 'missing',
+      attachmentCount: attachments?.length || 0,
+      durationMs: duration
+    }, 'Problem framing session created successfully');
+
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
-    console.error('Error creating PF session:', error);
+    const duration = Date.now() - startTime;
 
     // Extract detailed error info
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -67,23 +83,18 @@ export async function POST(request: NextRequest) {
 
     // Check if error is RLS-related
     if (errorCode === '42501' || errorMessage.includes('policy')) {
-      console.error('RLS Policy violation detected:', {
+      log.error({
         table: 'pf_session_participants',
         operation: 'INSERT',
         errorCode: errorCode,
         message: errorDetails || errorMessage,
         suggestedFix: 'Run migration 017 to restore RLS policies with WITH CHECK clause',
-        documentation: 'RLS policies need both USING (true) and WITH CHECK (true) for write operations'
-      });
+        documentation: 'RLS policies need both USING (true) and WITH CHECK (true) for write operations',
+        durationMs: duration
+      }, 'RLS Policy violation detected');
+    } else {
+      logError(log, error, { durationMs: duration, errorCode, errorDetails });
     }
-
-    // Log full details for debugging
-    console.error('Error details:', {
-      message: errorMessage,
-      code: errorCode,
-      details: errorDetails,
-      stack: error instanceof Error ? error.stack : undefined
-    });
 
     // Return more helpful error message
     let userMessage = 'Failed to create session';

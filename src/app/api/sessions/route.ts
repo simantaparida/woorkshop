@@ -2,9 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase/client';
 import { getRelativeTime } from '@/lib/utils/date';
 import type { SessionListItem, SessionsResponse, ToolType } from '@/types';
+import { createApiLogger, logError } from '@/lib/logger';
 
 // GET /api/sessions - Get user's sessions with filters
 export async function GET(request: NextRequest) {
+  const requestId = request.headers.get('x-request-id') || 'unknown';
+  const log = createApiLogger(requestId, '/api/sessions', 'GET');
+  const startTime = Date.now();
+
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
@@ -15,7 +20,10 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
 
+    log.info({ userId, toolType, status, search, sortBy, limit, offset }, 'Fetching user sessions');
+
     if (!userId) {
+      log.warn('User ID not provided');
       return NextResponse.json(
         { error: 'User ID is required' },
         { status: 400 }
@@ -73,7 +81,7 @@ export async function GET(request: NextRequest) {
     const { data: sessions, error, count } = await query;
 
     if (error) {
-      console.error('Error fetching sessions:', error);
+      logError(log, error, { userId, operation: 'fetch_sessions' });
       return NextResponse.json(
         { error: 'Failed to fetch sessions' },
         { status: 500 }
@@ -133,9 +141,18 @@ export async function GET(request: NextRequest) {
       total: count || 0,
     };
 
+    const duration = Date.now() - startTime;
+    log.info({
+      userId,
+      sessionCount: enrichedSessions.length,
+      totalSessions: count,
+      durationMs: duration
+    }, 'Sessions fetched successfully');
+
     return NextResponse.json(response);
   } catch (error) {
-    console.error('Error in GET /api/sessions:', error);
+    const duration = Date.now() - startTime;
+    logError(log, error, { durationMs: duration });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
