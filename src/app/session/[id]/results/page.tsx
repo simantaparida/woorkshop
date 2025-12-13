@@ -1,14 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { ResultsChart } from '@/components/ResultsChart';
 import { AppLayout } from '@/components/AppLayout';
 import { useToast } from '@/components/ui/Toast';
+import { Tooltip } from '@/components/ui/Tooltip';
 import { copyToClipboard, getSessionLink } from '@/lib/utils/helpers';
 import { calculateConsensusMetrics, type ConsensusMetrics } from '@/lib/utils/consensus';
+import { useClickOutside } from '@/lib/hooks/useClickOutside';
 import { ROUTES } from '@/lib/constants';
 import type { FeatureWithVotes, Session } from '@/types';
 
@@ -24,6 +26,22 @@ export default function ResultsPage() {
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
+
+  // Ref for click-outside detection
+  const exportMenuRef = useRef<HTMLDivElement>(null);
+
+  // Click-outside and ESC key handlers
+  useClickOutside(exportMenuRef, () => setShowExportMenu(false), showExportMenu);
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowExportMenu(false);
+    };
+    if (showExportMenu) {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
+  }, [showExportMenu]);
 
   useEffect(() => {
     if (sessionId) {
@@ -97,23 +115,26 @@ export default function ResultsPage() {
       const response = await fetch(`/api/session/${sessionId}/results/csv`);
 
       if (!response.ok) {
-        throw new Error('Failed to download CSV');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to download CSV');
       }
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
+      const filename = `${(session?.project_name || 'session').replace(/[^a-z0-9]/gi, '_')}_results.csv`;
       a.href = url;
-      a.download = `${(session?.project_name || 'session').replace(/[^a-z0-9]/gi, '_')}_results.csv`;
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
-      showToast('CSV downloaded successfully!', 'success');
+      showToast(`${filename} downloaded successfully!`, 'success');
     } catch (error) {
       console.error('Error downloading CSV:', error);
-      showToast('Failed to download CSV', 'error');
+      const message = error instanceof Error ? error.message : 'Failed to download CSV';
+      showToast(message, 'error');
     } finally {
       setDownloading(false);
     }
@@ -253,12 +274,13 @@ export default function ResultsPage() {
               </Button>
 
               {/* Export Dropdown */}
-              <div className="relative">
+              <div className="relative" ref={exportMenuRef}>
                 <Button
                   onClick={() => setShowExportMenu(!showExportMenu)}
                   variant="secondary"
                   size="sm"
                   isLoading={downloading}
+                  disabled={downloading}
                 >
                   <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -276,7 +298,10 @@ export default function ResultsPage() {
                         handleDownloadCSV();
                         setShowExportMenu(false);
                       }}
-                      className="w-full px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                      disabled={downloading}
+                      className={`w-full px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-100 flex items-center gap-2 ${
+                        downloading ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
                     >
                       <span>📊</span> CSV
                     </button>
@@ -285,7 +310,10 @@ export default function ResultsPage() {
                         handleDownloadJSON();
                         setShowExportMenu(false);
                       }}
-                      className="w-full px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                      disabled={downloading}
+                      className={`w-full px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-100 flex items-center gap-2 ${
+                        downloading ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
                     >
                       <span>🔧</span> JSON
                     </button>
@@ -294,7 +322,10 @@ export default function ResultsPage() {
                         handleDownloadMarkdown();
                         setShowExportMenu(false);
                       }}
-                      className="w-full px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                      disabled={downloading}
+                      className={`w-full px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-100 flex items-center gap-2 ${
+                        downloading ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
                     >
                       <span>📝</span> Markdown
                     </button>
@@ -316,7 +347,43 @@ export default function ResultsPage() {
             <ResultsChart results={results} />
           ) : (
             <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-              <p className="text-gray-600">No votes have been submitted yet.</p>
+              <div className="max-w-md mx-auto">
+                {/* Icon */}
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </div>
+
+                {/* Heading */}
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  No Votes Yet
+                </h3>
+
+                {/* Description */}
+                <p className="text-sm text-gray-600 mb-6">
+                  Share your voting link to start collecting votes from your team.
+                  Results will appear here once team members submit their votes.
+                </p>
+
+                {/* CTA Button */}
+                <Button onClick={handleCopyLink} variant="primary" size="md">
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  Copy Voting Link
+                </Button>
+
+                {/* Help Text */}
+                <p className="text-xs text-gray-500 mt-4">
+                  Once votes are submitted, you'll see:
+                </p>
+                <ul className="text-xs text-gray-500 mt-2 space-y-1">
+                  <li>• Bar chart of feature rankings</li>
+                  <li>• Team consensus metrics</li>
+                  <li>• Controversial features that need discussion</li>
+                </ul>
+              </div>
             </div>
           )}
 
@@ -356,7 +423,14 @@ export default function ResultsPage() {
                     {/* Team Alignment */}
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-700">Alignment Score</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-gray-700">Alignment Score</span>
+                          <Tooltip content="Measures how concentrated votes are on top 3 features. Higher scores mean stronger team agreement." position="right">
+                            <svg className="w-4 h-4 text-gray-400 cursor-help" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </Tooltip>
+                        </div>
                         <span className={`text-2xl font-bold ${
                           consensus.teamAlignment >= 70 ? 'text-green-600' :
                           consensus.teamAlignment >= 40 ? 'text-yellow-600' :
@@ -400,6 +474,62 @@ export default function ResultsPage() {
                           </span>
                           <span>•</span>
                           <span>{consensus.consensusLeader.vote_count} votes</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Controversial Features */}
+                    {consensus.controversialFeatures.length > 0 && (
+                      <div className="border-t border-gray-100 pt-4">
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                            Worth Discussing
+                          </span>
+                          <Tooltip content="Features with high engagement but lower points - team may be split on priority" position="right">
+                            <svg className="w-4 h-4 text-gray-400 cursor-help" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </Tooltip>
+                        </div>
+
+                        <div className="space-y-2">
+                          {consensus.controversialFeatures.slice(0, 3).map((feature) => (
+                            <div
+                              key={feature.id}
+                              className="flex items-center justify-between p-3 bg-amber-50 border border-amber-200 rounded-lg"
+                            >
+                              <div className="flex items-center gap-3 flex-1">
+                                {/* Controversy Icon */}
+                                <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                  <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                  </svg>
+                                </div>
+
+                                {/* Feature Info */}
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-medium text-gray-900 truncate">
+                                    {feature.title}
+                                  </p>
+                                  <div className="flex items-center gap-3 mt-0.5 text-xs text-gray-600">
+                                    <span className="flex items-center gap-1">
+                                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                                      </svg>
+                                      {feature.vote_count} votes
+                                    </span>
+                                    <span>•</span>
+                                    <span className="flex items-center gap-1">
+                                      <svg className="w-3 h-3 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                      </svg>
+                                      {feature.total_points} points
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     )}

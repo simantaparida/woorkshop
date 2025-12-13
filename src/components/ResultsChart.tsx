@@ -12,7 +12,7 @@ interface ResultsChartProps {
 export function ResultsChart({ results }: ResultsChartProps) {
   // Prepare data for chart
   const chartData = results.map((feature, index) => ({
-    name: feature.title.length > 30 ? feature.title.substring(0, 30) + '...' : feature.title,
+    name: feature.title.length > 40 ? feature.title.substring(0, 40) + '...' : feature.title,
     fullName: feature.title,
     points: feature.total_points,
     rank: index + 1,
@@ -36,7 +36,7 @@ export function ResultsChart({ results }: ResultsChartProps) {
         <ResponsiveContainer width="100%" height={400}>
           <BarChart
             data={chartData}
-            margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
+            margin={{ top: 20, right: 30, left: 20, bottom: results.length > 10 ? 100 : 80 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             <XAxis
@@ -105,7 +105,7 @@ export function ResultsChart({ results }: ResultsChartProps) {
 
                   {/* Feature Details */}
                   <div className="flex-1">
-                    <h4 className="font-semibold text-gray-900">
+                    <h4 className="font-semibold text-gray-900 break-words">
                       {feature.title}
                     </h4>
                     <div className="flex gap-4 mt-1 text-sm text-gray-600">
