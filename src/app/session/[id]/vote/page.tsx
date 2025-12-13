@@ -467,13 +467,13 @@ export default function VotePage() {
                         className="bg-amber-50 border border-amber-200 rounded-lg p-4"
                       >
                         <div className="flex items-center justify-between gap-3">
-                          <p className="text-sm text-amber-800">
+                          <p className="text-sm text-amber-900 font-medium">
                             Changed your mind? You have 10 seconds to undo.
                           </p>
                           <Button
                             onClick={handleUndo}
                             variant="secondary"
-                            className="bg-amber-600 hover:bg-amber-700 text-white border-amber-700 whitespace-nowrap"
+                            className="!bg-amber-700 hover:!bg-amber-800 !text-white !border-amber-700 whitespace-nowrap"
                           >
                             Undo Votes
                           </Button>
