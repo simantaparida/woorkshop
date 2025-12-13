@@ -29,6 +29,7 @@ export default function LoginPage() {
   const [showPasswordReset, setShowPasswordReset] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [figmaLoading, setFigmaLoading] = useState(false);
 
   // Check if user is already logged in
   useEffect(() => {
@@ -76,6 +77,29 @@ export default function LoginPage() {
       console.error('Auth error:', err);
       setError(err instanceof Error ? err.message : 'Failed to sign in with Google');
       setGoogleLoading(false);
+    }
+  };
+
+  const handleFigmaAuth = async () => {
+    try {
+      setFigmaLoading(true);
+      setError(null);
+      setSuccessMessage(null);
+
+      const { error: signInError } = await supabase.auth.signInWithOAuth({
+        provider: 'figma',
+        options: {
+          redirectTo: `${window.location.origin}${ROUTES.AUTH_CALLBACK}?redirect=${encodeURIComponent(redirectTo)}`,
+        },
+      });
+
+      if (signInError) {
+        throw signInError;
+      }
+    } catch (err) {
+      console.error('Figma auth error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to sign in with Figma');
+      setFigmaLoading(false);
     }
   };
 
@@ -208,6 +232,25 @@ export default function LoginPage() {
             </svg>
             {googleLoading ? 'Signing in...' : 'Sign in with Google'}
           </Button>
+
+          {/* Figma Auth Button - Hidden for now */}
+          {/* <Button
+            onClick={handleFigmaAuth}
+            disabled={googleLoading || figmaLoading || loading}
+            isLoading={figmaLoading}
+            variant="outline"
+            size="lg"
+            className="w-full border border-gray-300 bg-gray-50 hover:bg-gray-100 text-gray-700"
+          >
+            <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24" fill="none">
+              <path d="M7.5 3h4.5v4.5H7.5a2.25 2.25 0 110-4.5z" fill="#F24E1E"/>
+              <path d="M12 3h4.5a2.25 2.25 0 110 4.5H12V3z" fill="#FF7262"/>
+              <path d="M12 7.5h4.5a2.25 2.25 0 110 4.5H12V7.5z" fill="#A259FF"/>
+              <path d="M7.5 7.5H12V12H7.5a2.25 2.25 0 110-4.5z" fill="#1ABCFE"/>
+              <path d="M12 12a2.25 2.25 0 114.5 0 2.25 2.25 0 01-4.5 0z" fill="#0ACF83"/>
+            </svg>
+            {figmaLoading ? 'Signing in...' : 'Sign in with Figma'}
+          </Button> */}
 
           {/* Divider */}
           <div className="relative my-6">
