@@ -521,7 +521,7 @@ export default function LobbyPage() {
           )}
 
           {/* Main Content - Two Column Layout */}
-          <div className="space-y-4">
+          <div className="space-y-4 mt-2">
             {/* Team Section: Invite + Players */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
