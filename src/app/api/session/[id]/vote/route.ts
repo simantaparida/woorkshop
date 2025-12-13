@@ -122,12 +122,23 @@ export async function POST(
     const uniqueVoters = new Set(playersWithVotes?.map((v) => v.player_id) || []);
     const allVoted = allPlayers?.every((p) => uniqueVoters.has(p.id));
 
+    console.log('[Vote API] All players:', allPlayers?.length);
+    console.log('[Vote API] Unique voters:', uniqueVoters.size);
+    console.log('[Vote API] All voted?', allVoted);
+
     // Optionally auto-transition to results when everyone has voted
     if (allVoted && allPlayers && allPlayers.length > 0) {
-      await supabase
+      console.log('[Vote API] All players have voted! Updating session status to results...');
+      const { error: updateError } = await supabase
         .from('sessions_unified')
         .update({ status: 'results' })
         .eq('id', sessionId);
+
+      if (updateError) {
+        console.error('[Vote API] Failed to update session status:', updateError);
+      } else {
+        console.log('[Vote API] Session status updated to results successfully');
+      }
     }
 
     return NextResponse.json({ success: true });

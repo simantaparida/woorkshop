@@ -102,7 +102,9 @@ export default function VotePage() {
 
   // Redirect to results when session changes
   useEffect(() => {
+    console.log('[Vote Page] Current session status:', session?.status);
     if (session?.status === 'results' || session?.status === 'completed') {
+      console.log('[Vote Page] Redirecting to results page...');
       router.push(ROUTES.RESULTS(sessionId));
     }
   }, [session?.status, router, sessionId]);
