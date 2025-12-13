@@ -240,7 +240,7 @@ export default function NewVotingBoardPage() {
           className="space-y-6"
         >
           {/* Session Timeline Progress */}
-          <div className="mb-8">
+          <div className="mb-10">
             <div className="flex items-center justify-center w-full">
               <div className="flex items-center gap-2">
                 {[

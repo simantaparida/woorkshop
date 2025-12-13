@@ -35,7 +35,7 @@ export function VotingBoardStepper({ currentStep, size = 'compact' }: VotingBoar
       connectorHeight: 'h-[1.5px]',
       connectorMargin: 'mx-1',
       labelTop: 'top-8',
-      containerMargin: 'mb-8',
+      containerMargin: 'mb-10',
     }
   };
 
