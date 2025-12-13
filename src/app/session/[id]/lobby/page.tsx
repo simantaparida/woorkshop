@@ -364,22 +364,6 @@ export default function LobbyPage() {
                   )}
                 </div>
               </div>
-
-              {/* Start Voting Button - Host Only */}
-              {isHost && currentPlayerId && (
-                <Button
-                  onClick={handleStartGame}
-                  isLoading={starting}
-                  disabled={!canStartGame}
-                  size="lg"
-                  className="w-full sm:w-auto sm:min-w-[200px] flex-shrink-0"
-                >
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                  Begin Voting Round
-                </Button>
-              )}
             </div>
           </div>
 
@@ -556,7 +540,7 @@ export default function LobbyPage() {
                       isLoading={togglingReady}
                       variant={isReady ? 'secondary' : 'primary'}
                       size="sm"
-                      className="w-full"
+                      className="w-full max-w-[300px]"
                     >
                       {isReady ? (
                         <>
@@ -845,7 +829,35 @@ export default function LobbyPage() {
             )}
           </AnimatePresence>
 
-
+          {/* Floating Bottom Bar - Host Only */}
+          {isHost && currentPlayerId && (
+            <div className="sticky bottom-6 z-10 bg-white border border-gray-200 rounded-xl p-3 shadow-lg">
+              <div className="flex items-center justify-between gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="md"
+                  onClick={() => router.push('/tools')}
+                  disabled={starting}
+                >
+                  Back
+                </Button>
+                <Button
+                  onClick={handleStartGame}
+                  isLoading={starting}
+                  disabled={!canStartGame}
+                  variant="primary"
+                  size="md"
+                  className="flex-1 max-w-[300px]"
+                >
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                  {starting ? 'Starting...' : 'Begin Voting Round'}
+                </Button>
+              </div>
+            </div>
+          )}
 
         </motion.div>
       </div>
