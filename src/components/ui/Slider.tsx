@@ -27,11 +27,17 @@ export function Slider({
   const [isDragging, setIsDragging] = useState(false);
   const sliderRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
+  const onChangeRef = useRef(onChange);
+
+  // Keep onChange ref up to date
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
 
   const percentage = ((value - min) / (max - min)) * 100;
 
   const updateValue = useCallback((clientX: number) => {
-    if (!sliderRef.current || disabled) return;
+    if (!sliderRef.current) return;
 
     const rect = sliderRef.current.getBoundingClientRect();
     const offsetX = clientX - rect.left;
@@ -40,8 +46,8 @@ export function Slider({
     const steppedValue = Math.round(rawValue / step) * step;
     const clampedValue = Math.max(min, Math.min(max, steppedValue));
 
-    onChange(clampedValue);
-  }, [min, max, step, disabled, onChange]);
+    onChangeRef.current(clampedValue);
+  }, [min, max, step]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isDraggingRef.current) return;
@@ -50,10 +56,8 @@ export function Slider({
     updateValue(e.clientX);
   }, [updateValue]);
 
-  const handleMouseUp = useCallback((e?: MouseEvent) => {
+  const handleMouseUp = useCallback(() => {
     if (!isDraggingRef.current) return;
-    e?.preventDefault();
-    e?.stopPropagation();
     isDraggingRef.current = false;
     setIsDragging(false);
   }, []);
@@ -78,10 +82,13 @@ export function Slider({
 
   const handleTouchStart = (e: React.TouchEvent) => {
     if (disabled) return;
+    e.preventDefault();
     e.stopPropagation();
     isDraggingRef.current = true;
     setIsDragging(true);
-    updateValue(e.touches[0].clientX);
+    if (e.touches[0]) {
+      updateValue(e.touches[0].clientX);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -105,25 +112,41 @@ export function Slider({
   };
 
   useEffect(() => {
-    if (isDragging) {
-      const mouseMoveHandler = (e: MouseEvent) => handleMouseMove(e);
-      const mouseUpHandler = (e: MouseEvent) => handleMouseUp(e);
-      const touchMoveHandler = (e: TouchEvent) => handleTouchMove(e);
-      const touchEndHandler = () => handleMouseUp();
+    if (!isDragging) return;
 
-      window.addEventListener('mousemove', mouseMoveHandler, { capture: true });
-      window.addEventListener('mouseup', mouseUpHandler, { capture: true });
-      window.addEventListener('touchmove', touchMoveHandler, { capture: true });
-      window.addEventListener('touchend', touchEndHandler, { capture: true });
+    const mouseMoveHandler = (e: MouseEvent) => {
+      if (!isDraggingRef.current) return;
+      e.preventDefault();
+      e.stopPropagation();
+      handleMouseMove(e);
+    };
 
-      return () => {
-        window.removeEventListener('mousemove', mouseMoveHandler, { capture: true });
-        window.removeEventListener('mouseup', mouseUpHandler, { capture: true });
-        window.removeEventListener('touchmove', touchMoveHandler, { capture: true });
-        window.removeEventListener('touchend', touchEndHandler, { capture: true });
-        isDraggingRef.current = false;
-      };
-    }
+    const mouseUpHandler = () => {
+      handleMouseUp();
+    };
+
+    const touchMoveHandler = (e: TouchEvent) => {
+      if (!isDraggingRef.current) return;
+      e.preventDefault();
+      e.stopPropagation();
+      handleTouchMove(e);
+    };
+
+    const touchEndHandler = () => {
+      handleMouseUp();
+    };
+
+    window.addEventListener('mousemove', mouseMoveHandler);
+    window.addEventListener('mouseup', mouseUpHandler);
+    window.addEventListener('touchmove', touchMoveHandler, { passive: false });
+    window.addEventListener('touchend', touchEndHandler);
+
+    return () => {
+      window.removeEventListener('mousemove', mouseMoveHandler);
+      window.removeEventListener('mouseup', mouseUpHandler);
+      window.removeEventListener('touchmove', touchMoveHandler);
+      window.removeEventListener('touchend', touchEndHandler);
+    };
   }, [isDragging, handleMouseMove, handleMouseUp, handleTouchMove]);
 
   return (
@@ -153,17 +176,15 @@ export function Slider({
 
         {/* Thumb */}
         <div
-          className={`absolute w-6 h-6 bg-white border-2 border-blue-600 rounded-full shadow-md ${
+          className={`absolute w-6 h-6 bg-white border-2 border-blue-600 rounded-full shadow-md -translate-x-1/2 -translate-y-1/2 ${
             disabled ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing'
-          } ${isDragging ? 'scale-110' : 'hover:scale-110'} transition-transform`}
+          } ${
+            isDragging ? 'scale-110' : 'hover:scale-110'
+          } transition-transform duration-150`}
           style={{
             left: `${percentage}%`,
             top: '50%',
-            transform: 'translate(-50%, -50%)',
-            marginLeft: 0
           }}
-          onMouseDown={handleMouseDown}
-          onTouchStart={handleTouchStart}
         />
       </div>
 
