@@ -132,9 +132,9 @@ export function Slider({
         />
 
         {/* Thumb */}
-        <motion.div
-          className={`absolute w-6 h-6 bg-white border-2 border-blue-600 rounded-full shadow-md ${
-            disabled ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing'
+        <div
+          className={`absolute w-6 h-6 bg-white border-2 border-blue-600 rounded-full shadow-md transition-transform ${
+            disabled ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing hover:scale-110'
           }`}
           style={{
             left: `${percentage}%`,
@@ -142,9 +142,6 @@ export function Slider({
             transform: 'translate(-50%, -50%)',
             marginLeft: 0
           }}
-          whileHover={!disabled ? { scale: 1.1 } : {}}
-          whileTap={!disabled ? { scale: 0.95 } : {}}
-          transition={{ type: 'spring', stiffness: 400, damping: 20 }}
         />
       </div>
 

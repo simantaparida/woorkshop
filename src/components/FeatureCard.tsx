@@ -29,7 +29,6 @@ export function FeatureCard({
   const [localPoints, setLocalPoints] = useState(points.toString());
   const [localNote, setLocalNote] = useState(note);
   const [showNoteField, setShowNoteField] = useState(!!note);
-  const [isEditingPoints, setIsEditingPoints] = useState(false);
 
   useEffect(() => {
     setLocalPoints(points.toString());
@@ -52,15 +51,15 @@ export function FeatureCard({
     const maxAllowed = points + remainingPoints;
     const clampedValue = Math.min(numValue, maxAllowed);
     onPointsChange(feature.id, clampedValue);
-    setIsEditingPoints(false);
   };
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleInputBlur();
+      e.currentTarget.blur();
     } else if (e.key === 'Escape') {
       setLocalPoints(points.toString());
-      setIsEditingPoints(false);
+      e.currentTarget.blur();
     }
   };
 
@@ -229,6 +228,7 @@ export function FeatureCard({
           <div className="flex items-center gap-4">
             <div className="flex-1 relative pt-4">
               <Slider
+                key={`slider-${feature.id}`}
                 value={points}
                 onChange={handleSliderChange}
                 min={0}
@@ -238,32 +238,15 @@ export function FeatureCard({
               />
             </div>
             <div className="flex items-center gap-2">
-              {isEditingPoints ? (
-                <input
-                  type="text"
-                  value={localPoints}
-                  onChange={(e) => handleChange(e.target.value)}
-                  onBlur={handleInputBlur}
-                  onKeyDown={handleInputKeyDown}
-                  autoFocus
-                  disabled={disabled}
-                  className="w-16 text-3xl font-bold text-gray-900 text-right border-2 border-blue-500 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              ) : (
-                <motion.div
-                  key={points}
-                  initial={{ scale: 1.2 }}
-                  animate={{ scale: 1 }}
-                  transition={{ duration: 0.2 }}
-                  onClick={() => !disabled && setIsEditingPoints(true)}
-                  className={`text-3xl font-bold text-gray-900 min-w-[60px] text-right ${
-                    !disabled ? 'cursor-pointer hover:text-blue-600 transition-colors' : 'cursor-not-allowed'
-                  }`}
-                  title={!disabled ? 'Click to enter exact value' : ''}
-                >
-                  {points}
-                </motion.div>
-              )}
+              <input
+                type="text"
+                value={localPoints}
+                onChange={(e) => handleChange(e.target.value)}
+                onBlur={handleInputBlur}
+                onKeyDown={handleInputKeyDown}
+                disabled={disabled}
+                className="w-20 text-3xl font-bold text-gray-900 text-right border border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              />
               <span className="text-sm text-gray-500 font-medium">pts</span>
               <button
                 onClick={handleDecrement}

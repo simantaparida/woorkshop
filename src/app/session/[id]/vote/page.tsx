@@ -486,43 +486,6 @@ export default function VotePage() {
                         </span>
                       )}
                     </p>
-
-                    {/* Quick Distribution Actions */}
-                    {!hasSubmitted && (
-                      <div className="space-y-2">
-                        <p className="text-xs font-medium text-gray-700">Quick Distribute:</p>
-                        <div className="flex flex-wrap gap-2">
-                          <button
-                            onClick={distributeEvenly}
-                            disabled={hasSubmitted}
-                            className="px-3 py-1.5 text-xs font-medium rounded-md bg-blue-50 text-blue-700 hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                          >
-                            Evenly
-                          </button>
-                          <button
-                            onClick={distributeTopThree}
-                            disabled={hasSubmitted || features.length < 3}
-                            className="px-3 py-1.5 text-xs font-medium rounded-md bg-purple-50 text-purple-700 hover:bg-purple-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                          >
-                            Top 3 (50/30/20)
-                          </button>
-                          <button
-                            onClick={distributePyramid}
-                            disabled={hasSubmitted}
-                            className="px-3 py-1.5 text-xs font-medium rounded-md bg-indigo-50 text-indigo-700 hover:bg-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                          >
-                            Pyramid
-                          </button>
-                          <button
-                            onClick={clearAllVotes}
-                            disabled={hasSubmitted}
-                            className="px-3 py-1.5 text-xs font-medium rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                          >
-                            Clear All
-                          </button>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
