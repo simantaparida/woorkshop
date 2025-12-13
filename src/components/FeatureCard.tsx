@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from './ui/Card';
+import { Slider } from './ui/Slider';
 import { getLinkTypeIcon } from '@/lib/utils/link-metadata';
 import type { Feature } from '@/types';
 
@@ -28,6 +29,7 @@ export function FeatureCard({
   const [localPoints, setLocalPoints] = useState(points.toString());
   const [localNote, setLocalNote] = useState(note);
   const [showNoteField, setShowNoteField] = useState(!!note);
+  const [isEditingPoints, setIsEditingPoints] = useState(false);
 
   useEffect(() => {
     setLocalPoints(points.toString());
@@ -42,8 +44,23 @@ export function FeatureCard({
     // Allow empty string or valid numbers
     if (value === '' || /^\d+$/.test(value)) {
       setLocalPoints(value);
-      const numValue = value === '' ? 0 : parseInt(value, 10);
-      onPointsChange(feature.id, numValue);
+    }
+  };
+
+  const handleInputBlur = () => {
+    const numValue = localPoints === '' ? 0 : parseInt(localPoints, 10);
+    const maxAllowed = points + remainingPoints;
+    const clampedValue = Math.min(numValue, maxAllowed);
+    onPointsChange(feature.id, clampedValue);
+    setIsEditingPoints(false);
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleInputBlur();
+    } else if (e.key === 'Escape') {
+      setLocalPoints(points.toString());
+      setIsEditingPoints(false);
     }
   };
 
@@ -58,6 +75,25 @@ export function FeatureCard({
     if (points > 0 && !disabled) {
       const newPoints = points - 1;
       onPointsChange(feature.id, newPoints);
+    }
+  };
+
+  const handleQuickAdd = (amount: number) => {
+    if (!disabled) {
+      const newPoints = Math.min(points + amount, points + remainingPoints);
+      onPointsChange(feature.id, newPoints);
+    }
+  };
+
+  const handleClear = () => {
+    if (!disabled) {
+      onPointsChange(feature.id, 0);
+    }
+  };
+
+  const handleSliderChange = (value: number) => {
+    if (!disabled) {
+      onPointsChange(feature.id, value);
     }
   };
 
@@ -187,54 +223,122 @@ export function FeatureCard({
           })()}
         </div>
 
-        {/* Points Allocator */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleDecrement}
-            disabled={disabled || points === 0}
-            className="w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-xl font-semibold transition-colors"
-          >
-            −
-          </button>
-
-          <div className="flex-1 relative">
-            <input
-              type="text"
-              value={localPoints}
-              onChange={(e) => handleChange(e.target.value)}
-              disabled={disabled}
-              className="w-full text-center text-2xl font-bold py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              placeholder="0"
-            />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 font-medium">
-              pts
+        {/* Points Allocator - Hybrid Approach */}
+        <div className="space-y-3">
+          {/* Slider with Points Display */}
+          <div className="flex items-center gap-4">
+            <div className="flex-1 relative pt-4">
+              <Slider
+                value={points}
+                onChange={handleSliderChange}
+                min={0}
+                max={Math.min(100, points + remainingPoints)}
+                disabled={disabled}
+                showValue={false}
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              {isEditingPoints ? (
+                <input
+                  type="text"
+                  value={localPoints}
+                  onChange={(e) => handleChange(e.target.value)}
+                  onBlur={handleInputBlur}
+                  onKeyDown={handleInputKeyDown}
+                  autoFocus
+                  disabled={disabled}
+                  className="w-16 text-3xl font-bold text-gray-900 text-right border-2 border-blue-500 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              ) : (
+                <motion.div
+                  key={points}
+                  initial={{ scale: 1.2 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={() => !disabled && setIsEditingPoints(true)}
+                  className={`text-3xl font-bold text-gray-900 min-w-[60px] text-right ${
+                    !disabled ? 'cursor-pointer hover:text-blue-600 transition-colors' : 'cursor-not-allowed'
+                  }`}
+                  title={!disabled ? 'Click to enter exact value' : ''}
+                >
+                  {points}
+                </motion.div>
+              )}
+              <span className="text-sm text-gray-500 font-medium">pts</span>
+              <button
+                onClick={handleDecrement}
+                disabled={disabled || points === 0}
+                className="w-9 h-9 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-lg font-semibold transition-colors"
+              >
+                −
+              </button>
+              <button
+                onClick={handleIncrement}
+                disabled={disabled || remainingPoints === 0}
+                className="w-9 h-9 rounded-lg bg-primary hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-lg font-semibold text-white transition-colors"
+              >
+                +
+              </button>
             </div>
           </div>
 
-          <button
-            onClick={handleIncrement}
-            disabled={disabled || remainingPoints === 0}
-            className="w-10 h-10 rounded-lg bg-primary hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-xl font-semibold text-white transition-colors"
-          >
-            +
-          </button>
-        </div>
+          {/* Quick Action Buttons */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-600 font-medium mr-1">Quick:</span>
+            <button
+              onClick={() => handleQuickAdd(5)}
+              disabled={disabled || remainingPoints < 5}
+              className="px-3 py-1.5 text-xs font-medium rounded-md bg-blue-50 text-blue-700 hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              +5
+            </button>
+            <button
+              onClick={() => handleQuickAdd(10)}
+              disabled={disabled || remainingPoints < 10}
+              className="px-3 py-1.5 text-xs font-medium rounded-md bg-blue-50 text-blue-700 hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              +10
+            </button>
+            <button
+              onClick={() => handleQuickAdd(25)}
+              disabled={disabled || remainingPoints < 25}
+              className="px-3 py-1.5 text-xs font-medium rounded-md bg-blue-50 text-blue-700 hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              +25
+            </button>
+            {points > 0 && (
+              <button
+                onClick={handleClear}
+                disabled={disabled}
+                className="px-3 py-1.5 text-xs font-medium rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ml-auto"
+              >
+                Clear
+              </button>
+            )}
+          </div>
 
-        {/* Visual progress bar */}
-        {points > 0 && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="h-2 bg-gray-100 rounded-full overflow-hidden"
-          >
+          {/* Enhanced Visual Progress Bar */}
+          {points > 0 && (
             <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${points}%` }}
-              transition={{ duration: 0.3 }}
-              className="h-full bg-primary rounded-full"
-            />
-          </motion.div>
-        )}
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="space-y-1"
+            >
+              <div className="flex items-center justify-between text-xs text-gray-600">
+                <span>{points}% of total budget</span>
+                <span className="font-medium">{points}/100 pts</span>
+              </div>
+              <div className="h-3 bg-gray-100 rounded-full overflow-hidden relative">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${points}%` }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"
+                />
+              </div>
+            </motion.div>
+          )}
+        </div>
 
         {/* Optional Note Section */}
         {points > 0 && (

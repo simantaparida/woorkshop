@@ -398,30 +398,131 @@ export default function VotePage() {
 
             {/* Features Section */}
             <div className="space-y-4">
-              {/* Points Remaining Card */}
+              {/* Points Remaining Card - Enhanced */}
               <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-5">
-                <div className="text-center mb-4">
-                  <div className="text-5xl font-bold mb-2">
-                    <span className={remainingPoints < 0 ? 'text-red-600' : 'text-primary'}>
-                      {remainingPoints}
-                    </span>
+                <div className="flex flex-col sm:flex-row items-center gap-6">
+                  {/* Points Display with Circular Progress */}
+                  <div className="flex-shrink-0">
+                    <div className="relative w-32 h-32">
+                      {/* Background Circle */}
+                      <svg className="w-full h-full transform -rotate-90">
+                        <circle
+                          cx="64"
+                          cy="64"
+                          r="56"
+                          stroke="currentColor"
+                          strokeWidth="8"
+                          fill="none"
+                          className="text-gray-200"
+                        />
+                        {/* Progress Circle */}
+                        <motion.circle
+                          cx="64"
+                          cy="64"
+                          r="56"
+                          stroke="currentColor"
+                          strokeWidth="8"
+                          fill="none"
+                          strokeLinecap="round"
+                          initial={{ strokeDashoffset: 352 }}
+                          animate={{ strokeDashoffset: 352 - (352 * (TOTAL_POINTS - remainingPoints)) / TOTAL_POINTS }}
+                          transition={{ duration: 0.5, ease: 'easeOut' }}
+                          className={
+                            remainingPoints < 0
+                              ? 'text-red-500'
+                              : remainingPoints === 0
+                              ? 'text-green-500'
+                              : remainingPoints <= 20
+                              ? 'text-orange-500'
+                              : remainingPoints <= 50
+                              ? 'text-yellow-500'
+                              : 'text-blue-500'
+                          }
+                          style={{ strokeDasharray: 352 }}
+                        />
+                      </svg>
+                      {/* Center Text */}
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <motion.div
+                          key={remainingPoints}
+                          initial={{ scale: 1.2 }}
+                          animate={{ scale: 1 }}
+                          transition={{ duration: 0.2 }}
+                          className={`text-3xl font-bold ${
+                            remainingPoints < 0
+                              ? 'text-red-600'
+                              : remainingPoints === 0
+                              ? 'text-green-600'
+                              : 'text-gray-900'
+                          }`}
+                        >
+                          {remainingPoints}
+                        </motion.div>
+                        <div className="text-xs text-gray-500 font-medium">
+                          {remainingPoints < 0 ? 'over' : 'left'}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-gray-600">
-                    {remainingPoints < 0 ? 'Points over limit' : 'Points remaining'}
-                  </p>
 
-                  {/* Helper Copy */}
-                  <div className="mt-3 pt-3 border-t border-gray-200">
-                    <p className="text-sm text-gray-600">
+                  {/* Info and Quick Actions */}
+                  <div className="flex-1 text-center sm:text-left">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Points Budget</h3>
+                    <p className="text-sm text-gray-600 mb-4">
                       You have <span className="font-semibold text-gray-900">{TOTAL_POINTS} points</span> to allocate across features.
+                      {remainingPoints > 0 && (
+                        <span className="block mt-1 text-xs text-amber-600">
+                          💡 Tip: Unused points won't count toward your vote
+                        </span>
+                      )}
+                      {remainingPoints === 0 && (
+                        <span className="block mt-1 text-xs text-green-600">
+                          ✓ Perfect! All points allocated
+                        </span>
+                      )}
+                      {remainingPoints < 0 && (
+                        <span className="block mt-1 text-xs text-red-600">
+                          ⚠️ You've exceeded the limit by {Math.abs(remainingPoints)} points
+                        </span>
+                      )}
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {remainingPoints > 0
-                        ? `Tip: Remaining ${remainingPoints} points won't count if not allocated.`
-                        : remainingPoints === 0
-                        ? 'Perfect! All points allocated.'
-                        : "You've exceeded the limit. Please reduce your allocation."}
-                    </p>
+
+                    {/* Quick Distribution Actions */}
+                    {!hasSubmitted && (
+                      <div className="space-y-2">
+                        <p className="text-xs font-medium text-gray-700">Quick Distribute:</p>
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            onClick={distributeEvenly}
+                            disabled={hasSubmitted}
+                            className="px-3 py-1.5 text-xs font-medium rounded-md bg-blue-50 text-blue-700 hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          >
+                            Evenly
+                          </button>
+                          <button
+                            onClick={distributeTopThree}
+                            disabled={hasSubmitted || features.length < 3}
+                            className="px-3 py-1.5 text-xs font-medium rounded-md bg-purple-50 text-purple-700 hover:bg-purple-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          >
+                            Top 3 (50/30/20)
+                          </button>
+                          <button
+                            onClick={distributePyramid}
+                            disabled={hasSubmitted}
+                            className="px-3 py-1.5 text-xs font-medium rounded-md bg-indigo-50 text-indigo-700 hover:bg-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          >
+                            Pyramid
+                          </button>
+                          <button
+                            onClick={clearAllVotes}
+                            disabled={hasSubmitted}
+                            className="px-3 py-1.5 text-xs font-medium rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          >
+                            Clear All
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
