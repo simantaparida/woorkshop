@@ -92,7 +92,10 @@ export function FeatureCard({
 
   const handleSliderChange = (value: number) => {
     if (!disabled) {
-      onPointsChange(feature.id, value);
+      // Clamp value to available points (current points + remaining points)
+      const maxAllowed = points + remainingPoints;
+      const clampedValue = Math.min(value, maxAllowed);
+      onPointsChange(feature.id, clampedValue);
     }
   };
 
@@ -232,7 +235,7 @@ export function FeatureCard({
                 value={points}
                 onChange={handleSliderChange}
                 min={0}
-                max={Math.min(100, points + remainingPoints)}
+                max={100}
                 disabled={disabled}
                 showValue={false}
               />
