@@ -1,16 +1,29 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { rateLimiters, getClientIdentifier, createRateLimitResponse } from '@/lib/rate-limit';
+import { generateRequestId } from '@/lib/logger';
 
 /**
  * Middleware to:
- * 1. Apply rate limiting to protect against abuse
- * 2. Refresh Supabase auth tokens and pass them to Server Components
+ * 1. Generate request IDs for tracing
+ * 2. Apply rate limiting to protect against abuse
+ * 3. Refresh Supabase auth tokens and pass them to Server Components
  *
  * @see https://supabase.com/docs/guides/auth/server-side/nextjs
  */
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // ==========================================================
+  // REQUEST ID GENERATION
+  // ==========================================================
+
+  // Generate unique request ID for tracing
+  const requestId = generateRequestId();
+
+  // Add to request headers so API routes can access it
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-request-id', requestId);
 
   // ==========================================================
   // RATE LIMITING
@@ -41,7 +54,9 @@ export async function middleware(request: NextRequest) {
   // ==========================================================
 
   let supabaseResponse = NextResponse.next({
-    request,
+    request: {
+      headers: requestHeaders,
+    },
   });
 
   const supabase = createServerClient(
@@ -74,6 +89,9 @@ export async function middleware(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // Add request ID to response headers for client-side debugging
+  supabaseResponse.headers.set('x-request-id', requestId);
 
   return supabaseResponse;
 }

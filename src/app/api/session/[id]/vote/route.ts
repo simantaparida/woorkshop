@@ -1,15 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServer } from '@/lib/supabase/server';
 import { validateVotes } from '@/lib/utils/validation';
+import { createApiLogger, logError } from '@/lib/logger';
 import type { VoteInput } from '@/types';
 
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  // Create logger with request context
+  const requestId = request.headers.get('x-request-id') || 'unknown';
+  const log = createApiLogger(requestId, `/api/session/${params.id}/vote`, 'POST');
+
+  const startTime = Date.now();
+
   try {
     const { id: sessionId } = params;
     const { playerId, votes }: VoteInput = await request.json();
+
+    log.info({ sessionId, playerId, voteCount: votes.length }, 'Processing vote submission');
 
     // Validate input
     if (!playerId) {
@@ -97,7 +106,11 @@ export async function POST(
 
     // Check for delete errors
     if (deleteError) {
-      console.error('Vote deletion error:', deleteError);
+      logError(log, deleteError, {
+        sessionId,
+        playerId,
+        operation: 'delete_votes'
+      });
       return NextResponse.json(
         { error: 'Failed to clear existing votes' },
         { status: 500 }
@@ -122,24 +135,27 @@ export async function POST(
         .insert(voteInserts);
 
       if (insertError) {
-        console.error('Vote insertion error:', insertError);
-
         // CRITICAL: If insert fails after delete, we've lost data
-        // Log this prominently for debugging
-        console.error('[DATA LOSS RISK] Votes were deleted but insert failed', {
+        log.fatal({
           sessionId,
           playerId,
           deletedVotesCount: 'unknown',
           failedInsertCount: voteInserts.length,
           error: insertError.message,
-          code: insertError.code
-        });
+          code: insertError.code,
+        }, 'DATA LOSS RISK: Votes were deleted but insert failed');
 
         return NextResponse.json(
           { error: 'Failed to record votes. Please try again.' },
           { status: 500 }
         );
       }
+
+      log.info({
+        sessionId,
+        playerId,
+        votesRecorded: voteInserts.length
+      }, 'Votes recorded successfully');
     }
 
     // Check if all players have voted
@@ -156,28 +172,42 @@ export async function POST(
     const uniqueVoters = new Set(playersWithVotes?.map((v) => v.player_id) || []);
     const allVoted = allPlayers?.every((p) => uniqueVoters.has(p.id));
 
-    console.log('[Vote API] All players:', allPlayers?.length);
-    console.log('[Vote API] Unique voters:', uniqueVoters.size);
-    console.log('[Vote API] All voted?', allVoted);
+    log.debug({
+      totalPlayers: allPlayers?.length,
+      uniqueVoters: uniqueVoters.size,
+      allVoted
+    }, 'Vote status check');
 
     // Optionally auto-transition to results when everyone has voted
     if (allVoted && allPlayers && allPlayers.length > 0) {
-      console.log('[Vote API] All players have voted! Updating session status to results...');
+      log.info({ sessionId }, 'All players have voted, transitioning to results');
+
       const { error: updateError } = await supabase
         .from('sessions_unified')
         .update({ status: 'results' })
         .eq('id', sessionId);
 
       if (updateError) {
-        console.error('[Vote API] Failed to update session status:', updateError);
+        logError(log, updateError, {
+          sessionId,
+          operation: 'auto_transition_to_results'
+        });
       } else {
-        console.log('[Vote API] Session status updated to results successfully');
+        log.info({ sessionId }, 'Session status updated to results');
       }
     }
 
+    const duration = Date.now() - startTime;
+    log.info({ sessionId, playerId, durationMs: duration }, 'Vote submission completed');
+
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Unexpected error:', error);
+    const duration = Date.now() - startTime;
+    logError(log, error, {
+      sessionId: params.id,
+      durationMs: duration
+    });
+
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
