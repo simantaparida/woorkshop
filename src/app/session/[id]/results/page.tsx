@@ -20,12 +20,17 @@ export default function ResultsPage() {
   const sessionId = params?.id as string;
   const { showToast, ToastContainer } = useToast();
 
+  const { players } = usePlayers(sessionId);
+  const { progress } = usePlayerProgress(sessionId);
+
   const [session, setSession] = useState<Session | null>(null);
   const [results, setResults] = useState<FeatureWithVotes[]>([]);
   const [consensus, setConsensus] = useState<ConsensusMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
+
+  const votedPlayerIds = new Set(progress.filter(p => p.has_voted).map(p => p.player.id));
 
   // Ref for click-outside detection
   const exportMenuRef = useRef<HTMLDivElement>(null);
@@ -140,80 +145,10 @@ export default function ResultsPage() {
     }
   };
 
-  const handleDownloadJSON = () => {
-    const exportData = {
-      session: {
-        id: session?.id,
-        projectName: session?.project_name,
-        hostName: session?.host_name,
-        createdAt: session?.created_at,
-      },
-      results: results.map((r) => ({
-        title: r.title,
-        description: r.description,
-        effort: r.effort,
-        impact: r.impact,
-        totalPoints: r.total_points,
-        voteCount: r.vote_count,
-      })),
-      consensus: consensus ? {
-        teamAlignment: consensus.teamAlignment,
-        consensusLeader: consensus.consensusLeader?.title,
-        controversialFeatures: consensus.controversialFeatures.map((f) => f.title),
-        unanimousWinners: consensus.unanimousWinners.map((f) => f.title),
-      } : null,
-    };
-
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${(session?.project_name || 'session').replace(/[^a-z0-9]/gi, '_')}_results.json`;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-    showToast('JSON downloaded successfully!', 'success');
-  };
-
-  const handleDownloadMarkdown = () => {
-    let markdown = `# ${session?.project_name} - Results\n\n`;
-    markdown += `**Host:** ${session?.host_name}\n\n`;
-    markdown += `**Date:** ${new Date(session?.created_at || '').toLocaleDateString()}\n\n`;
-
-    if (consensus) {
-      markdown += `## Team Consensus\n\n`;
-      markdown += `**Alignment Score:** ${consensus.teamAlignment}%\n\n`;
-      if (consensus.consensusLeader) {
-        markdown += `**Clear Winner:** ${consensus.consensusLeader.title}\n\n`;
-      }
-    }
-
-    markdown += `## Results\n\n`;
-    markdown += `| Rank | Feature | Points | Votes |\n`;
-    markdown += `|------|---------|--------|-------|\n`;
-
-    results.forEach((r, index) => {
-      markdown += `| ${index + 1} | ${r.title} | ${r.total_points} | ${r.vote_count} |\n`;
-    });
-
-    if (consensus && consensus.controversialFeatures.length > 0) {
-      markdown += `\n## Worth Discussing\n\n`;
-      consensus.controversialFeatures.forEach((f) => {
-        markdown += `- ${f.title}\n`;
-      });
-    }
-
-    const blob = new Blob([markdown], { type: 'text/markdown' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${(session?.project_name || 'session').replace(/[^a-z0-9]/gi, '_')}_results.md`;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-    showToast('Markdown downloaded successfully!', 'success');
+  const handleDownloadPDF = () => {
+    // TODO: Implement PDF export
+    // For now, show a message that it's coming soon
+    showToast('PDF export coming soon!', 'info');
   };
 
   const handleNewSession = () => {
@@ -257,15 +192,13 @@ export default function ResultsPage() {
         >
           {/* Header */}
           <div className="space-y-4">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <div className="flex items-start justify-between gap-4">
+              <h1 className="text-3xl font-bold text-gray-900">
                 {session?.title || session?.project_name || 'Results'}
               </h1>
-              <p className="text-gray-600 text-sm">✓ Voting complete</p>
-            </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-wrap gap-2">
+              {/* Action Buttons */}
+              <div className="flex flex-wrap gap-2">
               <Button onClick={handleCopyLink} variant="secondary" size="sm">
                 <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -307,7 +240,7 @@ export default function ResultsPage() {
                     </button>
                     <button
                       onClick={() => {
-                        handleDownloadJSON();
+                        handleDownloadPDF();
                         setShowExportMenu(false);
                       }}
                       disabled={downloading}
@@ -315,19 +248,7 @@ export default function ResultsPage() {
                         downloading ? 'opacity-50 cursor-not-allowed' : ''
                       }`}
                     >
-                      <span>🔧</span> JSON
-                    </button>
-                    <button
-                      onClick={() => {
-                        handleDownloadMarkdown();
-                        setShowExportMenu(false);
-                      }}
-                      disabled={downloading}
-                      className={`w-full px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-100 flex items-center gap-2 ${
-                        downloading ? 'opacity-50 cursor-not-allowed' : ''
-                      }`}
-                    >
-                      <span>📝</span> Markdown
+                      <span>📄</span> PDF
                     </button>
                   </div>
                 )}
@@ -339,7 +260,15 @@ export default function ResultsPage() {
                 </svg>
                 New Session
               </Button>
+              </div>
             </div>
+
+            {/* Progress Indicator */}
+            <ProgressIndicator
+              current={votedPlayerIds.size}
+              total={players.length}
+              label="Voting complete"
+            />
           </div>
 
           {/* Results Visualization */}
