@@ -219,35 +219,15 @@ export function Slider({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className={`absolute text-white text-xs px-3 py-2 rounded-lg shadow-lg whitespace-nowrap z-20 pointer-events-none ${getTooltipColor(calculatedRemaining).bg}`}
+            className={`absolute -translate-x-1/2 text-white text-xs px-3 py-2 rounded-lg shadow-lg whitespace-nowrap z-20 pointer-events-none ${getTooltipColor(calculatedRemaining).bg}`}
             style={{
               left: `${percentage}%`,
-              top: '-3rem',
-              transform: 'translateX(-50%)'
+              top: '-3rem'
             }}
           >
             {calculatedRemaining} points remaining
             {/* Arrow */}
             <div className={`absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 ${getTooltipColor(calculatedRemaining).arrow} rotate-45`}></div>
-          </motion.div>
-        )}
-
-        {/* Limit Tooltip - Shows error when trying to exceed limit */}
-        {showTooltip && tooltipContent && !isDragging && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="absolute bg-red-600 text-white text-xs px-3 py-2 rounded-lg shadow-lg whitespace-nowrap z-20 pointer-events-none"
-            style={{
-              left: `${percentage}%`,
-              top: '-3rem',
-              transform: 'translateX(-50%)'
-            }}
-          >
-            {tooltipContent}
-            {/* Arrow */}
-            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-red-600 rotate-45"></div>
           </motion.div>
         )}
       </div>
