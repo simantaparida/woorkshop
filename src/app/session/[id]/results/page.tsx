@@ -227,93 +227,24 @@ export default function ResultsPage() {
 
   return (
     <AppLayout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
           className="space-y-6"
         >
-          {/* Session Timeline Progress */}
-          {(() => {
-            const currentStep = 6; // Results step is active
-            const steps = [
-              { id: 1, label: 'Create' },
-              { id: 2, label: 'Join' },
-              { id: 3, label: 'Review' },
-              { id: 4, label: 'Ready' },
-              { id: 5, label: 'Vote' },
-              { id: 6, label: 'Results' },
-            ];
-
-            return (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1, duration: 0.4 }}
-                className="flex items-center justify-center w-full mb-10"
-              >
-                <div className="flex items-center relative z-10">
-                  {steps.map((step, index) => {
-                    const isActive = step.id === currentStep;
-                    const isCompleted = step.id < currentStep;
-                    const isLast = index === steps.length - 1;
-
-                    return (
-                      <div key={step.id} className="flex items-center">
-                        <div className="flex flex-col items-center relative">
-                          <div
-                            className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-300 border-2 ${
-                              isActive
-                                ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200'
-                                : isCompleted
-                                ? 'bg-green-500 text-white border-green-500'
-                                : 'bg-white text-gray-400 border-gray-200'
-                            }`}
-                          >
-                            {isCompleted ? (
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                              </svg>
-                            ) : (
-                              step.id
-                            )}
-                          </div>
-                          <span
-                            className={`absolute top-8 text-[10px] font-medium whitespace-nowrap transition-colors duration-300 ${
-                              isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-400'
-                            }`}
-                          >
-                            {step.label}
-                          </span>
-                        </div>
-
-                        {!isLast && (
-                          <div
-                            className={`w-12 sm:w-16 h-0.5 mx-1.5 transition-colors duration-300 ${
-                              isCompleted ? 'bg-green-500' : 'bg-gray-200'
-                            }`}
-                          />
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            );
-          })()}
-
           {/* Header */}
-          <div className="flex items-center justify-between">
+          <div className="space-y-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-1">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 {session?.title || session?.project_name || 'Results'}
               </h1>
-              <p className="text-gray-600 text-sm">Voting complete</p>
+              <p className="text-gray-600 text-sm">✓ Voting complete</p>
             </div>
 
-            {/* Compact Actions */}
-            <div className="flex gap-2">
+            {/* Action Buttons */}
+            <div className="flex flex-wrap gap-2">
               <Button onClick={handleCopyLink} variant="secondary" size="sm">
                 <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -389,71 +320,92 @@ export default function ResultsPage() {
             </div>
           )}
 
-          {/* Compact Consensus Metrics */}
-          {consensus && results.length > 0 && (
-            <div className="bg-white rounded-xl border border-gray-200 p-5">
-              <div className="grid md:grid-cols-2 gap-4">
-                {/* Team Alignment */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-700">Team Alignment</span>
-                    <span className={`text-xl font-bold ${
-                      consensus.teamAlignment >= 70 ? 'text-green-600' :
-                      consensus.teamAlignment >= 40 ? 'text-yellow-600' :
-                      'text-red-600'
-                    }`}>
-                      {consensus.teamAlignment}%
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-1.5">
-                    <div
-                      className={`h-1.5 rounded-full transition-all ${
-                        consensus.teamAlignment >= 70 ? 'bg-green-600' :
-                        consensus.teamAlignment >= 40 ? 'bg-yellow-600' :
-                        'bg-red-600'
-                      }`}
-                      style={{ width: `${consensus.teamAlignment}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* Consensus Leader */}
-                {consensus.consensusLeader && (
-                  <div>
-                    <span className="text-xs text-gray-500">Top Priority</span>
-                    <p className="text-sm font-semibold text-gray-900 mt-1">
-                      {consensus.consensusLeader.title}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {consensus.consensusLeader.total_points} pts • {consensus.consensusLeader.vote_count} votes
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Compact Summary Stats */}
+          {/* Summary Stats & Consensus Metrics */}
           {results.length > 0 && (
-            <div className="grid grid-cols-3 gap-4">
-              <div className="bg-white rounded-xl border border-gray-200 p-4 text-center">
-                <div className="text-2xl font-bold text-primary mb-1">
-                  {results.length}
+            <div className="space-y-4">
+              {/* Summary Stats */}
+              <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-5">
+                <h3 className="text-sm font-semibold text-gray-700 mb-4">Summary</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-primary mb-1">
+                      {results.length}
+                    </div>
+                    <p className="text-sm text-gray-600">Features</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-primary mb-1">
+                      {results.reduce((sum, r) => sum + r.vote_count, 0)}
+                    </div>
+                    <p className="text-sm text-gray-600">Votes</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-primary mb-1">
+                      {results.reduce((sum, r) => sum + r.total_points, 0)}
+                    </div>
+                    <p className="text-sm text-gray-600">Points</p>
+                  </div>
                 </div>
-                <p className="text-xs text-gray-600">Features</p>
               </div>
-              <div className="bg-white rounded-xl border border-gray-200 p-4 text-center">
-                <div className="text-2xl font-bold text-primary mb-1">
-                  {results.reduce((sum, r) => sum + r.vote_count, 0)}
+
+              {/* Consensus Metrics */}
+              {consensus && (
+                <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-5">
+                  <h3 className="text-sm font-semibold text-gray-700 mb-4">Team Consensus</h3>
+                  <div className="space-y-4">
+                    {/* Team Alignment */}
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-700">Alignment Score</span>
+                        <span className={`text-2xl font-bold ${
+                          consensus.teamAlignment >= 70 ? 'text-green-600' :
+                          consensus.teamAlignment >= 40 ? 'text-yellow-600' :
+                          'text-red-600'
+                        }`}>
+                          {consensus.teamAlignment}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${consensus.teamAlignment}%` }}
+                          transition={{ duration: 0.8, ease: 'easeOut' }}
+                          className={`h-2 rounded-full ${
+                            consensus.teamAlignment >= 70 ? 'bg-green-600' :
+                            consensus.teamAlignment >= 40 ? 'bg-yellow-600' :
+                            'bg-red-600'
+                          }`}
+                        />
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {consensus.teamAlignment >= 70 ? 'Strong alignment on top priorities' :
+                         consensus.teamAlignment >= 40 ? 'Moderate team alignment' :
+                         'Diverse opinions - discussion recommended'}
+                      </p>
+                    </div>
+
+                    {/* Consensus Leader */}
+                    {consensus.consensusLeader && (
+                      <div className="border-t border-gray-100 pt-4">
+                        <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Top Priority</span>
+                        <p className="text-base font-semibold text-gray-900 mt-2">
+                          {consensus.consensusLeader.title}
+                        </p>
+                        <div className="flex items-center gap-3 mt-2 text-sm text-gray-600">
+                          <span className="flex items-center gap-1">
+                            <svg className="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                            {consensus.consensusLeader.total_points} points
+                          </span>
+                          <span>•</span>
+                          <span>{consensus.consensusLeader.vote_count} votes</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <p className="text-xs text-gray-600">Votes</p>
-              </div>
-              <div className="bg-white rounded-xl border border-gray-200 p-4 text-center">
-                <div className="text-2xl font-bold text-primary mb-1">
-                  {results.reduce((sum, r) => sum + r.total_points, 0)}
-                </div>
-                <p className="text-xs text-gray-600">Points</p>
-              </div>
+              )}
             </div>
           )}
         </motion.div>
