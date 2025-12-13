@@ -237,10 +237,9 @@ export default function NewVotingBoardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-          className="space-y-6"
         >
           {/* Session Timeline Progress */}
-          <div className="mb-10">
+          <div className="mb-[40px]">
             <div className="flex items-center justify-center w-full">
               <div className="flex items-center gap-2">
                 {[
@@ -276,7 +275,7 @@ export default function NewVotingBoardPage() {
                           )}
                         </div>
                         <span
-                          className={`absolute top-8 text-xs font-medium whitespace-nowrap transition-colors duration-300 ${
+                          className={`absolute top-7 text-xs font-medium whitespace-nowrap transition-colors duration-300 ${
                             isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-400'
                           }`}
                         >
@@ -299,13 +298,10 @@ export default function NewVotingBoardPage() {
           </div>
 
           {/* Page Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+          <div className="text-center mb-[16px]">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
               Create Voting Board
             </h1>
-            <p className="text-base text-gray-600">
-              Set up a 100-point effort scoring session for your team
-            </p>
           </div>
 
           {/* Form */}

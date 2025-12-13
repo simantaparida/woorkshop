@@ -24,8 +24,8 @@ export function VotingBoardStepper({ currentStep, size = 'compact' }: VotingBoar
       connector: 'w-12 sm:w-16',
       connectorHeight: 'h-0.5',
       connectorMargin: 'mx-2',
-      labelTop: 'top-12',
-      containerMargin: 'mb-12',
+      labelTop: 'top-8',
+      containerMargin: 'mb-10',
     },
     compact: {
       circle: 'w-[22px] h-[22px]',
