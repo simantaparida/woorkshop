@@ -259,16 +259,16 @@ export default function NewVotingBoardPage() {
                     <div key={step.id} className="flex items-center">
                       <div className="flex flex-col items-center relative">
                         <div
-                          className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                          className={`w-[22px] h-[22px] rounded-full flex items-center justify-center text-[9px] font-bold transition-all duration-300 border-2 ${
                             isActive
-                              ? 'bg-blue-600 text-white shadow-md shadow-blue-200/50'
+                              ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-200'
                               : isCompleted
-                              ? 'bg-green-500 text-white'
-                              : 'bg-white text-gray-400 border-2 border-gray-200'
+                              ? 'bg-green-500 text-white border-green-500'
+                              : 'bg-white text-gray-400 border-gray-200'
                           }`}
                         >
                           {isCompleted ? (
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                             </svg>
                           ) : (
@@ -276,7 +276,7 @@ export default function NewVotingBoardPage() {
                           )}
                         </div>
                         <span
-                          className={`absolute -bottom-5 text-xs font-medium whitespace-nowrap ${
+                          className={`absolute top-8 text-xs font-medium whitespace-nowrap transition-colors duration-300 ${
                             isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-400'
                           }`}
                         >
@@ -286,7 +286,7 @@ export default function NewVotingBoardPage() {
 
                       {!isLast && (
                         <div
-                          className={`w-12 sm:w-16 h-0.5 mx-2 transition-colors ${
+                          className={`w-8 sm:w-12 h-[1.5px] mx-1 transition-colors duration-300 ${
                             isCompleted ? 'bg-green-500' : 'bg-gray-200'
                           }`}
                         />

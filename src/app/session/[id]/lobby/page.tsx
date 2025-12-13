@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/Input';
 import { PlayerList } from '@/components/PlayerList';
 import { AppLayout } from '@/components/AppLayout';
 import { useToast } from '@/components/ui/Toast';
+import { VotingBoardStepper } from '@/components/VotingBoardStepper';
 import { useSession } from '@/lib/hooks/useSession';
 import { usePlayers } from '@/lib/hooks/usePlayers';
 import { copyToClipboard, getSessionLink } from '@/lib/utils/helpers';
@@ -277,107 +278,47 @@ export default function LobbyPage() {
           className="space-y-4"
         >
           {/* Session Timeline Progress */}
-          {(() => {
-            // Determine current step based on voting board flow
-            // Step 1: Join - User needs to join the session
-            // Step 2: Review - User has joined and should review features
-            // Step 3: Ready - User has marked themselves as ready
-            // Step 4: Vote - Voting is in progress
-            // Step 5: Results - Voting is complete, showing results
-            
-            let currentStep = 1;
-            
-            // Check session status first
-            if (sessionStatus === 'results') {
-              currentStep = 5; // Results
-            } else if (sessionStatus === 'playing') {
-              currentStep = 4; // Vote
-            } else if (currentPlayerId) {
-              // Step 1 completed: User has joined
-              currentStep = 2; // Now on Review step
-              
-              // Check if features are available to review
-              if (features.length > 0) {
-                // User can review features, but step 2 is still active until they mark ready
-                // If user is ready, they've completed review
-                if (isReady) {
-                  // Step 2 completed: Features reviewed
-                  // Step 3 completed: User is ready
-                  currentStep = 3; // Now on Ready step (waiting for host to start voting)
+          <VotingBoardStepper
+            currentStep={(() => {
+              // Determine current step based on voting board flow
+              // Step 1: Join - User needs to join the session
+              // Step 2: Review - User has joined and should review features
+              // Step 3: Ready - User has marked themselves as ready
+              // Step 4: Vote - Voting is in progress
+              // Step 5: Results - Voting is complete, showing results
+
+              let currentStep: 1 | 2 | 3 | 4 | 5 = 1;
+
+              // Check session status first
+              if (sessionStatus === 'results') {
+                currentStep = 5; // Results
+              } else if (sessionStatus === 'playing') {
+                currentStep = 4; // Vote
+              } else if (currentPlayerId) {
+                // Step 1 completed: User has joined
+                currentStep = 2; // Now on Review step
+
+                // Check if features are available to review
+                if (features.length > 0) {
+                  // User can review features, but step 2 is still active until they mark ready
+                  // If user is ready, they've completed review
+                  if (isReady) {
+                    // Step 2 completed: Features reviewed
+                    // Step 3 completed: User is ready
+                    currentStep = 3; // Now on Ready step (waiting for host to start voting)
+                  } else {
+                    // Step 2 active: User is reviewing features
+                    currentStep = 2;
+                  }
                 } else {
-                  // Step 2 active: User is reviewing features
+                  // No features yet, still on review step (waiting for host to add features)
                   currentStep = 2;
                 }
-              } else {
-                // No features yet, still on review step (waiting for host to add features)
-                currentStep = 2;
               }
-            }
 
-            const steps = [
-              { id: 1, label: 'Join' },
-              { id: 2, label: 'Review' },
-              { id: 3, label: 'Ready' },
-              { id: 4, label: 'Vote' },
-              { id: 5, label: 'Results' },
-            ];
-
-            return (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1, duration: 0.4 }}
-                className="flex items-center justify-center w-full mb-10"
-              >
-                <div className="flex items-center relative z-10">
-                  {steps.map((step, index) => {
-                    const isActive = step.id === currentStep;
-                    const isCompleted = step.id < currentStep;
-                    const isLast = index === steps.length - 1;
-
-                    return (
-                      <div key={step.id} className="flex items-center">
-                        <div className="flex flex-col items-center relative">
-                          <div
-                            className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold transition-all duration-300 border-2 ${
-                              isActive
-                                ? 'bg-blue-600 text-white border-blue-600'
-                                : isCompleted
-                                ? 'bg-green-500 text-white border-green-500'
-                                : 'bg-white text-gray-400 border-gray-200'
-                            }`}
-                          >
-                            {isCompleted ? (
-                              <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                              </svg>
-                            ) : (
-                              step.id
-                            )}
-                          </div>
-                          <span
-                            className={`absolute top-6 text-[9px] font-medium whitespace-nowrap transition-colors duration-300 ${
-                              isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-400'
-                            }`}
-                          >
-                            {step.label}
-                          </span>
-                        </div>
-
-                        {!isLast && (
-                          <div
-                            className={`w-10 sm:w-12 h-0.5 mx-1 transition-colors duration-300 ${
-                              isCompleted ? 'bg-green-500' : 'bg-gray-200'
-                            }`}
-                          />
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            );
-          })()}
+              return currentStep;
+            })()}
+          />
 
           {/* Session Goal Banner - Only show if goal exists */}
           {session.session_goal && (

@@ -8,6 +8,7 @@ import { ResultsChart } from '@/components/ResultsChart';
 import { AppLayout } from '@/components/AppLayout';
 import { useToast } from '@/components/ui/Toast';
 import { Tooltip } from '@/components/ui/Tooltip';
+import { VotingBoardStepper } from '@/components/VotingBoardStepper';
 import { copyToClipboard, getSessionLink } from '@/lib/utils/helpers';
 import { calculateConsensusMetrics, type ConsensusMetrics } from '@/lib/utils/consensus';
 import { useClickOutside } from '@/lib/hooks/useClickOutside';
@@ -20,17 +21,12 @@ export default function ResultsPage() {
   const sessionId = params?.id as string;
   const { showToast, ToastContainer } = useToast();
 
-  const { players } = usePlayers(sessionId);
-  const { progress } = usePlayerProgress(sessionId);
-
   const [session, setSession] = useState<Session | null>(null);
   const [results, setResults] = useState<FeatureWithVotes[]>([]);
   const [consensus, setConsensus] = useState<ConsensusMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
-
-  const votedPlayerIds = new Set(progress.filter(p => p.has_voted).map(p => p.player.id));
 
   // Ref for click-outside detection
   const exportMenuRef = useRef<HTMLDivElement>(null);
@@ -190,6 +186,9 @@ export default function ResultsPage() {
           transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
           className="space-y-6"
         >
+          {/* Voting Board Stepper */}
+          <VotingBoardStepper currentStep={5} />
+
           {/* Header */}
           <div className="space-y-4">
             <div className="flex items-start justify-between gap-4">
@@ -262,13 +261,6 @@ export default function ResultsPage() {
               </Button>
               </div>
             </div>
-
-            {/* Progress Indicator */}
-            <ProgressIndicator
-              current={votedPlayerIds.size}
-              total={players.length}
-              label="Voting complete"
-            />
           </div>
 
           {/* Results Visualization */}
