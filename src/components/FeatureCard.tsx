@@ -307,8 +307,7 @@ export function FeatureCard({
               animate={{ opacity: 1, height: 'auto' }}
               className="space-y-1"
             >
-              <div className="flex items-center justify-between text-xs text-gray-600">
-                <span>{points}% of total budget</span>
+              <div className="flex items-center justify-end text-xs text-gray-600">
                 <span className="font-medium">{points}/100 pts</span>
               </div>
               <div className="h-3 bg-gray-100 rounded-full overflow-hidden relative">
@@ -323,58 +322,52 @@ export function FeatureCard({
           )}
         </div>
 
-        {/* Optional Note Section */}
-        {points > 0 && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            className="border-t border-gray-200 pt-3"
-          >
-            {!showNoteField ? (
-              <button
-                onClick={() => setShowNoteField(true)}
-                disabled={disabled}
-                className="text-sm text-primary hover:text-primary-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 transition-colors"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-                Add note (why you gave this score)
-              </button>
-            ) : (
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-gray-700 flex items-center justify-between">
-                  <span>Why did you give this score? (optional)</span>
-                  <button
-                    onClick={() => {
-                      setShowNoteField(false);
-                      setLocalNote('');
-                      if (onNoteChange) onNoteChange(feature.id, '');
-                    }}
-                    disabled={disabled}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </label>
-                <textarea
-                  value={localNote}
-                  onChange={(e) => handleNoteChange(e.target.value)}
+        {/* Optional Note Section - Always Visible */}
+        <div className="border-t border-gray-200 pt-3">
+          {!showNoteField ? (
+            <button
+              onClick={() => setShowNoteField(true)}
+              disabled={disabled}
+              className="text-sm text-primary hover:text-primary-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              Add note (why you gave this score)
+            </button>
+          ) : (
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-gray-700 flex items-center justify-between">
+                <span>Why did you give this score? (optional)</span>
+                <button
+                  onClick={() => {
+                    setShowNoteField(false);
+                    setLocalNote('');
+                    if (onNoteChange) onNoteChange(feature.id, '');
+                  }}
                   disabled={disabled}
-                  placeholder="e.g., High impact on user retention but requires significant backend work..."
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed resize-none"
-                  rows={3}
-                  maxLength={500}
-                />
-                <p className="text-xs text-gray-500 text-right">
-                  {localNote.length}/500 characters
-                </p>
-              </div>
-            )}
-          </motion.div>
-        )}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </label>
+              <textarea
+                value={localNote}
+                onChange={(e) => handleNoteChange(e.target.value)}
+                disabled={disabled}
+                placeholder="e.g., High impact on user retention but requires significant backend work..."
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed resize-none"
+                rows={3}
+                maxLength={500}
+              />
+              <p className="text-xs text-gray-500 text-right">
+                {localNote.length}/500 characters
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </Card>
   );

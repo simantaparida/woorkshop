@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 
 interface SliderProps {
@@ -29,32 +29,44 @@ export function Slider({
 
   const percentage = ((value - min) / (max - min)) * 100;
 
+  const updateValue = useCallback((clientX: number) => {
+    if (!sliderRef.current || disabled) return;
+
+    const rect = sliderRef.current.getBoundingClientRect();
+    const offsetX = clientX - rect.left;
+    const newPercentage = Math.max(0, Math.min(100, (offsetX / rect.width) * 100));
+    const rawValue = (newPercentage / 100) * (max - min) + min;
+    const steppedValue = Math.round(rawValue / step) * step;
+    const clampedValue = Math.max(min, Math.min(max, steppedValue));
+
+    onChange(clampedValue);
+  }, [min, max, step, disabled, onChange]);
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    updateValue(e.clientX);
+  }, [updateValue]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  const handleTouchMove = useCallback((e: TouchEvent) => {
+    if (e.touches[0]) {
+      updateValue(e.touches[0].clientX);
+    }
+  }, [updateValue]);
+
   const handleMouseDown = (e: React.MouseEvent) => {
     if (disabled) return;
+    e.preventDefault();
     setIsDragging(true);
     updateValue(e.clientX);
-  };
-
-  const handleMouseMove = (e: MouseEvent) => {
-    if (isDragging && !disabled) {
-      updateValue(e.clientX);
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
     if (disabled) return;
     setIsDragging(true);
     updateValue(e.touches[0].clientX);
-  };
-
-  const handleTouchMove = (e: TouchEvent) => {
-    if (isDragging && !disabled) {
-      updateValue(e.touches[0].clientX);
-    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -77,19 +89,6 @@ export function Slider({
     onChange(newValue);
   };
 
-  const updateValue = (clientX: number) => {
-    if (!sliderRef.current) return;
-
-    const rect = sliderRef.current.getBoundingClientRect();
-    const offsetX = clientX - rect.left;
-    const newPercentage = Math.max(0, Math.min(100, (offsetX / rect.width) * 100));
-    const rawValue = (newPercentage / 100) * (max - min) + min;
-    const steppedValue = Math.round(rawValue / step) * step;
-    const clampedValue = Math.max(min, Math.min(max, steppedValue));
-
-    onChange(clampedValue);
-  };
-
   useEffect(() => {
     if (isDragging) {
       window.addEventListener('mousemove', handleMouseMove);
@@ -104,7 +103,7 @@ export function Slider({
         window.removeEventListener('touchend', handleMouseUp);
       };
     }
-  }, [isDragging]);
+  }, [isDragging, handleMouseMove, handleMouseUp, handleTouchMove]);
 
   return (
     <div className={`relative ${className}`}>
