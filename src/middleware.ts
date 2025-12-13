@@ -90,8 +90,60 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // ==========================================================
+  // SECURITY HEADERS
+  // ==========================================================
+
   // Add request ID to response headers for client-side debugging
   supabaseResponse.headers.set('x-request-id', requestId);
+
+  // Content Security Policy (CSP)
+  // Helps prevent XSS attacks by controlling which resources can be loaded
+  const cspHeader = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://vercel.live",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "img-src 'self' data: https: blob:",
+    "font-src 'self' data: https://fonts.gstatic.com",
+    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://vercel.live",
+    "frame-src 'self' https://www.figma.com",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+    "upgrade-insecure-requests",
+  ].join('; ');
+
+  supabaseResponse.headers.set('Content-Security-Policy', cspHeader);
+
+  // HTTP Strict Transport Security (HSTS)
+  // Force HTTPS connections for 1 year
+  supabaseResponse.headers.set(
+    'Strict-Transport-Security',
+    'max-age=31536000; includeSubDomains; preload'
+  );
+
+  // X-Frame-Options
+  // Prevent clickjacking by disallowing embedding in iframes
+  supabaseResponse.headers.set('X-Frame-Options', 'DENY');
+
+  // X-Content-Type-Options
+  // Prevent MIME type sniffing
+  supabaseResponse.headers.set('X-Content-Type-Options', 'nosniff');
+
+  // Referrer-Policy
+  // Control how much referrer information is sent
+  supabaseResponse.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+
+  // Permissions-Policy
+  // Control which browser features can be used
+  supabaseResponse.headers.set(
+    'Permissions-Policy',
+    'camera=(), microphone=(), geolocation=(), interest-cohort=()'
+  );
+
+  // X-XSS-Protection (legacy, but still supported by some browsers)
+  supabaseResponse.headers.set('X-XSS-Protection', '1; mode=block');
 
   return supabaseResponse;
 }
