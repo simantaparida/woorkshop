@@ -26,6 +26,7 @@ export function Slider({
 }: SliderProps) {
   const [isDragging, setIsDragging] = useState(false);
   const sliderRef = useRef<HTMLDivElement>(null);
+  const isDraggingRef = useRef(false);
 
   const percentage = ((value - min) / (max - min)) * 100;
 
@@ -43,15 +44,25 @@ export function Slider({
   }, [min, max, step, disabled, onChange]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isDraggingRef.current) return;
+    e.preventDefault();
+    e.stopPropagation();
     updateValue(e.clientX);
   }, [updateValue]);
 
-  const handleMouseUp = useCallback(() => {
+  const handleMouseUp = useCallback((e?: MouseEvent) => {
+    if (!isDraggingRef.current) return;
+    e?.preventDefault();
+    e?.stopPropagation();
+    isDraggingRef.current = false;
     setIsDragging(false);
   }, []);
 
   const handleTouchMove = useCallback((e: TouchEvent) => {
+    if (!isDraggingRef.current) return;
     if (e.touches[0]) {
+      e.preventDefault();
+      e.stopPropagation();
       updateValue(e.touches[0].clientX);
     }
   }, [updateValue]);
@@ -59,12 +70,16 @@ export function Slider({
   const handleMouseDown = (e: React.MouseEvent) => {
     if (disabled) return;
     e.preventDefault();
+    e.stopPropagation();
+    isDraggingRef.current = true;
     setIsDragging(true);
     updateValue(e.clientX);
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
     if (disabled) return;
+    e.stopPropagation();
+    isDraggingRef.current = true;
     setIsDragging(true);
     updateValue(e.touches[0].clientX);
   };
@@ -91,16 +106,22 @@ export function Slider({
 
   useEffect(() => {
     if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-      window.addEventListener('touchmove', handleTouchMove);
-      window.addEventListener('touchend', handleMouseUp);
+      const mouseMoveHandler = (e: MouseEvent) => handleMouseMove(e);
+      const mouseUpHandler = (e: MouseEvent) => handleMouseUp(e);
+      const touchMoveHandler = (e: TouchEvent) => handleTouchMove(e);
+      const touchEndHandler = () => handleMouseUp();
+
+      window.addEventListener('mousemove', mouseMoveHandler, { capture: true });
+      window.addEventListener('mouseup', mouseUpHandler, { capture: true });
+      window.addEventListener('touchmove', touchMoveHandler, { capture: true });
+      window.addEventListener('touchend', touchEndHandler, { capture: true });
 
       return () => {
-        window.removeEventListener('mousemove', handleMouseMove);
-        window.removeEventListener('mouseup', handleMouseUp);
-        window.removeEventListener('touchmove', handleTouchMove);
-        window.removeEventListener('touchend', handleMouseUp);
+        window.removeEventListener('mousemove', mouseMoveHandler, { capture: true });
+        window.removeEventListener('mouseup', mouseUpHandler, { capture: true });
+        window.removeEventListener('touchmove', touchMoveHandler, { capture: true });
+        window.removeEventListener('touchend', touchEndHandler, { capture: true });
+        isDraggingRef.current = false;
       };
     }
   }, [isDragging, handleMouseMove, handleMouseUp, handleTouchMove]);

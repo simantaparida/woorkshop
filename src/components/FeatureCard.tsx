@@ -238,6 +238,13 @@ export function FeatureCard({
               />
             </div>
             <div className="flex items-center gap-2">
+              <button
+                onClick={handleDecrement}
+                disabled={disabled || points === 0}
+                className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-base font-semibold transition-colors"
+              >
+                −
+              </button>
               <input
                 type="text"
                 value={localPoints}
@@ -245,20 +252,13 @@ export function FeatureCard({
                 onBlur={handleInputBlur}
                 onKeyDown={handleInputKeyDown}
                 disabled={disabled}
-                className="w-20 text-3xl font-bold text-gray-900 text-right border border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="w-16 text-lg font-semibold text-gray-900 text-center border border-gray-300 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               />
               <span className="text-sm text-gray-500 font-medium">pts</span>
               <button
-                onClick={handleDecrement}
-                disabled={disabled || points === 0}
-                className="w-9 h-9 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-lg font-semibold transition-colors"
-              >
-                −
-              </button>
-              <button
                 onClick={handleIncrement}
                 disabled={disabled || remainingPoints === 0}
-                className="w-9 h-9 rounded-lg bg-primary hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-lg font-semibold text-white transition-colors"
+                className="w-8 h-8 rounded-lg bg-primary hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-base font-semibold text-white transition-colors"
               >
                 +
               </button>
@@ -299,27 +299,6 @@ export function FeatureCard({
               </button>
             )}
           </div>
-
-          {/* Enhanced Visual Progress Bar */}
-          {points > 0 && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              className="space-y-1"
-            >
-              <div className="flex items-center justify-end text-xs text-gray-600">
-                <span className="font-medium">{points}/100 pts</span>
-              </div>
-              <div className="h-3 bg-gray-100 rounded-full overflow-hidden relative">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${points}%` }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                  className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"
-                />
-              </div>
-            </motion.div>
-          )}
         </div>
 
         {/* Optional Note Section - Always Visible */}
