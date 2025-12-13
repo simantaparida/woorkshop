@@ -1,19 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServer } from '@/lib/supabase/server';
 import { verifySessionAccess, verifySessionOwnership } from '@/lib/utils/auth';
+import { createApiLogger, logError } from '@/lib/logger';
 
 // GET /api/sessions/[id] - Get session with context (workshop, project)
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const requestId = request.headers.get('x-request-id') || 'unknown';
+  const log = createApiLogger(requestId, `/api/sessions/${params.id}`, 'GET');
+  const startTime = Date.now();
+
   try {
     const { id } = params;
+
+    log.info({ sessionId: id }, 'Fetching session details');
 
     // Verify user has access to this session (owner or guest with link)
     const { authorized, error: authError } = await verifySessionAccess(id);
 
     if (!authorized) {
+      log.warn({ sessionId: id, reason: authError }, 'Session access denied');
       return NextResponse.json(
         { error: authError || 'Access denied' },
         { status: authError === 'Session not found' ? 404 : 403 }
@@ -39,21 +47,34 @@ export async function GET(
 
     if (error) {
       if (error.code === 'PGRST116') {
+        log.warn({ sessionId: id }, 'Session not found');
         return NextResponse.json(
           { error: 'Session not found' },
           { status: 404 }
         );
       }
-      console.error('Error fetching session:', error);
+      logError(log, error, { sessionId: id, operation: 'fetch_session' });
       return NextResponse.json(
         { error: 'Failed to fetch session' },
         { status: 500 }
       );
     }
 
+    const duration = Date.now() - startTime;
+    log.info({
+      sessionId: id,
+      playerCount: session.players?.length || 0,
+      featureCount: session.features?.length || 0,
+      durationMs: duration
+    }, 'Session fetched successfully');
+
     return NextResponse.json({ session });
   } catch (error) {
-    console.error('Error in GET /api/sessions/[id]:', error);
+    const duration = Date.now() - startTime;
+    logError(log, error, {
+      sessionId: params.id,
+      durationMs: duration
+    });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -66,13 +87,20 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const requestId = request.headers.get('x-request-id') || 'unknown';
+  const log = createApiLogger(requestId, `/api/sessions/${params.id}`, 'PATCH');
+  const startTime = Date.now();
+
   try {
     const { id } = params;
+
+    log.info({ sessionId: id }, 'Updating session');
 
     // Verify user owns this session
     const { authorized, error: authError } = await verifySessionOwnership(id);
 
     if (!authorized) {
+      log.warn({ sessionId: id, reason: authError }, 'Session update denied - not owner');
       return NextResponse.json(
         { error: authError || 'Access denied' },
         { status: authError === 'Session not found' ? 404 : 403 }
@@ -82,6 +110,11 @@ export async function PATCH(
     const supabase = getSupabaseServer();
     const body = await request.json();
     const { title, description, status, workshop_id, session_config } = body;
+
+    log.debug({
+      sessionId: id,
+      updates: { title: !!title, description: !!description, status, workshop_id: !!workshop_id }
+    }, 'Session update fields');
 
     // Build update object
     const updates: any = {
@@ -150,21 +183,33 @@ export async function PATCH(
 
     if (error) {
       if (error.code === 'PGRST116') {
+        log.warn({ sessionId: id }, 'Session not found for update');
         return NextResponse.json(
           { error: 'Session not found' },
           { status: 404 }
         );
       }
-      console.error('Error updating session:', error);
+      logError(log, error, { sessionId: id, operation: 'update_session' });
       return NextResponse.json(
         { error: 'Failed to update session' },
         { status: 500 }
       );
     }
 
+    const duration = Date.now() - startTime;
+    log.info({
+      sessionId: id,
+      updatedFields: Object.keys(updates),
+      durationMs: duration
+    }, 'Session updated successfully');
+
     return NextResponse.json({ session });
   } catch (error) {
-    console.error('Error in PATCH /api/sessions/[id]:', error);
+    const duration = Date.now() - startTime;
+    logError(log, error, {
+      sessionId: params.id,
+      durationMs: duration
+    });
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -178,21 +223,24 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
+  const requestId = request.headers.get('x-request-id') || 'unknown';
+  const log = createApiLogger(requestId, `/api/sessions/${id}`, 'DELETE');
+  const startTime = Date.now();
+
   try {
+    log.info({ sessionId: id }, 'Processing session deletion');
+
     const supabase = getSupabaseServer();
 
     // Get authenticated user (for new sessions module)
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    // DEBUG: Log authentication state
-    console.log('[DELETE SESSION] Auth state:', {
+    log.debug({
       sessionId: id,
       hasUser: !!user,
       userId: user?.id,
-      userEmail: user?.email,
       authError: authError?.message,
-      timestamp: new Date().toISOString(),
-    });
+    }, 'Authentication state for deletion');
 
     // For backward compatibility, also check for hostToken in query params or body
     const { searchParams } = new URL(request.url);
@@ -214,60 +262,44 @@ export async function DELETE(
       .eq('id', id)
       .single();
 
-    // DEBUG: Log session fetch result
-    console.log('[DELETE SESSION] Session fetch:', {
-      sessionId: id,
-      found: !!session,
-      createdBy: session?.created_by,
-      hasHostToken: !!session?.host_token,
-      hostTokenLength: session?.host_token?.length,
-      fetchError: fetchError?.code,
-      fetchErrorMessage: fetchError?.message,
-      fetchErrorDetails: fetchError?.details,
-    });
-
     if (fetchError) {
       if (fetchError.code === 'PGRST116') {
+        log.warn({ sessionId: id }, 'Session not found for deletion');
         return NextResponse.json(
           { error: 'Session not found' },
           { status: 404 }
         );
       }
-      console.error('Error fetching session:', fetchError);
+      logError(log, fetchError, { sessionId: id, operation: 'fetch_session_for_delete' });
       return NextResponse.json(
         { error: 'Failed to fetch session' },
         { status: 500 }
       );
     }
 
+    log.debug({
+      sessionId: id,
+      createdBy: session.created_by,
+      hasHostToken: !!session.host_token
+    }, 'Session fetched for deletion');
+
     // Verify authorization: either user owns session OR has valid host token
     const isOwner = user && session.created_by === user.id;
     const hasValidToken = hostToken && session.host_token === hostToken;
 
-    // DEBUG: Log authorization check
-    console.log('[DELETE SESSION] Authorization check:', {
+    log.debug({
       sessionId: id,
       isOwner,
-      ownerCheck: {
-        hasUser: !!user,
-        userId: user?.id,
-        createdBy: session.created_by,
-        matches: user?.id === session.created_by,
-        userIdType: typeof user?.id,
-        createdByType: typeof session.created_by,
-      },
       hasValidToken,
-      tokenCheck: {
-        hasProvidedToken: !!hostToken,
-        providedTokenLength: hostToken?.length,
-        hasSessionToken: !!session.host_token,
-        sessionTokenLength: session.host_token?.length,
-        tokensMatch: hostToken === session.host_token,
-      },
-      authorized: isOwner || hasValidToken,
-    });
+      authorized: isOwner || hasValidToken
+    }, 'Authorization check for deletion');
 
     if (!isOwner && !hasValidToken) {
+      log.warn({
+        sessionId: id,
+        attemptedBy: user?.id || 'anonymous',
+        hasProvidedToken: !!hostToken
+      }, 'Unauthorized deletion attempt');
       return NextResponse.json(
         { error: 'Unauthorized to delete this session' },
         { status: 403 }
@@ -275,37 +307,21 @@ export async function DELETE(
     }
 
     // Call cascade delete function
-    console.log('[DELETE SESSION] Calling RPC delete_session_cascade:', {
-      sessionId: id,
-      timestamp: new Date().toISOString(),
-    });
+    log.info({ sessionId: id }, 'Calling cascade delete RPC');
 
     const { data, error: rpcError } = await supabase.rpc('delete_session_cascade', {
       session_id_param: id
     });
 
-    // DEBUG: Log RPC result
-    console.log('[DELETE SESSION] RPC result:', {
-      sessionId: id,
-      success: !!data,
-      data,
-      hasError: !!rpcError,
-      errorMessage: rpcError?.message,
-      errorCode: rpcError?.code,
-      errorDetails: rpcError?.details,
-      errorHint: rpcError?.hint,
-      timestamp: new Date().toISOString(),
-    });
-
     // Handle RPC errors
     if (rpcError) {
-      console.error('[DELETE SESSION] RPC call failed:', {
+      logError(log, rpcError, {
         sessionId: id,
-        error: rpcError.message,
+        operation: 'rpc_delete_cascade',
         code: rpcError.code,
-        details: rpcError.details,
-        hint: rpcError.hint,
+        details: rpcError.details
       });
+
       return NextResponse.json(
         {
           error: 'Failed to delete session',
@@ -321,12 +337,12 @@ export async function DELETE(
     // Check if RPC function returned success (new JSONB format)
     if (data && typeof data === 'object' && 'success' in data) {
       if (!data.success) {
-        console.error('[DELETE SESSION] RPC function reported failure:', {
+        log.error({
           sessionId: id,
           errorStep: data.error_step,
           errorMessage: data.error_message,
           sqlState: data.sql_state,
-        });
+        }, 'RPC delete function reported failure');
 
         return NextResponse.json(
           {
@@ -344,31 +360,28 @@ export async function DELETE(
 
     // For backward compatibility with old function (returns boolean TRUE)
     if (!data || (typeof data === 'boolean' && !data)) {
-      console.error('[DELETE SESSION] RPC returned false or null:', {
-        sessionId: id,
-        data,
-      });
+      log.error({ sessionId: id, data }, 'RPC returned false or null');
       return NextResponse.json(
         { error: 'Failed to delete session' },
         { status: 500 }
       );
     }
 
-    console.log('[DELETE SESSION] Success:', {
+    const duration = Date.now() - startTime;
+    log.info({
       sessionId: id,
-      timestamp: new Date().toISOString(),
-    });
+      durationMs: duration
+    }, 'Session deleted successfully');
 
     return NextResponse.json({
       success: true,
       message: 'Session deleted successfully'
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Error in DELETE /api/sessions/[id]:', {
+    const duration = Date.now() - startTime;
+    logError(log, error, {
       sessionId: id,
-      error: errorMessage,
-      stack: error instanceof Error ? error.stack : undefined,
+      durationMs: duration
     });
     return NextResponse.json(
       { error: 'Internal server error' },
