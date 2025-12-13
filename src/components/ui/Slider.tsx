@@ -145,7 +145,7 @@ export function Slider({
       >
         {/* Filled portion */}
         <motion.div
-          className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"
+          className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full pointer-events-none"
           initial={{ width: `${percentage}%` }}
           animate={{ width: `${percentage}%` }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
@@ -153,15 +153,17 @@ export function Slider({
 
         {/* Thumb */}
         <div
-          className={`absolute w-6 h-6 bg-white border-2 border-blue-600 rounded-full shadow-md transition-transform ${
-            disabled ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing hover:scale-110'
-          }`}
+          className={`absolute w-6 h-6 bg-white border-2 border-blue-600 rounded-full shadow-md ${
+            disabled ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing'
+          } ${isDragging ? 'scale-110' : 'hover:scale-110'} transition-transform`}
           style={{
             left: `${percentage}%`,
             top: '50%',
             transform: 'translate(-50%, -50%)',
             marginLeft: 0
           }}
+          onMouseDown={handleMouseDown}
+          onTouchStart={handleTouchStart}
         />
       </div>
 

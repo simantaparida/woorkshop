@@ -254,11 +254,10 @@ export function FeatureCard({
                 disabled={disabled}
                 className="w-16 text-lg font-semibold text-gray-900 text-center border border-gray-300 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               />
-              <span className="text-sm text-gray-500 font-medium">pts</span>
               <button
                 onClick={handleIncrement}
                 disabled={disabled || remainingPoints === 0}
-                className="w-8 h-8 rounded-lg bg-primary hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-base font-semibold text-white transition-colors"
+                className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-base font-semibold transition-colors"
               >
                 +
               </button>
