@@ -216,10 +216,10 @@ export function Slider({
         {/* Drag Tooltip - Shows remaining points during active drag */}
         {isDragging && remainingPoints !== undefined && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className={`absolute -translate-x-1/2 text-white text-xs px-3 py-2 rounded-lg shadow-lg whitespace-nowrap z-20 pointer-events-none ${getTooltipColor(calculatedRemaining).bg}`}
+            initial={{ opacity: 0, y: -10, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: -10, x: '-50%' }}
+            className={`absolute text-white text-xs px-3 py-2 rounded-lg shadow-lg whitespace-nowrap z-20 pointer-events-none ${getTooltipColor(calculatedRemaining).bg}`}
             style={{
               left: `${percentage}%`,
               top: '-3rem'
