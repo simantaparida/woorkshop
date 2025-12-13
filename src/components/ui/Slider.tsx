@@ -3,6 +3,12 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 
+function getTooltipColor(remaining: number): { bg: string; arrow: string } {
+  if (remaining > 30) return { bg: 'bg-blue-600', arrow: 'bg-blue-600' };
+  if (remaining > 10) return { bg: 'bg-orange-600', arrow: 'bg-orange-600' };
+  return { bg: 'bg-red-600', arrow: 'bg-red-600' };
+}
+
 interface SliderProps {
   value: number;
   onChange: (value: number) => void;
@@ -14,6 +20,7 @@ interface SliderProps {
   showValue?: boolean;
   showTooltip?: boolean;
   tooltipContent?: React.ReactNode;
+  remainingPoints?: number;
 }
 
 export function Slider({
@@ -27,8 +34,11 @@ export function Slider({
   showValue = true,
   showTooltip = false,
   tooltipContent,
+  remainingPoints,
 }: SliderProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const [dragStartValue, setDragStartValue] = useState(value);
+  const [dragStartRemaining, setDragStartRemaining] = useState(0);
   const sliderRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
   const onChangeRef = useRef(onChange);
@@ -39,6 +49,14 @@ export function Slider({
   }, [onChange]);
 
   const percentage = ((value - min) / (max - min)) * 100;
+
+  // Calculate how many points would remain after this allocation
+  // When dragging starts, we capture the initial remainingPoints
+  // As we drag, we calculate: startRemaining - (currentValue - startValue)
+  // This gives us the remaining points if we commit to this position
+  const calculatedRemaining = isDragging && dragStartRemaining !== undefined
+    ? Math.max(0, dragStartRemaining - (value - dragStartValue))
+    : (remainingPoints !== undefined ? remainingPoints : 0);
 
   const updateValue = useCallback((clientX: number) => {
     if (!sliderRef.current) return;
@@ -79,6 +97,8 @@ export function Slider({
     if (disabled) return;
     e.preventDefault();
     e.stopPropagation();
+    setDragStartValue(value);
+    setDragStartRemaining(remainingPoints || 0);
     isDraggingRef.current = true;
     setIsDragging(true);
     updateValue(e.clientX);
@@ -88,6 +108,8 @@ export function Slider({
     if (disabled) return;
     e.preventDefault();
     e.stopPropagation();
+    setDragStartValue(value);
+    setDragStartRemaining(remainingPoints || 0);
     isDraggingRef.current = true;
     setIsDragging(true);
     if (e.touches[0]) {
@@ -191,8 +213,27 @@ export function Slider({
           }}
         />
 
-        {/* Limit Tooltip */}
-        {showTooltip && tooltipContent && (
+        {/* Drag Tooltip - Shows remaining points during active drag */}
+        {isDragging && remainingPoints !== undefined && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className={`absolute text-white text-xs px-3 py-2 rounded-lg shadow-lg whitespace-nowrap z-20 pointer-events-none ${getTooltipColor(calculatedRemaining).bg}`}
+            style={{
+              left: `${percentage}%`,
+              top: '-3rem',
+              transform: 'translateX(-50%)'
+            }}
+          >
+            {calculatedRemaining} points remaining
+            {/* Arrow */}
+            <div className={`absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 ${getTooltipColor(calculatedRemaining).arrow} rotate-45`}></div>
+          </motion.div>
+        )}
+
+        {/* Limit Tooltip - Shows error when trying to exceed limit */}
+        {showTooltip && tooltipContent && !isDragging && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}

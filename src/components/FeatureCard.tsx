@@ -256,6 +256,7 @@ export function FeatureCard({
                 max={100}
                 disabled={disabled}
                 showValue={false}
+                remainingPoints={remainingPoints}
                 showTooltip={showLimitTooltip}
                 tooltipContent={
                   <div className="flex items-center gap-2">
