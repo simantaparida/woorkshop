@@ -29,6 +29,7 @@ export function FeatureCard({
   const [localPoints, setLocalPoints] = useState(points.toString());
   const [localNote, setLocalNote] = useState(note);
   const [showNoteField, setShowNoteField] = useState(!!note);
+  const [showLimitTooltip, setShowLimitTooltip] = useState(false);
 
   useEffect(() => {
     setLocalPoints(points.toString());
@@ -67,6 +68,9 @@ export function FeatureCard({
     if (remainingPoints > 0 && !disabled) {
       const newPoints = points + 1;
       onPointsChange(feature.id, newPoints);
+    } else if (remainingPoints === 0 && !disabled) {
+      setShowLimitTooltip(true);
+      setTimeout(() => setShowLimitTooltip(false), 2000);
     }
   };
 
@@ -80,6 +84,13 @@ export function FeatureCard({
   const handleQuickAdd = (amount: number) => {
     if (!disabled) {
       const newPoints = Math.min(points + amount, points + remainingPoints);
+
+      // Show tooltip if trying to add more than available
+      if (amount > remainingPoints) {
+        setShowLimitTooltip(true);
+        setTimeout(() => setShowLimitTooltip(false), 2000);
+      }
+
       onPointsChange(feature.id, newPoints);
     }
   };
@@ -95,6 +106,13 @@ export function FeatureCard({
       // Clamp value to available points (current points + remaining points)
       const maxAllowed = points + remainingPoints;
       const clampedValue = Math.min(value, maxAllowed);
+
+      // Show tooltip if user tried to exceed limit
+      if (value > maxAllowed) {
+        setShowLimitTooltip(true);
+        setTimeout(() => setShowLimitTooltip(false), 2000);
+      }
+
       onPointsChange(feature.id, clampedValue);
     }
   };
@@ -238,6 +256,15 @@ export function FeatureCard({
                 max={100}
                 disabled={disabled}
                 showValue={false}
+                showTooltip={showLimitTooltip}
+                tooltipContent={
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    <span>Only {remainingPoints} points remaining!</span>
+                  </div>
+                }
               />
             </div>
             <div className="flex items-center gap-2">

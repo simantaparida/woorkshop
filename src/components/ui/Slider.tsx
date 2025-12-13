@@ -12,6 +12,8 @@ interface SliderProps {
   disabled?: boolean;
   className?: string;
   showValue?: boolean;
+  showTooltip?: boolean;
+  tooltipContent?: React.ReactNode;
 }
 
 export function Slider({
@@ -23,6 +25,8 @@ export function Slider({
   disabled = false,
   className = '',
   showValue = true,
+  showTooltip = false,
+  tooltipContent,
 }: SliderProps) {
   const [isDragging, setIsDragging] = useState(false);
   const sliderRef = useRef<HTMLDivElement>(null);
@@ -186,6 +190,25 @@ export function Slider({
             top: '50%',
           }}
         />
+
+        {/* Limit Tooltip */}
+        {showTooltip && tooltipContent && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="absolute bg-red-600 text-white text-xs px-3 py-2 rounded-lg shadow-lg whitespace-nowrap z-20 pointer-events-none"
+            style={{
+              left: `${percentage}%`,
+              top: '-3rem',
+              transform: 'translateX(-50%)'
+            }}
+          >
+            {tooltipContent}
+            {/* Arrow */}
+            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-red-600 rotate-45"></div>
+          </motion.div>
+        )}
       </div>
 
       {/* Value display */}
