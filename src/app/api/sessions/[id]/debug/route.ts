@@ -1,15 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServer } from '@/lib/supabase/server';
+import { verifySessionOwnership } from '@/lib/utils/auth';
 
 /**
  * DEBUG ENDPOINT: Test session deletion prerequisites without actually deleting
- * GET /api/sessions/[id]/debug?host_token=xxx
+ * GET /api/sessions/[id]/debug
+ *
+ * SECURITY: Only available in development mode and requires session ownership
  */
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  // SECURITY: Only allow in development
+  if (process.env.NODE_ENV !== 'development') {
+    return NextResponse.json(
+      { error: 'Not found' },
+      { status: 404 }
+    );
+  }
+
   const { id } = params;
+
+  // SECURITY: Require authentication and session ownership
+  const { authorized, error: authError } = await verifySessionOwnership(id);
+
+  if (!authorized) {
+    return NextResponse.json(
+      { error: authError || 'Unauthorized' },
+      { status: 403 }
+    );
+  }
+
   const { searchParams } = new URL(request.url);
   const hostToken = searchParams.get('host_token');
 
@@ -27,9 +49,9 @@ export async function GET(
     debug.checks.auth = {
       success: !!user,
       userId: user?.id,
-      userEmail: user?.email,
-      error: authError?.message,
+      // REDACTED: Don't expose email in debug output
       hasAuthCookie: !!user,
+      error: authError?.message,
     };
 
     // CHECK 2: Session fetch with RLS
@@ -48,7 +70,7 @@ export async function GET(
         status: session.status,
         createdBy: session.created_by,
         hasHostToken: !!session.host_token,
-        hostTokenPreview: session.host_token?.substring(0, 8) + '...',
+        // REDACTED: Don't expose token preview
       } : null,
       error: fetchError ? {
         code: fetchError.code,
@@ -77,10 +99,9 @@ export async function GET(
         hasValidToken,
         tokenCheck: {
           hasProvidedToken: !!hostToken,
-          providedTokenPreview: hostToken?.substring(0, 8) + '...',
           hasSessionToken: !!session.host_token,
-          sessionTokenPreview: session.host_token?.substring(0, 8) + '...',
           tokensMatch: hostToken === session.host_token,
+          // REDACTED: Don't expose token previews
         },
         wouldAuthorize: isOwner || hasValidToken,
       };

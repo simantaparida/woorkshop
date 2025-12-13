@@ -76,14 +76,35 @@ export async function POST(
       );
     }
 
+    // VOTE SUBMISSION STRATEGY:
+    // We use delete + insert pattern to handle vote updates.
+    // Ideally, this would be in a database transaction, but Supabase JS client
+    // doesn't support multi-statement transactions.
+    //
+    // Alternative approaches for future improvement:
+    // 1. Use PostgreSQL function with BEGIN/COMMIT transaction
+    // 2. Use upsert with ON CONFLICT, but requires handling zero-point votes differently
+    // 3. Fetch existing votes first, calculate diff, then update/insert/delete
+    //
+    // Current approach: Delete + Insert with error handling
+
     // Delete existing votes for this player
-    await supabase
+    const { error: deleteError } = await supabase
       .from('votes')
       .delete()
       .eq('session_id', sessionId)
       .eq('player_id', playerId);
 
-    // Insert new votes (only non-zero votes)
+    // Check for delete errors
+    if (deleteError) {
+      console.error('Vote deletion error:', deleteError);
+      return NextResponse.json(
+        { error: 'Failed to clear existing votes' },
+        { status: 500 }
+      );
+    }
+
+    // Prepare new votes (only non-zero votes)
     const voteInserts = votes
       .filter((vote) => vote.points > 0)
       .map((vote) => ({
@@ -94,6 +115,7 @@ export async function POST(
         note: vote.note || null,
       }));
 
+    // Insert new votes if any
     if (voteInserts.length > 0) {
       const { error: insertError } = await supabase
         .from('votes')
@@ -101,8 +123,20 @@ export async function POST(
 
       if (insertError) {
         console.error('Vote insertion error:', insertError);
+
+        // CRITICAL: If insert fails after delete, we've lost data
+        // Log this prominently for debugging
+        console.error('[DATA LOSS RISK] Votes were deleted but insert failed', {
+          sessionId,
+          playerId,
+          deletedVotesCount: 'unknown',
+          failedInsertCount: voteInserts.length,
+          error: insertError.message,
+          code: insertError.code
+        });
+
         return NextResponse.json(
-          { error: 'Failed to record votes' },
+          { error: 'Failed to record votes. Please try again.' },
           { status: 500 }
         );
       }

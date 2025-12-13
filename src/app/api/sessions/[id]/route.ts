@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServer } from '@/lib/supabase/server';
+import { verifySessionAccess, verifySessionOwnership } from '@/lib/utils/auth';
 
 // GET /api/sessions/[id] - Get session with context (workshop, project)
 export async function GET(
@@ -8,6 +9,17 @@ export async function GET(
 ) {
   try {
     const { id } = params;
+
+    // Verify user has access to this session (owner or guest with link)
+    const { authorized, error: authError } = await verifySessionAccess(id);
+
+    if (!authorized) {
+      return NextResponse.json(
+        { error: authError || 'Access denied' },
+        { status: authError === 'Session not found' ? 404 : 403 }
+      );
+    }
+
     const supabase = getSupabaseServer();
 
     const { data: session, error } = await supabase
@@ -56,6 +68,17 @@ export async function PATCH(
 ) {
   try {
     const { id } = params;
+
+    // Verify user owns this session
+    const { authorized, error: authError } = await verifySessionOwnership(id);
+
+    if (!authorized) {
+      return NextResponse.json(
+        { error: authError || 'Access denied' },
+        { status: authError === 'Session not found' ? 404 : 403 }
+      );
+    }
+
     const supabase = getSupabaseServer();
     const body = await request.json();
     const { title, description, status, workshop_id, session_config } = body;

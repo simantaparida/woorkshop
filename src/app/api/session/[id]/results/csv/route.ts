@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServer } from '@/lib/supabase/server';
-import { aggregateVotes, exportToCSV } from '@/lib/utils/helpers';
+import { aggregateVotes } from '@/lib/utils/helpers';
+import { sanitizeCSVCell } from '@/lib/utils/csv';
+import { verifySessionAccess } from '@/lib/utils/auth';
 
 export async function GET(
   request: NextRequest,
@@ -8,6 +10,17 @@ export async function GET(
 ) {
   try {
     const { id: sessionId } = params;
+
+    // SECURITY: Verify user has access to this session
+    const { authorized, error: authError } = await verifySessionAccess(sessionId);
+
+    if (!authorized) {
+      return NextResponse.json(
+        { error: authError || 'Access denied' },
+        { status: authError === 'Session not found' ? 404 : 403 }
+      );
+    }
+
     const supabase = getSupabaseServer();
 
     // Fetch session
@@ -32,9 +45,37 @@ export async function GET(
       .select('*')
       .eq('session_id', sessionId);
 
-    // Aggregate and export
+    // Aggregate votes
     const results = aggregateVotes(features || [], votes || []);
-    const csv = exportToCSV(results);
+
+    // Build CSV with sanitization to prevent CSV injection
+    const csvRows: string[] = [];
+
+    // Header row
+    csvRows.push([
+      'Rank',
+      'Feature',
+      'Description',
+      'Average Points',
+      'Total Votes',
+      'Effort',
+      'Impact'
+    ].map(h => sanitizeCSVCell(h)).join(','));
+
+    // Data rows with CSV injection protection
+    results.forEach((feature: any, index: number) => {
+      csvRows.push([
+        index + 1,
+        sanitizeCSVCell(feature.title),
+        sanitizeCSVCell(feature.description),
+        sanitizeCSVCell(feature.averagePoints?.toFixed(1) || '0'),
+        sanitizeCSVCell(feature.totalVotes || 0),
+        sanitizeCSVCell(feature.effort || ''),
+        sanitizeCSVCell(feature.impact || '')
+      ].join(','));
+    });
+
+    const csv = csvRows.join('\n');
 
     const sessionName = session.title || session.project_name || 'session';
     const filename = `${sessionName.replace(/[^a-z0-9]/gi, '_')}_results.csv`;
@@ -42,8 +83,10 @@ export async function GET(
     return new NextResponse(csv, {
       status: 200,
       headers: {
-        'Content-Type': 'text/csv',
+        'Content-Type': 'text/csv; charset=utf-8',
         'Content-Disposition': `attachment; filename="${filename}"`,
+        // Security headers
+        'X-Content-Type-Options': 'nosniff',
       },
     });
   } catch (error) {
