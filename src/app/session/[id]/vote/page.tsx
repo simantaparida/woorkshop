@@ -35,6 +35,7 @@ export default function VotePage() {
   const [currentPlayerId, setCurrentPlayerId] = useState<string | null>(null);
   const [showUndoOption, setShowUndoOption] = useState(false);
   const [undoTimeoutId, setUndoTimeoutId] = useState<NodeJS.Timeout | null>(null);
+  const [showSubmittedMessage, setShowSubmittedMessage] = useState(false);
 
   const remainingPoints = calculateRemainingPoints(TOTAL_POINTS, votes);
   const votedPlayerIds = new Set(progress.filter(p => p.has_voted).map(p => p.player.id));
@@ -201,27 +202,33 @@ export default function VotePage() {
       const data = await response.json();
 
       if (!response.ok) {
+        console.error('Vote submission failed:', data);
         throw new Error(data.error || 'Failed to submit votes');
       }
 
       setHasSubmitted(true);
       setSubmitting(false);
       setShowUndoOption(true);
+      setShowSubmittedMessage(true);
 
       // Set a 10-second timer for undo option
-      const timeoutId = setTimeout(() => {
+      const undoTimeout = setTimeout(() => {
         setShowUndoOption(false);
       }, 10000);
-      setUndoTimeoutId(timeoutId);
+      setUndoTimeoutId(undoTimeout);
+
+      // Set a 5-second timer for submitted message
+      setTimeout(() => {
+        setShowSubmittedMessage(false);
+      }, 5000);
 
       showToast('Votes submitted successfully!', 'success');
     } catch (error) {
       console.error('Error submitting votes:', error);
-      showToast(
-        error instanceof Error ? error.message : 'Failed to submit votes',
-        'error'
-      );
+      const errorMessage = error instanceof Error ? error.message : 'Failed to submit votes';
+      showToast(errorMessage, 'error');
       setSubmitting(false);
+      // Don't set hasSubmitted to true on error
     }
   };
 
@@ -244,8 +251,11 @@ export default function VotePage() {
 
       if (error) throw error;
 
+      // Reset all submission-related states
       setHasSubmitted(false);
       setShowUndoOption(false);
+      setSubmitting(false);
+      setShowSubmittedMessage(false);
       showToast('Votes undone. You can vote again.', 'success');
     } catch (error) {
       console.error('Error undoing votes:', error);
@@ -447,14 +457,33 @@ export default function VotePage() {
 
               {/* Submit Button */}
               <div className="sticky bottom-4 space-y-3">
-                <Button
-                  onClick={handleSubmit}
-                  disabled={hasSubmitted || remainingPoints < 0}
-                  isLoading={submitting}
-                  className="w-full py-4 text-lg"
-                >
-                  {hasSubmitted ? 'Votes Submitted ✓' : 'Submit Votes'}
-                </Button>
+                {!hasSubmitted ? (
+                  <Button
+                    onClick={handleSubmit}
+                    disabled={remainingPoints < 0}
+                    isLoading={submitting}
+                    className="w-full py-4 text-lg"
+                  >
+                    Submit Votes
+                  </Button>
+                ) : (
+                  <>
+                    {showSubmittedMessage && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                      >
+                        <Button
+                          disabled
+                          className="w-full py-4 text-lg"
+                        >
+                          Votes Submitted ✓
+                        </Button>
+                      </motion.div>
+                    )}
+                  </>
+                )}
 
                 {hasSubmitted && (
                   <div className="space-y-3">
@@ -483,22 +512,27 @@ export default function VotePage() {
 
                     {/* Vote Status */}
                     <div className="text-center space-y-2">
-                      {!showUndoOption && (
-                        <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-2">
+                      {showSubmittedMessage && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          className="bg-green-50 border border-green-200 rounded-lg p-3 mb-2"
+                        >
                           <p className="text-sm font-medium text-green-800">
                             ✓ Votes locked and submitted
                           </p>
                           <p className="text-xs text-green-700 mt-1">
                             Your votes are final and cannot be changed
                           </p>
-                        </div>
+                        </motion.div>
                       )}
                       <p className="text-sm text-gray-600">
                         Waiting for others to vote... You'll be redirected automatically when everyone has voted.
                       </p>
                       <Button
                         onClick={() => router.push(ROUTES.RESULTS(sessionId))}
-                        variant="secondary"
+                        variant="primary"
                         className="w-full"
                       >
                         View Results Now
