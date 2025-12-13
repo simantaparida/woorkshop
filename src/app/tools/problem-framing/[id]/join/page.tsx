@@ -9,7 +9,7 @@ import { ShareLink } from '@/components/problem-framing/ShareLink';
 import { SessionTimeline } from '@/components/problem-framing/SessionTimeline';
 import { Button } from '@/components/ui/Button';
 import { useProblemFramingSession } from '@/lib/hooks/useProblemFramingSession';
-import { Users, ArrowRight, FileText, Link as LinkIcon, Image as ImageIcon, Paperclip, CheckCircle2, ChevronLeft, Copy } from 'lucide-react';
+import { Users, ArrowRight, FileText, Link as LinkIcon, Image as ImageIcon, Paperclip, CheckCircle2, Copy } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
 export default function JoinPage() {
@@ -194,19 +194,6 @@ export default function JoinPage() {
   return (
     <AppLayout>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-        {/* Back Button */}
-        <div className="mb-6">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.push('/tools')}
-            className="text-gray-500 hover:text-gray-900"
-          >
-            <ChevronLeft className="w-4 h-4 mr-1" />
-            Back to Tools
-          </Button>
-        </div>
 
         {/* Timeline - Step 1 (Setup/Join) */}
         <SessionTimeline currentStep={1} size="compact" />

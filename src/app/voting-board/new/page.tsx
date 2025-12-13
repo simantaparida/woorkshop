@@ -298,22 +298,6 @@ export default function NewVotingBoardPage() {
             </div>
           </div>
 
-          {/* Back Button */}
-          <div className="mb-6">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => router.push('/tools')}
-              className="inline-flex items-center gap-1.5"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Back to Tools
-            </Button>
-          </div>
-
           {/* Page Header */}
           <div className="text-center mb-8">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">

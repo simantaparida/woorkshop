@@ -7,8 +7,7 @@ import { useUser } from '@/lib/hooks/useUser';
 import { AppLayout } from '@/components/AppLayout';
 import { TopicForm } from '@/components/problem-framing/TopicForm';
 import { SessionTimeline } from '@/components/problem-framing/SessionTimeline';
-import { FileText, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
+import { FileText } from 'lucide-react';
 import { Attachment } from '@/components/problem-framing/AttachmentUpload';
 
 export default function NewProblemFramingPage() {
@@ -92,14 +91,6 @@ export default function NewProblemFramingPage() {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
         <div className="mb-8">
-          <Link
-            href="/tools"
-            className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 mb-6 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            Back to Tools
-          </Link>
-
           {/* Minimalistic Timeline */}
           <SessionTimeline currentStep={1} />
 

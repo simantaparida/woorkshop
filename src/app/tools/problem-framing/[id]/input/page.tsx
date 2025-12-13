@@ -10,7 +10,7 @@ import { ShareLink } from '@/components/problem-framing/ShareLink';
 import { Button } from '@/components/ui/Button';
 import { useProblemFramingSession } from '@/lib/hooks/useProblemFramingSession';
 import { supabase } from '@/lib/supabase/client';
-import { ArrowRight, Users, CheckCircle2, Clock, AlertCircle, Paperclip, FileText, Link as LinkIcon, Image as ImageIcon, ChevronLeft } from 'lucide-react';
+import { ArrowRight, Users, CheckCircle2, Clock, AlertCircle, Paperclip, FileText, Link as LinkIcon, Image as ImageIcon } from 'lucide-react';
 
 export default function IndividualInputPage() {
   const params = useParams();
@@ -216,19 +216,6 @@ export default function IndividualInputPage() {
   return (
     <AppLayout>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-        {/* Back Button */}
-        <div className="mb-6">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.push('/tools')}
-            className="text-gray-500 hover:text-gray-900"
-          >
-            <ChevronLeft className="w-4 h-4 mr-1" />
-            Back to Tools
-          </Button>
-        </div>
 
         {/* Timeline */}
         <SessionTimeline currentStep={2} size="compact" />

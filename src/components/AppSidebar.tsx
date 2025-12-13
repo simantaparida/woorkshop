@@ -58,6 +58,10 @@ export function AppSidebar() {
     if (href === '/home') {
       return pathname === '/home';
     }
+    // Special handling for Tools - include voting-board and problem-framing paths
+    if (href === '/tools') {
+      return pathname.startsWith('/tools') || pathname.startsWith('/voting-board') || pathname.startsWith('/problem-framing');
+    }
     return pathname.startsWith(href);
   };
 
