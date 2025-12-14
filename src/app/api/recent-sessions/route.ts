@@ -3,6 +3,9 @@ import { supabase } from '@/lib/supabase/client';
 import { getToolPhases } from '@/lib/tools/registry';
 import type { ToolType, WorkshopSessionData } from '@/types';
 
+// Force this route to be dynamic (not statically generated)
+export const dynamic = 'force-dynamic';
+
 // GET /api/recent-sessions - Get user's recent workshop sessions
 export async function GET(request: NextRequest) {
   try {

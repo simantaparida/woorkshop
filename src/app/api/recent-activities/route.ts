@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase/client';
 import type { ActivityEntry } from '@/types';
 
+// Force this route to be dynamic (not statically generated)
+export const dynamic = 'force-dynamic';
+
 // GET /api/recent-activities - Get user's recent activity timeline
 export async function GET(request: NextRequest) {
   try {
