@@ -10,7 +10,7 @@ const scenarios = [
     before: {
       headline: '2-hour meetings that go nowhere',
       points: [
-        '"Let's take this offline" × 6',
+        '"Let\'s take this offline" × 6',
         'Leave with "maybe" priorities',
         'Same debates next sprint',
       ],
@@ -28,7 +28,7 @@ const scenarios = [
     title: 'Startup Decisions',
     teamType: 'Founders',
     before: {
-      headline: 'The CEO's "great idea" derails everything',
+      headline: 'The CEO\'s "great idea" derails everything',
       points: [
         'Roadmap changes every week',
         'Team morale tanks',

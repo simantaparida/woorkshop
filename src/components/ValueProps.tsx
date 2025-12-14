@@ -29,7 +29,7 @@ const features: Feature[] = [
     icon: Grid2x2,
   },
   {
-    title: 'Don't End at a Decision',
+    title: 'Don\'t End at a Decision',
     description: 'Export to CSV. Import to Jira. Move forward. From session to shipped in minutes.',
     icon: Download,
   },

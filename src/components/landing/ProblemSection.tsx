@@ -7,7 +7,7 @@ const problems = [
   {
     icon: '👔',
     title: 'HiPPO Syndrome',
-    description: 'The Highest Paid Person's Opinion wins every time',
+    description: 'The Highest Paid Person\'s Opinion wins every time',
     detail: 'Junior team members stop sharing ideas',
     color: 'from-chaos/10 to-chaos/5',
   },
@@ -21,7 +21,7 @@ const problems = [
   {
     icon: '🔄',
     title: 'The Same Debate Loop',
-    description: '"Let's discuss this next week" (again)',
+    description: '"Let\'s discuss this next week" (again)',
     detail: 'Every sprint planning feels like Groundhog Day',
     color: 'from-gray-100 to-gray-50',
   },
