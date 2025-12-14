@@ -134,23 +134,41 @@ Supabase Realtime channels broadcast:
 - Player submitted votes
 - Results ready
 
+## Documentation
+
+Comprehensive documentation is available:
+
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Complete deployment guide for Vercel with GitHub Actions
+- **[GITHUB_ACTIONS.md](GITHUB_ACTIONS.md)** - CI/CD workflows documentation
+- **[SECURITY_AUDIT.md](SECURITY_AUDIT.md)** - Security analysis and recommendations
+- **[CLEANUP_SUMMARY.md](CLEANUP_SUMMARY.md)** - Codebase cleanup summary
+
 ## Deployment
 
-### Vercel
+For detailed deployment instructions, see **[DEPLOYMENT.md](DEPLOYMENT.md)**.
+
+### Quick Deploy to Vercel
 
 1. Push code to GitHub
 2. Import repository in Vercel
 3. Add environment variables:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
 4. Deploy
 
 ### Environment Variables
 
-| Variable | Description |
-|----------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key |
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL | Yes |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key | Yes |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key | Yes |
+| `NEXT_PUBLIC_SENTRY_DSN` | Sentry error tracking DSN | Optional |
+| `UPSTASH_REDIS_REST_URL` | Upstash Redis URL for rate limiting | Optional |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis token | Optional |
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for complete environment setup.
 
 ## Features
 
