@@ -7,9 +7,12 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Navbar } from '@/components/Navbar';
 import { Hero } from '@/components/Hero';
+import { ProblemSection } from '@/components/landing/ProblemSection';
 import { ValueProps } from '@/components/ValueProps';
-import { SocialProof } from '@/components/SocialProof';
+import { BeforeAfterScenarios } from '@/components/landing/BeforeAfterScenarios';
+import { HowItWorks } from '@/components/landing/HowItWorks';
 import { Pricing } from '@/components/Pricing';
+import { TrustBuilder } from '@/components/landing/TrustBuilder';
 import { APP_NAME, APP_DESCRIPTION, ROUTES } from '@/lib/constants';
 import { useAnalytics } from '@/lib/hooks/useAnalytics';
 
@@ -61,11 +64,23 @@ export default function HomePage() {
       {/* Hero Section */}
       <Hero />
 
+      {/* Problem Section */}
+      <ProblemSection />
+
       {/* Value Props Section */}
       <ValueProps />
 
+      {/* Before/After Scenarios */}
+      <BeforeAfterScenarios />
+
+      {/* How It Works */}
+      <HowItWorks />
+
       {/* Pricing Section */}
       <Pricing />
+
+      {/* Trust Builder */}
+      <TrustBuilder />
 
       {/* Final CTA Section */}
       <section className="py-24 bg-blue-600">
@@ -77,39 +92,33 @@ export default function HomePage() {
             transition={{ duration: 0.5 }}
           >
             <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6 tracking-tight">
-              Stop guessing. Start prioritizing.
+              Walk in with data.
+              <br />
+              Walk out with alignment.
             </h2>
 
             <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto leading-relaxed">
-              Join product teams using Woorkshop to build the right things.
-              <span className="text-white font-medium"> Completely free</span> during our public review period.
+              No signup friction. No credit card. No "request demo" runaround.
+              <br className="hidden sm:block" />
+              Just click, share a link, and start prioritizing in the next 60 seconds.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex flex-col items-center justify-center gap-4">
               <Button
                 variant="secondary"
                 size="lg"
                 onClick={() => router.push(ROUTES.LOGIN)}
-                className="!bg-white !text-blue-600 hover:!bg-blue-50 hover:-translate-y-1 transition-all duration-200 !border-0 font-bold shadow-lg"
+                className="!bg-white !text-blue-600 hover:!bg-blue-50 hover:-translate-y-1 transition-all duration-200 !border-0 font-bold shadow-lg px-8 py-4 text-lg"
               >
-                Launch a Session
+                Start Free Session
               </Button>
-              <Button
-                variant="ghost"
-                size="lg"
-                onClick={() => window.open('https://twitter.com/uxworks_app', '_blank')}
-                className="!bg-transparent !text-white !border-2 !border-white hover:!bg-white hover:!text-blue-600 transition-all duration-200 font-semibold !shadow-none"
+              <a
+                href="#how-it-works"
+                className="text-sm text-blue-100 hover:text-white underline transition-colors"
               >
-                Follow Updates
-              </Button>
+                See a demo session first →
+              </a>
             </div>
-
-            <p className="text-sm text-blue-200 mt-8 flex items-center justify-center gap-2">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              No signup required to start
-            </p>
           </motion.div>
         </div>
       </section>

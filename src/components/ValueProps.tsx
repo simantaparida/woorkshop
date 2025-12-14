@@ -14,23 +14,23 @@ interface Feature {
 
 const features: Feature[] = [
   {
-    title: '100-Point Voting',
-    description: 'Give everyone 100 points to distribute. See where your team agrees instantly.',
+    title: 'From Opinions to Data',
+    description: '"Feature A scores 85/100. Feature B scores 42. Ship A first." Turn subjective debates into objective numbers.',
     icon: Vote,
   },
   {
-    title: 'Real-Time Collaboration',
-    description: 'Everyone votes together. Results update as votes come in. No waiting.',
+    title: 'Force Real Trade-offs',
+    description: 'When everyone gets 100 points total, priorities get real. No more "everything is high priority."',
     icon: Users,
   },
   {
-    title: 'Multiple Frameworks',
-    description: 'RICE, MoSCoW, or simple voting. Use the methodology that fits your team.',
+    title: 'Democratize Decision-Making',
+    description: 'Everyone votes simultaneously. No anchoring bias. No loud voices dominating. Just data.',
     icon: Grid2x2,
   },
   {
-    title: 'Export to Action',
-    description: 'Download results as CSV. Share priorities in Notion, Jira, or your roadmap.',
+    title: 'Don't End at a Decision',
+    description: 'Export to CSV. Import to Jira. Move forward. From session to shipped in minutes.',
     icon: Download,
   },
 ];
@@ -82,8 +82,8 @@ export function ValueProps() {
           <div className="space-y-8">
             {/* Small Label */}
             <motion.div variants={itemVariants}>
-              <span className="inline-block px-3 py-1 text-xs font-semibold text-blue-700 bg-blue-50 rounded-full border border-blue-200">
-                Product features · Trusted methods
+              <span className="inline-block px-3 py-1 text-xs font-semibold text-clarity bg-green-50 rounded-full border border-green-200">
+                The Woorkshop Method
               </span>
             </motion.div>
 
@@ -92,7 +92,9 @@ export function ValueProps() {
               variants={itemVariants}
               className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight"
             >
-              Everything you need to prioritize as a team
+              Structure beats chaos.
+              <br />
+              Every single time.
             </motion.h2>
 
             {/* Subhead */}
@@ -100,7 +102,7 @@ export function ValueProps() {
               variants={itemVariants}
               className="text-lg text-gray-600 leading-relaxed"
             >
-              From simple voting to advanced scoring frameworks like RICE and MoSCoW, Woorkshop gives you the right tools for every decision.
+              Stop arguing. Start scoring. Walk away with priorities everyone believes in—backed by frameworks product teams actually use.
             </motion.p>
 
             {/* Features List */}
@@ -129,24 +131,30 @@ export function ValueProps() {
               ))}
             </motion.div>
 
-            {/* CTA Button */}
+            {/* Honest Feedback Block */}
             <motion.div variants={itemVariants} className="pt-4">
-              <button
-                onClick={handleCTAClick}
-                data-analytics="value_prop_cta"
-                className="group inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white text-base font-semibold rounded-lg transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
-                aria-label="Try a demo flow"
-              >
-                <span className="relative">Start prioritizing now</span>
-                <svg
-                  className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
+              <div className="bg-warning/10 border-2 border-warning/30 rounded-xl p-6">
+                <div className="flex items-start gap-3">
+                  <div className="text-2xl">⚠️</div>
+                  <div className="flex-1">
+                    <h3 className="text-base font-bold text-gray-900 mb-2">
+                      We're in public review. We need your honest feedback.
+                    </h3>
+                    <p className="text-sm text-gray-700 leading-relaxed mb-4">
+                      This isn't perfect yet—we know that. But if structured prioritization sounds useful to your team, we'd love to hear what we got right (and what we got wrong).
+                    </p>
+                    <a
+                      href="mailto:hello@woorkshop.app"
+                      className="inline-flex items-center gap-2 text-sm font-semibold text-warning hover:text-warning/80 transition-colors"
+                    >
+                      Give us feedback
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+              </div>
             </motion.div>
           </div>
 

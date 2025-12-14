@@ -40,89 +40,46 @@ export function Hero() {
           animate="visible"
           className="text-center"
         >
-          {/* Trust Badges */}
+          {/* Attention Badge */}
           <motion.div variants={itemVariants} className="flex items-center justify-center mb-8">
-            <div className="inline-flex items-center gap-6 flex-wrap justify-center">
-              {/* No Signup Badge */}
-              <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-full border border-blue-200">
-                <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span className="text-sm font-medium text-blue-700">No Signup Required</span>
-              </div>
-
-              {/* Real-Time Badge */}
-              <div className="flex items-center gap-2 px-4 py-2 bg-purple-50 rounded-full border border-purple-200">
-                <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
-                <span className="text-sm font-medium text-purple-700">Real-Time Collaboration</span>
-              </div>
-
-              {/* Free Forever Badge */}
-              <div className="flex items-center gap-2 px-4 py-2 bg-green-50 rounded-full border border-green-200">
-                <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="text-sm font-medium text-green-700">Free Forever</span>
-              </div>
-
-              {/* Secure Badge */}
-              <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-full border border-gray-200">
-                <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-                <span className="text-sm font-medium text-gray-700">Secure & Private</span>
-              </div>
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-secondary-50 rounded-full border-2 border-secondary-200 shadow-sm">
+              <div className="w-2 h-2 bg-secondary-500 rounded-full animate-pulse"></div>
+              <span className="text-sm font-semibold text-secondary-700">For teams tired of building what screams loudest</span>
             </div>
           </motion.div>
 
           {/* Headline */}
           <motion.h1
             variants={itemVariants}
-            className="text-5xl md:text-7xl font-bold text-gray-900 mb-5 leading-[1.1] tracking-tight"
+            className="text-6xl md:text-8xl font-extrabold text-gray-900 mb-6 leading-[1.05] tracking-tight"
           >
-            Prioritize features as a team — in 10 minutes
+            Stop letting the loudest voice win your roadmap
           </motion.h1>
 
-          {/* Subhead - Reduced size */}
+          {/* Subhead */}
           <motion.p
             variants={itemVariants}
-            className="text-lg md:text-xl text-gray-600 mb-8 mx-auto max-w-3xl leading-relaxed"
+            className="text-xl md:text-2xl text-gray-600 mb-10 mx-auto max-w-4xl leading-relaxed"
           >
-            Run voting sessions, RICE scoring, or MoSCoW workshops. No signup, no spreadsheets, no endless meetings.
+            Woorkshop replaces <span className="font-semibold text-gray-900">Miro sticky note chaos</span> with structured frameworks your team actually trusts. Run 100-Point Voting, RICE scoring, or MoSCoW workshops—and get aligned in <span className="font-semibold text-gray-900">10 minutes, not 10 meetings</span>.
           </motion.p>
 
-          {/* CTA Buttons - Elegant Modern Hover */}
-          <motion.div variants={itemVariants} className="flex items-center justify-center gap-4 mb-12">
+          {/* Single CTA */}
+          <motion.div variants={itemVariants} className="flex items-center justify-center mb-14">
             <Link
               href={ROUTES.LOGIN}
-              className="group relative inline-flex items-center gap-2 px-7 py-3.5 bg-blue-600 text-white text-base font-semibold rounded-lg transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 overflow-hidden"
-              aria-label="Get started with Woorkshop"
+              className="group relative inline-flex items-center gap-2 px-8 py-4 bg-blue-600 text-white text-lg font-bold rounded-lg transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 overflow-hidden"
+              aria-label="Start your free session"
             >
               <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
               <span className="relative flex items-center gap-2">
                 Start Free Session
-                <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                 </svg>
               </span>
             </Link>
-
-            <a
-              href="#how-it-works"
-              className="group relative inline-flex items-center gap-2 px-7 py-3.5 bg-blue-50 text-blue-700 text-base font-semibold rounded-lg border border-blue-200 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-blue-100 hover:border-blue-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
-              aria-label="Request Demo"
-            >
-              Request Demo
-            </a>
           </motion.div>
-
-          {/* Microcopy */}
-          <motion.p
-            variants={itemVariants}
-            className="text-sm text-gray-500 mb-14"
-          >
-            Free forever · No signup required · Real-time collaboration
-          </motion.p>
 
           {/* Video Placeholder - Auto-playing, no overlay button */}
           <motion.div
@@ -295,12 +252,17 @@ export function Hero() {
             </div>
           </motion.div>
 
-          {/* Trust line */}
+          {/* Public Review Trust Line */}
           <motion.p
             variants={itemVariants}
-            className="text-sm text-gray-400 italic mt-12"
+            className="text-base text-gray-600 mt-12"
           >
-            Used by curious teams who like their work smooth as sky.
+            We're in public review. No fake testimonials, no cherry-picked reviews.{' '}
+            <br className="hidden sm:block" />
+            Just us asking: <span className="font-semibold text-gray-900">Is this useful?</span>{' '}
+            <a href="mailto:hello@woorkshop.app" className="text-blue-600 hover:text-blue-700 underline font-medium transition-colors">
+              Tell us honestly →
+            </a>
           </motion.p>
         </motion.div>
       </div>
