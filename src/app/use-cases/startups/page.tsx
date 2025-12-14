@@ -322,7 +322,7 @@ export default function StartupsPage() {
             <div className="relative">
               <div className="flex items-center gap-2 text-4xl mb-6">⭐⭐⭐⭐⭐</div>
               <blockquote className="text-2xl font-medium text-gray-900 mb-8 leading-relaxed">
-                "We went from 2-hour planning meetings to 15-minute decision sessions. Padool helped us move 3x faster and actually build what our team wanted to build."
+                "We went from 2-hour planning meetings to 15-minute decision sessions. Woorkshop helped us move 3x faster and actually build what our team wanted to build."
               </blockquote>
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">

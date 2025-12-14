@@ -100,7 +100,7 @@ export function ValueProps() {
               variants={itemVariants}
               className="text-lg text-gray-600 leading-relaxed"
             >
-              From simple voting to advanced scoring frameworks like RICE and MoSCoW, Padool gives you the right tools for every decision.
+              From simple voting to advanced scoring frameworks like RICE and MoSCoW, Woorkshop gives you the right tools for every decision.
             </motion.p>
 
             {/* Features List */}

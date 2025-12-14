@@ -81,7 +81,7 @@ export default function HomePage() {
             </h2>
 
             <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto leading-relaxed">
-              Join product teams using Padool to build the right things.
+              Join product teams using Woorkshop to build the right things.
               <span className="text-white font-medium"> Completely free</span> during our public review period.
             </p>
 
@@ -128,7 +128,7 @@ export default function HomePage() {
             {/* Brand Section - Takes more space */}
             <div className="col-span-2 md:col-span-4">
               <div className="mb-6">
-                <h3 className="font-comfortaa text-2xl font-bold text-blue-400 mb-3 tracking-[0.1em]">padool</h3>
+                <h3 className="font-comfortaa text-2xl font-bold text-blue-400 mb-3 tracking-[0.1em]">woorkshop</h3>
                 <p className="text-gray-400 leading-relaxed text-sm max-w-xs">
                   Turn team debates into clear priorities. No signup required, completely free during public review.
                 </p>
@@ -263,7 +263,7 @@ export default function HomePage() {
           <div className="border-t border-gray-800 py-8">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <p className="text-sm text-gray-500">
-                © {new Date().getFullYear()} <span className="text-gray-400 font-medium">Padool</span>. All rights reserved.
+                © {new Date().getFullYear()} <span className="text-gray-400 font-medium">Woorkshop</span>. All rights reserved.
               </p>
 
               <div className="flex items-center gap-6">

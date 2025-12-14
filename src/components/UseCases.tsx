@@ -96,7 +96,7 @@ export function UseCases() {
           {/* Label */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-200 shadow-sm mb-6">
             <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-            <span className="text-sm font-medium text-gray-700">Who Padool helps</span>
+            <span className="text-sm font-medium text-gray-700">Who Woorkshop helps</span>
           </div>
 
           {/* H2 */}
@@ -106,7 +106,7 @@ export function UseCases() {
 
           {/* Subhead */}
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Padool fits into the rhythms of product and design teams — from sprint planning to async decision-making. Pick a use case to see how it helps.
+            Woorkshop fits into the rhythms of product and design teams — from sprint planning to async decision-making. Pick a use case to see how it helps.
           </p>
         </motion.div>
 

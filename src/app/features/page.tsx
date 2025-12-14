@@ -38,7 +38,7 @@ export default function FeaturesPage() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-xl text-gray-600 mb-4 leading-relaxed"
             >
-              Padool gives you all the tools to prioritize features, align stakeholders, and make better decisions — without the complexity.
+              Woorkshop gives you all the tools to prioritize features, align stakeholders, and make better decisions — without the complexity.
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -270,7 +270,7 @@ export default function FeaturesPage() {
                   Works the Way You Work
                 </h2>
                 <p className="text-lg text-gray-600 mb-6">
-                  Adapt Padool to your team's workflow, not the other way around.
+                  Adapt Woorkshop to your team's workflow, not the other way around.
                 </p>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-3">
@@ -432,7 +432,7 @@ export default function FeaturesPage() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-4xl sm:text-5xl font-bold mb-6">
-              Ready to try Padool?
+              Ready to try Woorkshop?
             </h2>
             <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
               Create your first session in seconds. No credit card, no signup, no complications.

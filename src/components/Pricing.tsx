@@ -204,8 +204,8 @@ export function Pricing() {
         >
           <p className="text-sm text-gray-600">
             Questions? Reach out to us at{' '}
-            <a href="mailto:hello@padool.com" className="text-blue-600 hover:underline font-medium">
-              hello@padool.com
+            <a href="mailto:hello@woorkshop.app" className="text-blue-600 hover:underline font-medium">
+              hello@woorkshop.app
             </a>
           </p>
         </motion.div>

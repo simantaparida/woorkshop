@@ -183,7 +183,7 @@ export function AppSidebar({ mobileMenuOpen = false, setMobileMenuOpen }: AppSid
               <div className="flex items-center justify-between p-4 border-b border-gray-200">
                 <Link href="/home" className="flex items-center" onClick={() => setIsMobileOpen(false)}>
                   <span className="font-comfortaa text-xl font-bold text-blue-600 tracking-[0.1em]">
-                    padool
+                    woorkshop
                   </span>
                 </Link>
                 <button

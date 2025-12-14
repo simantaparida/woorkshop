@@ -53,7 +53,7 @@ export function AppHeader({ onMenuClick }: AppHeaderProps = {}) {
 
   return (
     <header className="sticky top-0 h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 md:px-6 z-40">
-      {/* Left - Mobile Menu Button + Padool Logo */}
+      {/* Left - Mobile Menu Button + Woorkshop Logo */}
       <div className="flex items-center gap-3">
         {/* Mobile Hamburger Menu Button */}
         <button
@@ -69,10 +69,10 @@ export function AppHeader({ onMenuClick }: AppHeaderProps = {}) {
         <Link
           href="/home"
           className="flex items-center focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded-lg"
-          aria-label="Padool home"
+          aria-label="Woorkshop home"
         >
           <span className="font-comfortaa text-xl md:text-2xl font-bold text-blue-600 tracking-[0.1em]">
-            padool
+            woorkshop
           </span>
         </Link>
       </div>

@@ -46,7 +46,7 @@ export function HowItWorks() {
     {
       number: '03',
       title: 'See the Results',
-      description: 'Padool ranks priorities, shows alignment metrics, and gives an export you can share.',
+      description: 'Woorkshop ranks priorities, shows alignment metrics, and gives an export you can share.',
       color: 'green',
       bgGradient: 'from-green-50 to-green-100/50',
       iconGradient: 'from-green-500 to-green-600',
@@ -74,7 +74,7 @@ export function HowItWorks() {
             <span className="text-sm font-medium text-gray-700">Simple Process</span>
           </div>
           <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
-            How Padool flows
+            How Woorkshop flows
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Three simple steps to align your team and decide what to build next.

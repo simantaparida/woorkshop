@@ -175,7 +175,7 @@ function LoginPageContent() {
           <div className="text-center mb-8">
             <Link href="/" className="inline-block mb-4">
               <span className="font-comfortaa text-3xl font-bold text-blue-600 tracking-[0.1em]">
-                padool
+                woorkshop
               </span>
             </Link>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Sign in to your account</h1>
@@ -375,7 +375,7 @@ function LoginPageContent() {
           {/* Footer */}
           <div className="mt-8 pt-6 border-t border-gray-200 text-center">
             <p className="text-xs text-gray-500">
-              By continuing, you agree to Padool's{' '}
+              By continuing, you agree to Woorkshop's{' '}
               <Link href="/terms" className="text-blue-600 hover:underline">
                 Terms of Service
               </Link>{' '}

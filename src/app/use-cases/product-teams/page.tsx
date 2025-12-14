@@ -114,7 +114,7 @@ export default function ProductTeamsPage() {
               Stop Guessing, Start Scoring
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Choose the right tool for the job. Whether it's a quick vote or a detailed scoring session, Padool aligns your team in real-time.
+              Choose the right tool for the job. Whether it's a quick vote or a detailed scoring session, Woorkshop aligns your team in real-time.
             </p>
           </motion.div>
 
@@ -251,7 +251,7 @@ export default function ProductTeamsPage() {
           >
             <div className="flex items-center gap-2 text-4xl mb-6">⭐⭐⭐⭐⭐</div>
             <blockquote className="text-2xl font-medium text-gray-900 mb-6 leading-relaxed">
-              "Padool turned our sprint planning into a 15-minute ritual. Instead of 2-hour meetings where everyone argues, we now get aligned priorities in minutes. The data makes it much easier to say no to stakeholders."
+              "Woorkshop turned our sprint planning into a 15-minute ritual. Instead of 2-hour meetings where everyone argues, we now get aligned priorities in minutes. The data makes it much easier to say no to stakeholders."
             </blockquote>
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
@@ -310,7 +310,7 @@ export default function ProductTeamsPage() {
             {/* Brand Section - Takes more space */}
             <div className="col-span-2 md:col-span-4">
               <div className="mb-6">
-                <h3 className="font-comfortaa text-2xl font-bold text-blue-400 mb-3 tracking-[0.1em]">padool</h3>
+                <h3 className="font-comfortaa text-2xl font-bold text-blue-400 mb-3 tracking-[0.1em]">woorkshop</h3>
                 <p className="text-gray-400 leading-relaxed text-sm max-w-xs">
                   Turn team debates into clear priorities. No signup required, completely free during public review.
                 </p>
@@ -445,7 +445,7 @@ export default function ProductTeamsPage() {
           <div className="border-t border-gray-800 py-8">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <p className="text-sm text-gray-500">
-                © {new Date().getFullYear()} <span className="text-gray-400 font-medium">Padool</span>. All rights reserved.
+                © {new Date().getFullYear()} <span className="text-gray-400 font-medium">Woorkshop</span>. All rights reserved.
               </p>
 
               <div className="flex items-center gap-6">

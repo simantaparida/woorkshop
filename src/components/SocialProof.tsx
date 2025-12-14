@@ -29,7 +29,7 @@ export function SocialProof() {
 
   const testimonials: Testimonial[] = [
     {
-      quote: 'Padool turned our sprint planning into a 15-minute ritual. Fewer meetings, clearer priorities.',
+      quote: 'Woorkshop turned our sprint planning into a 15-minute ritual. Fewer meetings, clearer priorities.',
       attribution: 'Product Manager, early-stage SaaS team',
       avatar: (
         <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
@@ -88,12 +88,12 @@ export function SocialProof() {
 
           {/* H2 */}
           <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
-            Teams that move faster with Padool
+            Teams that move faster with Woorkshop
           </h2>
 
           {/* Subhead */}
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Hundreds of teams use Padool to turn debates into clear decisions. Here's what they say.
+            Hundreds of teams use Woorkshop to turn debates into clear decisions. Here's what they say.
           </p>
         </motion.div>
 

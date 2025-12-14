@@ -96,7 +96,7 @@ export function Hero() {
             <Link
               href={ROUTES.LOGIN}
               className="group relative inline-flex items-center gap-2 px-7 py-3.5 bg-blue-600 text-white text-base font-semibold rounded-lg transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 overflow-hidden"
-              aria-label="Get started with Padool"
+              aria-label="Get started with Woorkshop"
             >
               <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
               <span className="relative flex items-center gap-2">
@@ -139,7 +139,7 @@ export function Hero() {
                 </div>
                 <div className="flex-1 mx-4">
                   <div className="bg-gray-50 rounded-md px-3 py-1.5 text-xs text-gray-600 font-medium">
-                    padool.app/session/demo
+                    woorkshop.app/session/demo
                   </div>
                 </div>
               </div>

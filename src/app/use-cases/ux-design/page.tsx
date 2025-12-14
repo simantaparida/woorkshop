@@ -114,7 +114,7 @@ export default function UXDesignPage() {
               Focus on what matters most
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Padool helps UX teams prioritize design work based on user impact, team capacity, and strategic alignment.
+              Woorkshop helps UX teams prioritize design work based on user impact, team capacity, and strategic alignment.
             </p>
           </motion.div>
 
@@ -251,7 +251,7 @@ export default function UXDesignPage() {
               Integrate with your design process
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Padool fits seamlessly into existing UX workflows and design methodologies.
+              Woorkshop fits seamlessly into existing UX workflows and design methodologies.
             </p>
           </motion.div>
 
@@ -259,7 +259,7 @@ export default function UXDesignPage() {
             {[
               {
                 title: 'Design Thinking',
-                description: 'Use Padool in the "Define" phase to prioritize which user problems to solve first. Get stakeholder alignment before ideation.',
+                description: 'Use Woorkshop in the "Define" phase to prioritize which user problems to solve first. Get stakeholder alignment before ideation.',
                 icon: '💡'
               },
               {
@@ -302,7 +302,7 @@ export default function UXDesignPage() {
           >
             <div className="flex items-center gap-2 text-4xl mb-6">⭐⭐⭐⭐⭐</div>
             <blockquote className="text-2xl font-medium text-gray-900 mb-6 leading-relaxed">
-              "As a UX designer, I was constantly pulled in different directions. Padool helped our team focus on user impact over everything else. Now we start each design sprint with clear priorities and stakeholder buy-in."
+              "As a UX designer, I was constantly pulled in different directions. Woorkshop helped our team focus on user impact over everything else. Now we start each design sprint with clear priorities and stakeholder buy-in."
             </blockquote>
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">

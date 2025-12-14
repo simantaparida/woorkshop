@@ -113,7 +113,7 @@ function ResetPasswordContent() {
           <div className="text-center mb-8">
             <Link href="/" className="inline-block mb-4">
               <span className="font-comfortaa text-3xl font-bold text-blue-600 tracking-[0.1em]">
-                padool
+                woorkshop
               </span>
             </Link>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Reset your password</h1>
