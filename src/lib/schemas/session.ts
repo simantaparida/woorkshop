@@ -30,11 +30,11 @@ const descriptionSchema = z
 const uuidSchema = z.string().uuid('Invalid ID format');
 
 const toolTypeSchema = z.enum(['voting-board', 'problem-framing'], {
-  errorMap: () => ({ message: 'Invalid tool type' }),
+  message: 'Invalid tool type',
 });
 
 const sessionStatusSchema = z.enum(['open', 'playing', 'results', 'completed'], {
-  errorMap: () => ({ message: 'Invalid status' }),
+  message: 'Invalid status',
 });
 
 /**
@@ -45,7 +45,7 @@ export const createSessionSchema = z.object({
   description: descriptionSchema,
   tool_type: toolTypeSchema,
   workshop_id: uuidSchema.optional().nullable(),
-  session_config: z.record(z.any()).optional(),
+  session_config: z.record(z.string(), z.any()).optional(),
 });
 
 export type CreateSessionInput = z.infer<typeof createSessionSchema>;
@@ -58,7 +58,7 @@ export const updateSessionSchema = z.object({
   description: descriptionSchema,
   status: sessionStatusSchema.optional(),
   workshop_id: uuidSchema.optional().nullable(),
-  session_config: z.record(z.any()).optional(),
+  session_config: z.record(z.string(), z.any()).optional(),
 });
 
 export type UpdateSessionInput = z.infer<typeof updateSessionSchema>;

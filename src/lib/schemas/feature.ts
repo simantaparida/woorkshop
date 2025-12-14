@@ -10,14 +10,14 @@ const sanitizeText = (text: string) => text.trim().replace(/\s+/g, ' ');
  * Feature effort levels
  */
 export const effortSchema = z.enum(['small', 'medium', 'large'], {
-  errorMap: () => ({ message: 'Invalid effort level' }),
+  message: 'Invalid effort level',
 });
 
 /**
  * Feature impact levels
  */
 export const impactSchema = z.enum(['low', 'medium', 'high'], {
-  errorMap: () => ({ message: 'Invalid impact level' }),
+  message: 'Invalid impact level',
 });
 
 /**

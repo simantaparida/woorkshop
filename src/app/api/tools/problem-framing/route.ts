@@ -67,7 +67,6 @@ export async function POST(request: NextRequest) {
     const duration = Date.now() - startTime;
     log.info({
       sessionId: result.sessionId,
-      facilitatorToken: result.facilitatorToken ? 'generated' : 'missing',
       attachmentCount: attachments?.length || 0,
       durationMs: duration
     }, 'Problem framing session created successfully');

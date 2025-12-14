@@ -4,7 +4,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { z, ZodError } from 'zod';
+import { z } from 'zod';
 import type { Logger } from 'pino';
 
 /**
@@ -40,15 +40,16 @@ export function validateRequest<T>(
     const data = schema.parse(body);
     return { success: true, data };
   } catch (error) {
-    if (error instanceof ZodError) {
-      const errorMessages = error.errors.map((err) => {
+    if (error instanceof z.ZodError) {
+      const zodError = error as z.ZodError<unknown>;
+      const errorMessages = zodError.issues.map((err) => {
         const path = err.path.join('.');
         return path ? `${path}: ${err.message}` : err.message;
       });
 
       if (log) {
         log.warn({
-          validationErrors: error.errors,
+          validationErrors: zodError.issues,
           inputData: body,
         }, 'Request validation failed');
       }

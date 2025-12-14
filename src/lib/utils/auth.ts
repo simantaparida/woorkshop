@@ -168,7 +168,8 @@ export async function verifyHostToken(
   }
 
   // Extract host_token from session_config
-  const hostToken = session.session_config?.host_token || session.host_token;
+  const sessionConfig = session.session_config as Record<string, any> | null | undefined;
+  const hostToken = sessionConfig?.host_token || (session as any).host_token;
 
   if (!hostToken) {
     return {

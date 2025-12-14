@@ -63,9 +63,11 @@ function createRateLimiter(
   }
 
   // Create Upstash rate limiter with sliding window
+  // Convert window string to milliseconds for Upstash
+  const windowMs = parseWindowToMs(window);
   const limiter = new Ratelimit({
     redis,
-    limiter: Ratelimit.slidingWindow(requests, window),
+    limiter: Ratelimit.slidingWindow(requests, `${windowMs} ms`),
     prefix: `ratelimit:${prefix}`,
     analytics: true,
   });
