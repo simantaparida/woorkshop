@@ -86,77 +86,45 @@ export async function POST(
     }
 
     // VOTE SUBMISSION STRATEGY:
-    // We use delete + insert pattern to handle vote updates.
-    // Ideally, this would be in a database transaction, but Supabase JS client
-    // doesn't support multi-statement transactions.
-    //
-    // Alternative approaches for future improvement:
-    // 1. Use PostgreSQL function with BEGIN/COMMIT transaction
-    // 2. Use upsert with ON CONFLICT, but requires handling zero-point votes differently
-    // 3. Fetch existing votes first, calculate diff, then update/insert/delete
-    //
-    // Current approach: Delete + Insert with error handling
+    // Use PostgreSQL function for atomic delete + insert operation.
+    // This prevents data loss by ensuring both operations succeed or both fail.
+    // Migration: 035_add_submit_votes_function.sql
 
-    // Delete existing votes for this player
-    const { error: deleteError } = await supabase
-      .from('votes')
-      .delete()
-      .eq('session_id', sessionId)
-      .eq('player_id', playerId);
+    // Prepare votes in the format expected by the PostgreSQL function
+    const votesPayload = votes.map((vote) => ({
+      featureId: vote.featureId,
+      points: vote.points,
+      note: vote.note || null,
+    }));
 
-    // Check for delete errors
-    if (deleteError) {
-      logError(log, deleteError, {
+    // Call PostgreSQL function to atomically submit votes
+    const { data: result, error: submitError } = await supabase
+      .rpc('submit_votes', {
+        p_session_id: sessionId,
+        p_player_id: playerId,
+        p_votes: votesPayload,
+      });
+
+    if (submitError) {
+      logError(log, submitError, {
         sessionId,
         playerId,
-        operation: 'delete_votes'
+        operation: 'submit_votes',
+        voteCount: votes.length,
       });
+
       return NextResponse.json(
-        { error: 'Failed to clear existing votes' },
+        { error: 'Failed to record votes. Please try again.' },
         { status: 500 }
       );
     }
 
-    // Prepare new votes (only non-zero votes)
-    const voteInserts = votes
-      .filter((vote) => vote.points > 0)
-      .map((vote) => ({
-        session_id: sessionId,
-        player_id: playerId,
-        feature_id: vote.featureId,
-        points_allocated: vote.points,
-        note: vote.note || null,
-      }));
-
-    // Insert new votes if any
-    if (voteInserts.length > 0) {
-      const { error: insertError } = await supabase
-        .from('votes')
-        .insert(voteInserts);
-
-      if (insertError) {
-        // CRITICAL: If insert fails after delete, we've lost data
-        log.fatal({
-          sessionId,
-          playerId,
-          deletedVotesCount: 'unknown',
-          failedInsertCount: voteInserts.length,
-          error: insertError.message,
-          code: insertError.code,
-        }, 'DATA LOSS RISK: Votes were deleted but insert failed');
-
-        return NextResponse.json(
-          { error: 'Failed to record votes. Please try again.' },
-          { status: 500 }
-        );
-      }
-
-      log.info({
-        sessionId,
-        playerId,
-        votesRecorded: voteInserts.length
-      }, 'Votes recorded successfully');
-    }
+    log.info({
+      sessionId,
+      playerId,
+      deletedCount: result?.deleted_count,
+      insertedCount: result?.inserted_count,
+    }, 'Votes submitted successfully via atomic transaction');
 
     // Check if all players have voted
     const { data: allPlayers } = await supabase

@@ -819,6 +819,19 @@ export type Database = {
         Args: { session_id_param: string }
         Returns: Json
       }
+      submit_votes: {
+        Args: {
+          p_session_id: string
+          p_player_id: string
+          p_votes: Json
+        }
+        Returns: {
+          success: boolean
+          deleted_count: number
+          inserted_count: number
+          message: string
+        }
+      }
       update_participant_submission_status: {
         Args: { p_participant_id: string; p_session_id: string }
         Returns: Json
