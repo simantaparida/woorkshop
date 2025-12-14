@@ -8,7 +8,11 @@ import { supabase } from '@/lib/supabase/client';
 import { ROUTES } from '@/lib/constants';
 import { useUser } from '@/lib/hooks/useUser';
 
-export function AppHeader() {
+interface AppHeaderProps {
+  onMenuClick?: () => void;
+}
+
+export function AppHeader({ onMenuClick }: AppHeaderProps = {}) {
   const router = useRouter();
   const { user, loading } = useUser();
   const [showNotifications, setShowNotifications] = useState(false);
@@ -48,15 +52,26 @@ export function AppHeader() {
   }, []);
 
   return (
-    <header className="sticky top-0 h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 z-40">
-      {/* Left - Padool Logo */}
-      <div className="flex items-center gap-4">
+    <header className="sticky top-0 h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 md:px-6 z-40">
+      {/* Left - Mobile Menu Button + Padool Logo */}
+      <div className="flex items-center gap-3">
+        {/* Mobile Hamburger Menu Button */}
+        <button
+          onClick={onMenuClick}
+          className="md:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+          aria-label="Open menu"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
         <Link
           href="/home"
           className="flex items-center focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded-lg"
           aria-label="Padool home"
         >
-          <span className="font-comfortaa text-2xl font-bold text-blue-600 tracking-[0.1em]">
+          <span className="font-comfortaa text-xl md:text-2xl font-bold text-blue-600 tracking-[0.1em]">
             padool
           </span>
         </Link>
@@ -132,10 +147,10 @@ export function AppHeader() {
               setShowProfile(!showProfile);
               setShowNotifications(false);
             }}
-            className="flex items-center gap-3 px-3 py-1.5 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+            className="flex items-center gap-2 md:gap-3 px-2 md:px-3 py-1.5 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
             aria-label="Profile menu"
           >
-            <div className="flex flex-col items-end">
+            <div className="hidden sm:flex flex-col items-end">
               <span className="text-sm font-semibold text-gray-900">
                 {loading ? 'Loading...' : user?.name || 'Guest User'}
               </span>
@@ -146,7 +161,7 @@ export function AppHeader() {
                 {loading ? '...' : user?.initials || 'GU'}
               </span>
             </div>
-            <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="hidden sm:block w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
