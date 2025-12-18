@@ -23,10 +23,10 @@ export function RecognitionSection() {
   const totalSentences = recognitionContent.reduce((sum, p) => sum + p.sentences.length, 0);
 
   // Track scroll progress through this section
-  // Start tracking when content reaches center, end when section bottom leaves center
+  // Start when section top reaches center, end when section bottom reaches center
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ['start end', 'end end'],
+    offset: ['start center', 'end center'],
   });
 
   // Handle reduced motion preference
@@ -47,38 +47,46 @@ export function RecognitionSection() {
   }
 
   return (
-    <div
-      ref={containerRef}
-      className="relative bg-gray-50"
-      style={{
-        // Total height = space for text to scroll into center + highlighting space + space to scroll out
-        height: `calc(100vh + ${totalSentences * SCROLL_HEIGHT_PER_SENTENCE}vh)`,
-      }}
-    >
-      {/* Sticky container - stays centered in viewport during highlighting */}
-      <div className="sticky top-1/2 left-0 right-0 -translate-y-1/2">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="space-y-8">
-            {recognitionContent.map((paragraph, pIndex) => {
-              // Calculate starting index for this paragraph
-              const startIndex = recognitionContent
-                .slice(0, pIndex)
-                .reduce((sum, p) => sum + p.sentences.length, 0);
+    <section className="relative bg-gray-50">
+      {/* Top spacer for normal scroll before sticky behavior starts */}
+      <div className="h-[50vh]" />
 
-              return (
-                <ParagraphHighlight
-                  key={pIndex}
-                  sentences={paragraph.sentences}
-                  startIndex={startIndex}
-                  totalSentences={totalSentences}
-                  scrollProgress={scrollYProgress}
-                />
-              );
-            })}
+      <div
+        ref={containerRef}
+        className="relative"
+        style={{
+          // Total height = highlighting space only
+          height: `${totalSentences * SCROLL_HEIGHT_PER_SENTENCE}vh`,
+        }}
+      >
+        {/* Sticky container - stays centered in viewport during highlighting */}
+        <div className="sticky top-1/2 left-0 right-0 -translate-y-1/2">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="space-y-8">
+              {recognitionContent.map((paragraph, pIndex) => {
+                // Calculate starting index for this paragraph
+                const startIndex = recognitionContent
+                  .slice(0, pIndex)
+                  .reduce((sum, p) => sum + p.sentences.length, 0);
+
+                return (
+                  <ParagraphHighlight
+                    key={pIndex}
+                    sentences={paragraph.sentences}
+                    startIndex={startIndex}
+                    totalSentences={totalSentences}
+                    scrollProgress={scrollYProgress}
+                  />
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Bottom spacer for balanced padding */}
+      <div className="h-[50vh]" />
+    </section>
   );
 }
 

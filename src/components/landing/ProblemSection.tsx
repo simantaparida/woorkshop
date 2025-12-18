@@ -5,24 +5,24 @@ import { useRef } from 'react';
 
 const problems = [
   {
-    icon: '👔',
-    title: 'HiPPO Syndrome',
-    description: 'The Highest Paid Person\'s Opinion wins every time',
-    detail: 'Junior team members stop sharing ideas',
+    icon: '📋',
+    title: 'Whiteboards Get Crowded',
+    description: 'Too many voices, not enough structure',
+    detail: 'Ideas compete for attention instead of evaluation',
     color: 'from-chaos/10 to-chaos/5',
   },
   {
-    icon: '📊',
-    title: 'Death by Sticky Notes',
-    description: '300 notes. 2 hours. Zero decisions.',
-    detail: 'Miro boards that never turn into action',
+    icon: '🎭',
+    title: 'Sticky Notes Turn Performative',
+    description: 'The loudest voice wins, not the best idea',
+    detail: 'Teams optimize for presentation, not substance',
     color: 'from-secondary-100 to-secondary-50',
   },
   {
-    icon: '🔄',
-    title: 'The Same Debate Loop',
-    description: '"Let\'s discuss this next week" (again)',
-    detail: 'Every sprint planning feels like Groundhog Day',
+    icon: '⏱️',
+    title: 'Voting Feels Rushed',
+    description: 'Decisions made without real reflection',
+    detail: 'Alignment becomes an illusion, not a reality',
     color: 'from-gray-100 to-gray-50',
   },
 ];
@@ -85,7 +85,7 @@ export function ProblemSection() {
             variants={itemVariants}
             className="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto"
           >
-            When decisions are made by whoever argues loudest, your team loses trust in the process—and each other.
+            Most teams don't lack ideas. They lack a way to surface them fairly.
           </motion.p>
         </motion.div>
 
