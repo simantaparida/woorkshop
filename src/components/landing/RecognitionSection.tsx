@@ -6,10 +6,8 @@ import { useReducedMotion } from '@/lib/motion';
 
 const sentences = [
   "You've been in this meeting before.",
-  "Someone speaks with confidence.\nSomeone else nods.\nA few people stay quiet — not because they agree,\nbut because it's easier.",
-  "Ideas get filtered by volume.\nDecisions get made by momentum.\nAnd the roadmap slowly drifts.",
-  "Not because the team is bad.",
-  "But because the process is broken.",
+  "Someone speaks with confidence.\nSomeone else nods. A few people stay quiet — not because they agree, but because it's easier.",
+  "Ideas get filtered by volume. Decisions get made by momentum. And the roadmap slowly drifts. Not because the team is bad. But because the process is broken.",
 ];
 
 export function RecognitionSection() {
@@ -24,10 +22,10 @@ export function RecognitionSection() {
 
   return (
     <>
-      {/* Spacer to create scroll distance */}
+      {/* Spacer to create scroll distance - creates reading chamber */}
       <div ref={containerRef} className="relative bg-gray-50" style={{ height: `${sentences.length * 80}vh` }}>
-        {/* Sticky container - vertically centered, no horizontal movement */}
-        <div className="sticky top-1/2 -translate-y-1/2 left-0 right-0 py-12">
+        {/* Sticky container - vertically centered, pinned while page scrolls underneath */}
+        <div className="sticky top-1/2 -translate-y-1/2 left-0 right-0 py-12 z-0">
           <div className="max-w-4xl mx-auto px-6">
             <div className="space-y-4">
               {sentences.map((sentence, index) => (
