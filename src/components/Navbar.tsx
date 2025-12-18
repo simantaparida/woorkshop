@@ -252,10 +252,10 @@ export function Navbar() {
 
           {/* Right: CTA + Mobile Menu Button */}
           <div className="flex items-center gap-3">
-            {/* Start Free Session Button - Always Visible */}
+            {/* Start Free Session Button - Hidden on Mobile */}
             <Link
               href={ROUTES.LOGIN}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 shadow-sm"
+              className="hidden sm:inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 shadow-sm"
             >
               Start Free Session
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -9,8 +9,7 @@ import { recognitionContent } from '@/data/recognition-content';
 // CONSTANTS
 // ============================================================================
 
-const TRANSITION_OVERLAP = 0.3; // 30% overlap for smooth transitions
-const SCROLL_HEIGHT_PER_SENTENCE = 40; // vh per sentence
+const SCROLL_HEIGHT_PER_SENTENCE = 50; // vh per sentence (faster highlighting)
 
 // ============================================================================
 // MAIN COMPONENT
@@ -24,9 +23,10 @@ export function RecognitionSection() {
   const totalSentences = recognitionContent.reduce((sum, p) => sum + p.sentences.length, 0);
 
   // Track scroll progress through this section
+  // Start tracking when content reaches center, end when section bottom leaves center
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ['start center', 'end center'],
+    offset: ['start end', 'end end'],
   });
 
   // Handle reduced motion preference
@@ -36,7 +36,7 @@ export function RecognitionSection() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="space-y-8">
             {recognitionContent.map((paragraph, pIndex) => (
-              <p key={pIndex} className="text-2xl sm:text-3xl leading-snug text-gray-900">
+              <p key={pIndex} className="text-2xl sm:text-3xl leading-snug text-gray-900 font-bold">
                 {paragraph.sentences.join(' ')}
               </p>
             ))}
@@ -51,12 +51,12 @@ export function RecognitionSection() {
       ref={containerRef}
       className="relative bg-gray-50"
       style={{
-        height: `${totalSentences * SCROLL_HEIGHT_PER_SENTENCE}vh`,
-        paddingTop: '50vh'
+        // Total height = space for text to scroll into center + highlighting space + space to scroll out
+        height: `calc(100vh + ${totalSentences * SCROLL_HEIGHT_PER_SENTENCE}vh)`,
       }}
     >
-      {/* Sticky container - vertically centered, pinned while page scrolls underneath */}
-      <div className="sticky top-1/2 -translate-y-1/2 left-0 right-0 py-12">
+      {/* Sticky container - stays centered in viewport during highlighting */}
+      <div className="sticky top-1/2 left-0 right-0 -translate-y-1/2">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="space-y-8">
             {recognitionContent.map((paragraph, pIndex) => {
@@ -131,35 +131,30 @@ const SentenceSpan = memo(function SentenceSpan({
   totalSentences,
   scrollProgress,
 }: SentenceSpanProps) {
-  // Calculate when this sentence should be active
+  // Each sentence gets an equal portion of the scroll range
   const segmentSize = 1 / totalSentences;
   const startProgress = globalIndex * segmentSize;
   const endProgress = (globalIndex + 1) * segmentSize;
 
-  // Map scroll progress to sentence activation (0 = inactive, 1 = active)
-  const activation = useTransform(
-    scrollProgress,
-    [
-      startProgress,
-      startProgress + segmentSize * TRANSITION_OVERLAP,
-      endProgress - segmentSize * TRANSITION_OVERLAP,
-      endProgress
-    ],
-    [0, 1, 1, 0]
-  );
+  // Smooth fade in/out with 20% overlap
+  const fadeInEnd = startProgress + segmentSize * 0.2;
+  const fadeOutStart = endProgress - segmentSize * 0.2;
 
-  // Color: gray-400 → gray-900
+  // Map scroll progress to color (gray → black)
   const color = useTransform(
-    activation,
-    [0, 1],
-    ['rgb(156, 163, 175)', 'rgb(17, 24, 39)']
+    scrollProgress,
+    [startProgress, fadeInEnd, fadeOutStart, endProgress],
+    [
+      'rgb(156, 163, 175)', // gray-400 (faded)
+      'rgb(17, 24, 39)',    // gray-900 (dark)
+      'rgb(17, 24, 39)',    // gray-900 (stay dark)
+      'rgb(156, 163, 175)'  // gray-400 (fade out)
+    ]
   );
 
   return (
     <motion.span
-      style={{
-        color,
-      }}
+      style={{ color }}
       className="inline text-2xl sm:text-3xl font-bold"
     >
       {sentence}{' '}
