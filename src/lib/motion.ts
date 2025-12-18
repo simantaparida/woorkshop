@@ -19,12 +19,12 @@ import type { Variants } from 'framer-motion';
 
 /**
  * Duration constants (in seconds)
- * Calm, intentional timing for smooth motion
+ * Longer durations for gentle, flowing presence
  */
 export const DURATION = {
-  FAST: 0.3,    // 300ms - Quick transitions
-  MEDIUM: 0.4,  // 400ms - Most transitions
-  SLOW: 0.5,    // 500ms - Emphasis
+  FAST: 0.4,    // 400ms - Quick transitions
+  MEDIUM: 0.6,  // 600ms - Most transitions
+  SLOW: 0.8,    // 800ms - Emphasis
 } as const;
 
 /**
@@ -35,22 +35,24 @@ export const CALM_EASE = [0.22, 1, 0.36, 1] as const;
 
 /**
  * Vertical movement constraints (in pixels)
- * Keep movements subtle and intentional
+ * Very subtle movements for gentle presence
  */
 export const MOVEMENT = {
+  DRIFT: 4,      // 4px - Gentle drift
   SUBTLE: 8,     // 8px - Minimal movement
   NORMAL: 12,    // 12px - Default movement
   EMPHASIS: 16,  // 16px - Maximum movement
+  LIFT: 2,       // 2px - Micro-lift on scroll
 } as const;
 
 /**
  * Hero section animation sequence timing
- * Sequential delays for narrative hierarchy
+ * Overlapping timing for continuous flow
  */
 export const HERO_SEQUENCE = {
-  HEADLINE: 0,     // First: immediate
-  SUBTEXT: 0.12,   // Second: 120ms after headline starts
-  CTA: 0.24,       // Third: slight delay after subtext
+  HEADLINE: 0,     // First: immediate, 600ms duration
+  SUBTEXT: 0.3,    // Begins before headline settles (at 300ms)
+  CTA: 0.5,        // Appears while subtext finishing (at 500ms)
 } as const;
 
 // ============================================================================
@@ -71,6 +73,24 @@ export const fadeIn: Variants = {
     },
   },
 };
+
+/**
+ * Fade in with gentle upward drift
+ * Use for: Hero headlines that need gentle presence
+ *
+ * @param distance - Vertical drift in pixels (default: MOVEMENT.DRIFT = 4px)
+ */
+export const fadeInDrift = (distance: number = MOVEMENT.DRIFT): Variants => ({
+  hidden: { opacity: 0, y: distance },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: DURATION.MEDIUM,
+      ease: CALM_EASE,
+    },
+  },
+});
 
 /**
  * Slide up - opacity + vertical movement

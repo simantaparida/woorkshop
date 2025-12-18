@@ -1,11 +1,12 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
 import { Clock } from 'lucide-react';
+import { useRef } from 'react';
 import { ROUTES } from '@/lib/constants';
 import {
-  fadeIn,
+  fadeInDrift,
   slideUp,
   delayedFade,
   HERO_SEQUENCE,
@@ -16,14 +17,19 @@ import {
 
 export function Hero() {
   const reducedMotion = useReducedMotion();
+  const ctaRef = useRef<HTMLDivElement>(null);
+  const { scrollY } = useScroll();
+
+  // CTA lifts 2px on scroll start, then locks
+  const ctaY = useTransform(scrollY, [0, 50], [0, -MOVEMENT.LIFT]);
 
   return (
     <section className="relative bg-white pt-32 pb-24 overflow-hidden">
       <div className="max-w-5xl mx-auto px-6">
         <div className="text-center space-y-8">
-          {/* Step 1: Headline - Fade in only, no movement */}
+          {/* Step 1: Headline - Fade in with gentle upward drift (4px) over 600ms */}
           <motion.h1
-            variants={getMotionVariants(fadeIn, reducedMotion)}
+            variants={getMotionVariants(fadeInDrift(MOVEMENT.DRIFT), reducedMotion)}
             initial="hidden"
             animate="visible"
             className="text-5xl md:text-7xl font-extrabold text-gray-900 leading-[1.05] tracking-tight"
@@ -48,11 +54,13 @@ export function Hero() {
             </div>
           </motion.div>
 
-          {/* Step 3: CTA - Appears last with delay */}
+          {/* Step 3: CTA - Appears while subtext finishing, with scroll micro-lift */}
           <motion.div
+            ref={ctaRef}
             variants={getMotionVariants(delayedFade(HERO_SEQUENCE.CTA), reducedMotion)}
             initial="hidden"
             animate="visible"
+            style={{ y: reducedMotion ? 0 : ctaY }}
             className="pt-2"
           >
             <Link
