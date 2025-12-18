@@ -105,7 +105,7 @@ export function BeforeAfterScenarios() {
 
   return (
     <section ref={ref} className="py-24 bg-gradient-to-b from-white to-gray-50">
-      <div className="max-w-6xl mx-auto px-6">
+      <div className="max-w-4xl mx-auto px-6">
         {/* Header */}
         <motion.div
           variants={containerVariants}
@@ -132,50 +132,49 @@ export function BeforeAfterScenarios() {
           </motion.p>
         </motion.div>
 
-        {/* Scenario Tabs */}
+        {/* Box Container */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
-          className="mb-8"
+          className="border-2 border-gray-200 rounded-lg overflow-hidden bg-white"
         >
-          <div className="flex flex-wrap justify-center gap-3">
-            {scenarios.map((scenario, index) => (
-              <motion.button
-                key={scenario.title}
-                variants={itemVariants}
-                onClick={() => setSelectedIndex(index)}
-                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
-                  selectedIndex === index
-                    ? 'bg-gray-900 text-white shadow-lg scale-105'
-                    : 'bg-white text-gray-700 border border-gray-200 hover:border-gray-300 hover:shadow-md'
-                }`}
-              >
-                <span className="mr-2">{scenario.emoji}</span>
-                {scenario.title}
-              </motion.button>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Comparison Cards */}
-        <motion.div
-          key={selectedIndex}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="grid md:grid-cols-2 gap-6"
-        >
-          {/* Before Card */}
-          <div className="relative">
-            <div className="absolute -top-3 left-6 z-10">
-              <span className="inline-block px-4 py-1.5 bg-red-500 text-white text-xs font-bold uppercase rounded-full shadow-md">
-                Without System
-              </span>
+          {/* Tabs Row */}
+          <div className="bg-gray-50 border-b-2 border-gray-200">
+            <div className="grid grid-cols-3 divide-x divide-gray-200">
+              {scenarios.map((scenario, index) => (
+                <motion.button
+                  key={scenario.title}
+                  variants={itemVariants}
+                  onClick={() => setSelectedIndex(index)}
+                  className={`px-5 py-4 text-sm font-semibold transition-all duration-300 ${
+                    selectedIndex === index
+                      ? 'bg-gray-900 text-white'
+                      : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  <span className="mr-2">{scenario.emoji}</span>
+                  {scenario.title}
+                </motion.button>
+              ))}
             </div>
-            <div className="bg-white rounded-2xl border-2 border-red-200 p-8 pt-10 h-full">
+          </div>
+
+          {/* Comparison Content */}
+          <motion.div
+            key={selectedIndex}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="grid md:grid-cols-2"
+          >
+            {/* Before Column */}
+            <div className="p-8 border-r border-gray-200">
               <div className="mb-6">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                <div className="inline-block px-3 py-1 bg-red-100 text-red-700 text-xs font-bold uppercase rounded-full mb-4">
+                  Without System
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
                   {scenarios[selectedIndex].before.headline}
                 </h3>
                 <p className="text-sm font-semibold text-red-600">
@@ -203,18 +202,14 @@ export function BeforeAfterScenarios() {
                 ))}
               </ul>
             </div>
-          </div>
 
-          {/* After Card */}
-          <div className="relative">
-            <div className="absolute -top-3 left-6 z-10">
-              <span className="inline-block px-4 py-1.5 bg-green-500 text-white text-xs font-bold uppercase rounded-full shadow-md">
-                With System
-              </span>
-            </div>
-            <div className="bg-white rounded-2xl border-2 border-green-200 p-8 pt-10 h-full">
+            {/* After Column */}
+            <div className="p-8 bg-gradient-to-br from-green-50/30 to-white">
               <div className="mb-6">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                <div className="inline-block px-3 py-1 bg-green-100 text-green-700 text-xs font-bold uppercase rounded-full mb-4">
+                  With System
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
                   {scenarios[selectedIndex].after.headline}
                 </h3>
                 <p className="text-sm font-semibold text-green-600">
@@ -242,19 +237,7 @@ export function BeforeAfterScenarios() {
                 ))}
               </ul>
             </div>
-          </div>
-        </motion.div>
-
-        {/* Team Type Badge */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="text-center mt-8"
-        >
-          <span className="text-sm text-gray-500">
-            For <span className="font-semibold text-gray-700">{scenarios[selectedIndex].teamType}</span>
-          </span>
+          </motion.div>
         </motion.div>
       </div>
     </section>
