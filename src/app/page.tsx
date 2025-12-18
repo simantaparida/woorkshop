@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Navbar } from '@/components/Navbar';
 import { Hero } from '@/components/Hero';
+import { RecognitionSection } from '@/components/landing/RecognitionSection';
 import { ProblemSection } from '@/components/landing/ProblemSection';
 import { ValueProps } from '@/components/ValueProps';
 import { BeforeAfterScenarios } from '@/components/landing/BeforeAfterScenarios';
@@ -63,6 +64,9 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <Hero />
+
+      {/* Recognition Section - Scroll-driven sticky highlight */}
+      <RecognitionSection />
 
       {/* Problem Section */}
       <ProblemSection />
