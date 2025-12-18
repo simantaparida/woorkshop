@@ -2,17 +2,16 @@
 
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
-import { useRef } from 'react';
-import { useAnalytics } from '@/lib/hooks/useAnalytics';
+import { useRef, useState, useEffect } from 'react';
 import { Vote, Users, Grid2x2, Download } from 'lucide-react';
 
-interface Feature {
+interface Tool {
   title: string;
   description: string;
   icon: typeof Vote;
 }
 
-const features: Feature[] = [
+const tools: Tool[] = [
   {
     title: 'From Opinions to Data',
     description: '"Feature A scores 85/100. Feature B scores 42. Ship A first." Turn subjective debates into objective numbers.',
@@ -36,9 +35,23 @@ const features: Feature[] = [
 ];
 
 export function ValueProps() {
-  const { trackEvent } = useAnalytics();
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-50px' });
+  const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const [showSubtitles, setShowSubtitles] = useState(false);
+  const [selectedTool, setSelectedTool] = useState<number | null>(null);
+
+  // Show subtitles after headline appears
+  useEffect(() => {
+    if (!isInView) return;
+
+    const timer = setTimeout(() => {
+      setShowSubtitles(true);
+    }, 600);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [isInView]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -63,117 +76,108 @@ export function ValueProps() {
     },
   };
 
-  const handleCTAClick = () => {
-    trackEvent('value_prop_cta_click');
-    // Scroll to demo or trigger modal
-    document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
-    <section ref={ref} className="py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-6">
+    <section ref={ref} className="relative py-24 bg-white">
+      <div className="max-w-6xl mx-auto px-6">
+        {/* Header Section - Centered */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
-          className="grid lg:grid-cols-2 gap-16 items-center"
+          className="text-center mb-12"
         >
-          {/* Left Column - Text Content */}
-          <div className="space-y-8">
-            {/* Small Label */}
-            <motion.div variants={itemVariants}>
-              <span className="inline-block px-3 py-1 text-xs font-semibold text-clarity bg-green-50 rounded-full border border-green-200">
-                The Woorkshop Method
-              </span>
-            </motion.div>
+          {/* Small Label */}
+          <motion.div variants={itemVariants} className="mb-8">
+            <span className="inline-block px-3 py-1 text-xs font-semibold text-clarity bg-green-50 rounded-full border border-green-200">
+              The Solution
+            </span>
+          </motion.div>
 
-            {/* Headline */}
-            <motion.h2
-              variants={itemVariants}
-              className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight"
-            >
-              Structure beats chaos.
-              <br />
-              Every single time.
-            </motion.h2>
+          {/* Main Headline */}
+          <motion.h2
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight mb-6"
+          >
+            Structure beats chaos.
+            <br />
+            Every single time.
+          </motion.h2>
 
-            {/* Subhead */}
-            <motion.p
-              variants={itemVariants}
-              className="text-lg text-gray-600 leading-relaxed"
-            >
-              Stop arguing. Start scoring. Walk away with priorities everyone believes in—backed by frameworks product teams actually use.
-            </motion.p>
+          {/* Subtitles in same line */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={showSubtitles ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-wrap justify-center gap-2 text-lg text-gray-500"
+          >
+            <span>Not rigid process.</span>
+            <span>Not heavy frameworks.</span>
+          </motion.div>
+        </motion.div>
 
-            {/* Features List */}
-            <motion.div variants={itemVariants} className="space-y-6 pt-4">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={feature.title}
-                  variants={itemVariants}
-                  className="flex items-start gap-4 group"
-                >
-                  {/* Circle Icon */}
-                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 group-hover:scale-105">
-                    <feature.icon className="w-5 h-5" />
-                  </div>
-
-                  {/* Text */}
-                  <div className="flex-1 pt-1">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                      {feature.title}
-                    </h3>
-                    <p className="text-sm text-gray-600 leading-relaxed">
-                      {feature.description}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-
-            {/* Honest Feedback Block */}
-            <motion.div variants={itemVariants} className="pt-4">
-              <div className="bg-warning/10 border-2 border-warning/30 rounded-xl p-6">
-                <div className="flex items-start gap-3">
-                  <div className="text-2xl">⚠️</div>
-                  <div className="flex-1">
-                    <h3 className="text-base font-bold text-gray-900 mb-2">
-                      We're in public review. We need your honest feedback.
-                    </h3>
-                    <p className="text-sm text-gray-700 leading-relaxed mb-4">
-                      This isn't perfect yet—we know that. But if structured prioritization sounds useful to your team, we'd love to hear what we got right (and what we got wrong).
-                    </p>
-                    <a
-                      href="mailto:hello@woorkshop.app"
-                      className="inline-flex items-center gap-2 text-sm font-semibold text-warning hover:text-warning/80 transition-colors"
-                    >
-                      Give us feedback
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </a>
-                  </div>
+        {/* Tools Grid - 2 Columns */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? 'visible' : 'hidden'}
+          className="grid lg:grid-cols-2 gap-12 items-start"
+        >
+          {/* Left Column - Tools List */}
+          <div className="space-y-5">
+            <h3 className="text-xl font-bold text-gray-900 mb-6">My tools</h3>
+            {tools.map((tool, index) => (
+              <motion.div
+                key={tool.title}
+                variants={itemVariants}
+                onClick={() => setSelectedTool(selectedTool === index ? null : index)}
+                className="flex items-start gap-3 group cursor-pointer"
+              >
+                {/* Circle Icon */}
+                <div className={`flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ${
+                  selectedTool === index
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white group-hover:scale-105'
+                }`}>
+                  <tool.icon className="w-4 h-4" />
                 </div>
-              </div>
-            </motion.div>
+
+                {/* Text */}
+                <div className="flex-1 pt-0.5">
+                  <h3 className="text-base font-semibold text-gray-900 mb-1">
+                    {tool.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 leading-snug">
+                    {tool.description}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
           </div>
 
-          {/* Right Column - Image Placeholder */}
+          {/* Right Column - UI Preview */}
           <motion.div
             variants={itemVariants}
-            className="relative lg:h-full flex items-center justify-center"
+            className="lg:sticky lg:top-24"
           >
-            <div className="w-full aspect-[4/3] bg-gray-100 rounded-2xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400">
-              <svg className="w-16 h-16 mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <span className="font-medium text-sm">[Main UI Screenshot Placeholder]</span>
-              <span className="text-xs mt-1 text-gray-400">Width: 100%, Aspect Ratio: 4/3</span>
-            </div>
-
-            {/* Decorative elements - Simple backdrops to keep it looking nice even as a placeholder */}
-            <div className="absolute -z-10 -top-8 -right-8 w-64 h-64 bg-blue-100/50 rounded-full blur-3xl"></div>
-            <div className="absolute -z-10 -bottom-8 -left-8 w-64 h-64 bg-purple-100/50 rounded-full blur-3xl"></div>
+            {selectedTool !== null ? (
+              <div className="w-full aspect-[4/3] bg-gray-100 rounded-2xl border-2 border-gray-200 flex flex-col items-center justify-center text-gray-400 p-8">
+                {(() => {
+                  const SelectedIcon = tools[selectedTool].icon;
+                  return <SelectedIcon className="w-16 h-16 mb-4 text-gray-300" />;
+                })()}
+                <span className="font-medium text-sm text-center">{tools[selectedTool].title} UI Preview</span>
+                <span className="text-xs mt-2 text-gray-400">Width: 100%, Aspect Ratio: 4/3</span>
+              </div>
+            ) : (
+              <div className="w-full aspect-[4/3] bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400">
+                <svg className="w-16 h-16 mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                </svg>
+                <span className="font-medium text-sm">Click a tool to preview</span>
+              </div>
+            )}
           </motion.div>
         </motion.div>
       </div>
