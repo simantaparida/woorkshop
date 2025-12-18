@@ -19,12 +19,12 @@ import type { Variants } from 'framer-motion';
 
 /**
  * Duration constants (in seconds)
- * Slower durations create a more alive, smooth feel
+ * Calm, intentional timing for smooth motion
  */
 export const DURATION = {
-  FAST: 0.5,    // 500ms - Quick transitions
-  MEDIUM: 0.7,  // 700ms - Most transitions
-  SLOW: 0.9,    // 900ms - Emphasis
+  FAST: 0.3,    // 300ms - Quick transitions
+  MEDIUM: 0.4,  // 400ms - Most transitions
+  SLOW: 0.5,    // 500ms - Emphasis
 } as const;
 
 /**
@@ -45,12 +45,12 @@ export const MOVEMENT = {
 
 /**
  * Hero section animation sequence timing
- * Sequential delays for narrative hierarchy with breathing room
+ * Sequential delays for narrative hierarchy
  */
 export const HERO_SEQUENCE = {
   HEADLINE: 0,     // First: immediate
-  SUBTEXT: 0.4,    // Second: 400ms after headline starts
-  CTA: 0.9,        // Third: 900ms after headline starts
+  SUBTEXT: 0.12,   // Second: 120ms after headline starts
+  CTA: 0.24,       // Third: slight delay after subtext
 } as const;
 
 // ============================================================================

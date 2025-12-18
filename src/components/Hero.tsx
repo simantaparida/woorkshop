@@ -33,7 +33,7 @@ export function Hero() {
 
           {/* Step 2: Subtext - Slide up slightly after headline */}
           <motion.div
-            variants={getMotionVariants(slideUp(MOVEMENT.NORMAL), reducedMotion)}
+            variants={getMotionVariants(slideUp(MOVEMENT.SUBTLE), reducedMotion)}
             initial="hidden"
             animate="visible"
             transition={{ delay: HERO_SEQUENCE.SUBTEXT }}
@@ -57,12 +57,12 @@ export function Hero() {
           >
             <Link
               href={ROUTES.LOGIN}
-              className="group relative inline-flex items-center gap-3 px-8 py-4 bg-blue-600 text-white text-lg font-bold rounded-lg transition-all duration-300 ease-out hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+              className="group relative inline-flex items-center gap-3 px-8 py-4 bg-blue-600 text-white text-lg font-bold rounded-lg transition-all duration-300 ease-out hover:bg-blue-700 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
               aria-label="Start a session in 10 minutes"
             >
-              {/* Timer icon: hidden by default, slides in on hover */}
+              {/* Timer icon: hidden by default, gently fades in on hover */}
               <Clock
-                className="w-5 h-5 opacity-0 -ml-6 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300"
+                className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                 aria-hidden="true"
               />
               <span className="flex items-center gap-2">
