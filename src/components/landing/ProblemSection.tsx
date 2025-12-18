@@ -69,7 +69,7 @@ export function ProblemSection() {
   };
 
   return (
-    <section ref={ref} className="relative py-24 bg-gradient-to-b from-gray-50 to-white z-10">
+    <section ref={ref} className="relative py-24 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 z-10">
       <div className="max-w-6xl mx-auto px-6">
         <motion.div
           variants={containerVariants}
@@ -79,7 +79,7 @@ export function ProblemSection() {
         >
           {/* Small Label */}
           <motion.div variants={itemVariants} className="mb-8">
-            <span className="inline-block px-3 py-1 text-xs font-semibold text-chaos bg-red-50 rounded-full border border-red-200">
+            <span className="inline-block px-3 py-1 text-xs font-semibold text-red-400 bg-red-950/50 rounded-full border border-red-800/50">
               The Real Problem
             </span>
           </motion.div>
@@ -91,14 +91,14 @@ export function ProblemSection() {
             transition={{ duration: 0.5 }}
             className="text-center space-y-3 mb-6"
           >
-            <h2 className="text-[1.5rem] font-bold text-gray-900 leading-tight">
+            <h2 className="text-[1.5rem] font-bold text-gray-400 leading-tight">
               It's not a roadmap problem.
             </h2>
             <motion.h2
               initial={{ opacity: 0 }}
               animate={showSecondLine ? { opacity: 1 } : { opacity: 0 }}
               transition={{ duration: 0.5 }}
-              className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight"
+              className="text-4xl md:text-5xl font-extrabold text-white leading-tight"
             >
               It's a politics problem.
             </motion.h2>
@@ -109,7 +109,7 @@ export function ProblemSection() {
             initial={{ opacity: 0 }}
             animate={showSecondLine ? { opacity: 1 } : { opacity: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto"
+            className="text-lg text-gray-400 leading-relaxed max-w-3xl mx-auto"
           >
             Most teams don't lack ideas. They lack a way to surface them fairly.
           </motion.p>
@@ -129,26 +129,26 @@ export function ProblemSection() {
               className="group relative flex"
             >
               {/* Gradient border wrapper */}
-              <div className={`relative rounded-lg p-[1px] bg-gradient-to-br ${problem.color} transition-all duration-300 hover:shadow-lg w-full`}>
+              <div className="relative rounded-lg p-[1px] bg-gradient-to-br from-gray-700 to-gray-600 transition-all duration-300 hover:shadow-2xl hover:shadow-gray-900/50 w-full">
                 {/* Card content */}
-                <div className="relative bg-white group-hover:bg-gradient-to-br group-hover:from-gray-50 group-hover:via-white group-hover:to-gray-50 rounded-lg p-8 h-full flex flex-col transition-all duration-300">
+                <div className="relative bg-gray-800 group-hover:bg-gradient-to-br group-hover:from-gray-750 group-hover:via-gray-800 group-hover:to-gray-750 rounded-lg p-8 h-full flex flex-col transition-all duration-300">
                   {/* Icon */}
                   <div className="text-5xl mb-4 transition-transform duration-300 group-hover:scale-110">
                     {problem.icon}
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">
+                  <h3 className="text-xl font-bold text-white mb-3">
                     {problem.title}
                   </h3>
 
                   {/* Description */}
-                  <p className="text-base font-semibold text-gray-700 mb-2">
+                  <p className="text-base font-semibold text-gray-300 mb-2">
                     {problem.description}
                   </p>
 
                   {/* Detail */}
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-400">
                     {problem.detail}
                   </p>
                 </div>
@@ -162,15 +162,20 @@ export function ProblemSection() {
           variants={itemVariants}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
-          className="max-w-4xl mx-auto"
+          className="max-w-3xl mx-auto"
         >
-          <div className="bg-blue-50 rounded-2xl p-10 border-l-4 border-blue-600">
-            <blockquote className="text-2xl md:text-3xl font-medium text-gray-900 italic leading-relaxed text-center">
-              "I'm tired of pretending sticky notes are a methodology."
-            </blockquote>
-            <p className="text-sm text-gray-600 text-center mt-4">
-              — Product Manager, Series B Startup
-            </p>
+          <div className="relative py-12">
+            {/* Left border accent */}
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-red-500 to-red-600 rounded-full" />
+
+            <div className="pl-12">
+              <blockquote className="text-xl md:text-2xl font-medium text-white italic leading-relaxed mb-6">
+                "I'm tired of pretending sticky notes are a methodology."
+              </blockquote>
+              <p className="text-sm text-gray-400">
+                — Product Manager, Series B Startup
+              </p>
+            </div>
           </div>
         </motion.div>
       </div>
