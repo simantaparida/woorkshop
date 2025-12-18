@@ -9,21 +9,21 @@ const problems = [
     title: 'Whiteboards Get Crowded',
     description: 'Too many voices, not enough structure',
     detail: 'Ideas compete for attention instead of evaluation',
-    color: 'from-chaos/10 to-chaos/5',
+    color: 'from-gray-700 to-gray-600',
   },
   {
     icon: '🎭',
     title: 'Sticky Notes Turn Performative',
     description: 'The loudest voice wins, not the best idea',
     detail: 'Teams optimize for presentation, not substance',
-    color: 'from-secondary-100 to-secondary-50',
+    color: 'from-gray-700 to-gray-600',
   },
   {
     icon: '⏱️',
     title: 'Voting Feels Rushed',
     description: 'Decisions made without real reflection',
     detail: 'Alignment becomes an illusion, not a reality',
-    color: 'from-gray-100 to-gray-50',
+    color: 'from-gray-700 to-gray-600',
   },
 ];
 
@@ -70,7 +70,7 @@ export function ProblemSection() {
 
   return (
     <section ref={ref} className="relative py-24 bg-gradient-to-b from-gray-50 to-white z-10">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-6xl mx-auto px-6">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -78,33 +78,31 @@ export function ProblemSection() {
           className="text-center mb-16"
         >
           {/* Small Label */}
-          <motion.div variants={itemVariants}>
-            <span className="inline-block px-3 py-1 text-xs font-semibold text-chaos bg-red-50 rounded-full border border-red-200 mb-6">
+          <motion.div variants={itemVariants} className="mb-8">
+            <span className="inline-block px-3 py-1 text-xs font-semibold text-chaos bg-red-50 rounded-full border border-red-200">
               The Real Problem
             </span>
           </motion.div>
 
           {/* Headline */}
-          <div className="mb-8">
-            <motion.div
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="text-center space-y-3 mb-6"
+          >
+            <h2 className="text-[1.5rem] font-bold text-gray-900 leading-tight">
+              It's not a roadmap problem.
+            </h2>
+            <motion.h2
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              animate={showSecondLine ? { opacity: 1 } : { opacity: 0 }}
               transition={{ duration: 0.5 }}
-              className="text-center space-y-4"
+              className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight"
             >
-              <h2 className="text-[1.5rem] font-bold text-gray-900 leading-tight">
-                It's not a roadmap problem.
-              </h2>
-              <motion.h2
-                initial={{ opacity: 0 }}
-                animate={showSecondLine ? { opacity: 1 } : { opacity: 0 }}
-                transition={{ duration: 0.5 }}
-                className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight"
-              >
-                It's a politics problem.
-              </motion.h2>
-            </motion.div>
-          </div>
+              It's a politics problem.
+            </motion.h2>
+          </motion.div>
 
           {/* Subhead */}
           <motion.p
@@ -122,18 +120,18 @@ export function ProblemSection() {
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
-          className="grid md:grid-cols-3 gap-8 mb-16"
+          className="grid md:grid-cols-3 gap-8 mb-16 items-stretch"
         >
           {problems.map((problem, index) => (
             <motion.div
               key={problem.title}
               variants={itemVariants}
-              className="group relative"
+              className="group relative flex"
             >
               {/* Gradient border wrapper */}
-              <div className={`relative rounded-2xl p-[2px] bg-gradient-to-br ${problem.color} transition-all duration-300 hover:shadow-lg`}>
+              <div className={`relative rounded-lg p-[1px] bg-gradient-to-br ${problem.color} transition-all duration-300 hover:shadow-lg w-full`}>
                 {/* Card content */}
-                <div className="relative bg-white group-hover:bg-gradient-to-br group-hover:from-gray-50 group-hover:via-white group-hover:to-gray-50 rounded-2xl p-8 h-full transition-all duration-300">
+                <div className="relative bg-white group-hover:bg-gradient-to-br group-hover:from-gray-50 group-hover:via-white group-hover:to-gray-50 rounded-lg p-8 h-full flex flex-col transition-all duration-300">
                   {/* Icon */}
                   <div className="text-5xl mb-4 transition-transform duration-300 group-hover:scale-110">
                     {problem.icon}
