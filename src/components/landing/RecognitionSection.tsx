@@ -143,21 +143,9 @@ export function RecognitionSection() {
   }
 
   return (
-    <section
-      ref={containerRef}
-      className="relative bg-gray-50 overflow-x-hidden"
-      style={{ height: scrollHeight }}
-      aria-label="Recognition of common meeting challenges"
-      role="region"
-    >
-      {/* Sticky container - always sticky and centered in viewport */}
-      <div
-        className="sticky left-0 right-0 py-12 z-0"
-        style={{
-          top: '50%',
-          transform: 'translateY(-50%)',
-        }}
-      >
+    <div ref={containerRef} className="relative bg-gray-50" style={{ height: scrollHeight }}>
+      {/* Sticky container - vertically centered, pinned while page scrolls underneath */}
+      <div className="sticky top-1/2 -translate-y-1/2 left-0 right-0 py-12 z-0">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="space-y-8">
             {recognitionContent.map((paragraph, pIndex) => {
@@ -181,7 +169,7 @@ export function RecognitionSection() {
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 }
 
