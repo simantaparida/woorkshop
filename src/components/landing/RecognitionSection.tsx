@@ -1,7 +1,7 @@
 'use client';
 
-import { motion, useScroll, useTransform, MotionValue } from 'framer-motion';
-import { useRef } from 'react';
+import { motion, useScroll, useTransform, MotionValue, useMotionValueEvent } from 'framer-motion';
+import { useRef, useState } from 'react';
 import { useReducedMotion } from '@/lib/motion';
 
 const paragraphs = [
@@ -29,22 +29,62 @@ const paragraphs = [
 export function RecognitionSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
+  const prevScrollY = useRef(0);
 
   // Calculate total sentences across all paragraphs
   const totalSentences = paragraphs.reduce((sum, p) => sum + p.sentences.length, 0);
 
+  // State for scroll direction and section activation
+  const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('down');
+  const [hasBeenActivated, setHasBeenActivated] = useState(false);
+  const [shouldReset, setShouldReset] = useState(false);
+
   // Track scroll progress through this section
-  const { scrollYProgress } = useScroll({
+  const { scrollYProgress, scrollY } = useScroll({
     target: containerRef,
     offset: ['start start', 'end start'], // Pin from start until it leaves viewport
   });
+
+  // Detect scroll direction
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const direction = latest > prevScrollY.current ? 'down' : 'up';
+    setScrollDirection(direction);
+    prevScrollY.current = latest;
+  });
+
+  // Track section state (activation and reset)
+  useMotionValueEvent(scrollYProgress, "change", (progress) => {
+    // When scrolling up and leaving viewport (progress < 0)
+    if (scrollDirection === 'up' && progress < 0) {
+      setShouldReset(true);
+      setHasBeenActivated(false);
+    }
+
+    // When entering from top while scrolling down
+    if (scrollDirection === 'down' && progress > 0 && progress < 0.1) {
+      if (shouldReset) {
+        // Reset all sentences to faded
+        setShouldReset(false);
+      }
+    }
+
+    // Mark as activated when scrolling through
+    if (progress > 0.9 && scrollDirection === 'down') {
+      setHasBeenActivated(true);
+    }
+  });
+
+  // Conditional sticky class based on scroll direction
+  const stickyClass = scrollDirection === 'down'
+    ? "sticky top-1/2 -translate-y-1/2"
+    : "relative";
 
   return (
     <>
       {/* Spacer to create scroll distance - creates reading chamber */}
       <div ref={containerRef} className="relative bg-gray-50" style={{ height: `${totalSentences * 80}vh` }}>
-        {/* Sticky container - vertically centered, pinned while page scrolls underneath */}
-        <div className="sticky top-1/2 -translate-y-1/2 left-0 right-0 py-12 z-0">
+        {/* Sticky container - conditionally sticky based on scroll direction */}
+        <div className={`${stickyClass} left-0 right-0 py-12 z-0`}>
           <div className="max-w-4xl mx-auto px-6">
             <div className="space-y-8">
               {paragraphs.map((paragraph, pIndex) => {
@@ -60,6 +100,8 @@ export function RecognitionSection() {
                     startIndex={startIndex}
                     totalSentences={totalSentences}
                     scrollProgress={scrollYProgress}
+                    scrollDirection={scrollDirection}
+                    hasBeenActivated={hasBeenActivated}
                     reducedMotion={reducedMotion}
                   />
                 );
@@ -77,6 +119,8 @@ interface ParagraphHighlightProps {
   startIndex: number;
   totalSentences: number;
   scrollProgress: MotionValue<number>;
+  scrollDirection: 'up' | 'down';
+  hasBeenActivated: boolean;
   reducedMotion: boolean;
 }
 
@@ -85,6 +129,8 @@ function ParagraphHighlight({
   startIndex,
   totalSentences,
   scrollProgress,
+  scrollDirection,
+  hasBeenActivated,
   reducedMotion,
 }: ParagraphHighlightProps) {
   // Respect reduced motion preference
@@ -105,6 +151,8 @@ function ParagraphHighlight({
           globalIndex={startIndex + sentenceIndex}
           totalSentences={totalSentences}
           scrollProgress={scrollProgress}
+          scrollDirection={scrollDirection}
+          hasBeenActivated={hasBeenActivated}
         />
       ))}
     </p>
@@ -116,6 +164,8 @@ interface SentenceSpanProps {
   globalIndex: number;
   totalSentences: number;
   scrollProgress: MotionValue<number>;
+  scrollDirection: 'up' | 'down';
+  hasBeenActivated: boolean;
 }
 
 function SentenceSpan({
@@ -123,6 +173,8 @@ function SentenceSpan({
   globalIndex,
   totalSentences,
   scrollProgress,
+  scrollDirection,
+  hasBeenActivated,
 }: SentenceSpanProps) {
   // Calculate when this sentence should be active
   // Each sentence gets an equal portion of the scroll range
@@ -138,16 +190,15 @@ function SentenceSpan({
     [0, 1, 1, 0]
   );
 
-  // Active state transforms - only color and weight change
-  // Font weight: 400 (normal) → 700 (bold)
-  const fontWeight = useTransform(activation, [0, 1], [400, 700]);
+  // When scrolling up, keep sentences highlighted
+  // When scrolling down, progressive highlighting
+  const fontWeight = scrollDirection === 'up' && hasBeenActivated
+    ? useTransform(activation, [0, 1], [700, 700]) // Stay bold
+    : useTransform(activation, [0, 1], [400, 700]); // Normal progression
 
-  // Color: smooth transition from muted gray to black
-  const color = useTransform(
-    activation,
-    [0, 1],
-    ['rgb(156, 163, 175)', 'rgb(17, 24, 39)'] // gray-400 → gray-900
-  );
+  const color = scrollDirection === 'up' && hasBeenActivated
+    ? useTransform(activation, [0, 1], ['rgb(17, 24, 39)', 'rgb(17, 24, 39)']) // Stay dark
+    : useTransform(activation, [0, 1], ['rgb(156, 163, 175)', 'rgb(17, 24, 39)']); // gray-400 → gray-900
 
   return (
     <motion.span
@@ -155,7 +206,7 @@ function SentenceSpan({
         fontWeight,
         color,
       }}
-      className="inline"
+      className="inline text-3xl"
     >
       {sentence}{" "}
     </motion.span>
