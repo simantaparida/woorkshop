@@ -83,9 +83,6 @@ export function RecognitionSection() {
           </div>
         </div>
       </div>
-
-      {/* Bottom spacer for balanced padding */}
-      <div className="h-[50vh]" />
     </section>
   );
 }

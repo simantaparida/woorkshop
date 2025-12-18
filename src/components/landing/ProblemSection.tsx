@@ -1,7 +1,7 @@
 'use client';
 
-import { motion, useInView } from 'framer-motion';
-import { useRef } from 'react';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { useRef, useState, useEffect } from 'react';
 
 const problems = [
   {
@@ -30,6 +30,20 @@ const problems = [
 export function ProblemSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const [showSecondLine, setShowSecondLine] = useState(false);
+
+  // Title animation sequence
+  useEffect(() => {
+    if (!isInView) return;
+
+    const timer = setTimeout(() => {
+      setShowSecondLine(true);
+    }, 800); // Show second line after 0.8s
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [isInView]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -71,18 +85,31 @@ export function ProblemSection() {
           </motion.div>
 
           {/* Headline */}
-          <motion.h2
-            variants={itemVariants}
-            className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-6"
-          >
-            It's not a roadmap problem.
-            <br />
-            It's a politics problem.
-          </motion.h2>
+          <div className="mb-6">
+            <motion.h2
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="text-4xl md:text-5xl font-bold text-gray-900 text-center leading-tight"
+            >
+              It's not a roadmap problem.
+              <br />
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={showSecondLine ? { opacity: 1 } : { opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                className="font-extrabold"
+              >
+                It's a politics problem.
+              </motion.span>
+            </motion.h2>
+          </div>
 
           {/* Subhead */}
           <motion.p
-            variants={itemVariants}
+            initial={{ opacity: 0 }}
+            animate={showSecondLine ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
             className="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto"
           >
             Most teams don't lack ideas. They lack a way to surface them fairly.
@@ -102,24 +129,30 @@ export function ProblemSection() {
               variants={itemVariants}
               className="group relative"
             >
-              <div className={`bg-gradient-to-br ${problem.color} rounded-2xl p-8 h-full border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-lg`}>
-                {/* Icon */}
-                <div className="text-5xl mb-4">{problem.icon}</div>
+              {/* Gradient border wrapper */}
+              <div className={`relative rounded-2xl p-[2px] bg-gradient-to-br ${problem.color} transition-all duration-300 hover:shadow-lg`}>
+                {/* Card content */}
+                <div className="relative bg-white group-hover:bg-gradient-to-br group-hover:from-gray-50 group-hover:via-white group-hover:to-gray-50 rounded-2xl p-8 h-full transition-all duration-300">
+                  {/* Icon */}
+                  <div className="text-5xl mb-4 transition-transform duration-300 group-hover:scale-110">
+                    {problem.icon}
+                  </div>
 
-                {/* Title */}
-                <h3 className="text-xl font-bold text-gray-900 mb-3">
-                  {problem.title}
-                </h3>
+                  {/* Title */}
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">
+                    {problem.title}
+                  </h3>
 
-                {/* Description */}
-                <p className="text-base font-semibold text-gray-700 mb-2">
-                  {problem.description}
-                </p>
+                  {/* Description */}
+                  <p className="text-base font-semibold text-gray-700 mb-2">
+                    {problem.description}
+                  </p>
 
-                {/* Detail */}
-                <p className="text-sm text-gray-600">
-                  {problem.detail}
-                </p>
+                  {/* Detail */}
+                  <p className="text-sm text-gray-600">
+                    {problem.detail}
+                  </p>
+                </div>
               </div>
             </motion.div>
           ))}
