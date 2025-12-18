@@ -6,8 +6,14 @@ import { useReducedMotion } from '@/lib/motion';
 
 const sentences = [
   "You've been in this meeting before.",
-  "Someone speaks with confidence.\nSomeone else nods. A few people stay quiet — not because they agree, but because it's easier.",
-  "Ideas get filtered by volume. Decisions get made by momentum. And the roadmap slowly drifts. Not because the team is bad. But because the process is broken.",
+  "Someone speaks with confidence.",
+  "Someone else nods.",
+  "A few people stay quiet — not because they agree, but because it's easier.",
+  "Ideas get filtered by volume.",
+  "Decisions get made by momentum.",
+  "And the roadmap slowly drifts.",
+  "Not because the team is bad.",
+  "But because the process is broken.",
 ];
 
 export function RecognitionSection() {
@@ -75,23 +81,15 @@ function SentenceHighlight({
     [0, 1, 1, 0]
   );
 
-  // Active state transforms - smooth interpolation, no snapping
-  // Font size: base 1.875rem (30px) → +7% (2rem / 32px on active)
-  const baseFontSize = 1.875; // 30px in rem
-  const activeFontSize = baseFontSize * 1.07; // +7%
-  const fontSize = useTransform(activation, [0, 1], [`${baseFontSize}rem`, `${activeFontSize}rem`]);
-
-  // Font weight: 400 (normal) → 500 (medium)
-  const fontWeight = useTransform(activation, [0, 1], [400, 500]);
-
-  // Opacity: 45% (muted) → 100% (full)
-  const opacity = useTransform(activation, [0, 1], [0.45, 1]);
+  // Active state transforms - only color and weight change
+  // Font weight: 400 (normal) → 700 (bold)
+  const fontWeight = useTransform(activation, [0, 1], [400, 700]);
 
   // Color: smooth transition from muted gray to black
   const color = useTransform(
     activation,
     [0, 1],
-    ['rgb(107, 114, 128)', 'rgb(17, 24, 39)'] // gray-500 → gray-900
+    ['rgb(156, 163, 175)', 'rgb(17, 24, 39)'] // gray-400 → gray-900
   );
 
   // Respect reduced motion preference
@@ -106,14 +104,10 @@ function SentenceHighlight({
   return (
     <motion.p
       style={{
-        fontSize,
         fontWeight,
-        opacity,
         color,
-        lineHeight: 1.4,
-        // Remove CSS transitions - let Framer Motion handle everything for smoother interpolation
       }}
-      className="whitespace-pre-line"
+      className="text-3xl leading-snug"
     >
       {sentence}
     </motion.p>

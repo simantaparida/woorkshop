@@ -24,7 +24,7 @@ export function Hero() {
   const ctaY = useTransform(scrollY, [0, 50], [0, -MOVEMENT.LIFT]);
 
   return (
-    <section className="relative bg-white pt-32 pb-24 overflow-hidden">
+    <section className="relative bg-white pt-32 pb-24 overflow-hidden z-20">
       <div className="max-w-5xl mx-auto px-6">
         <div className="text-center space-y-8">
           {/* Step 1: Headline - Fade in with gentle upward drift (4px) over 600ms */}
