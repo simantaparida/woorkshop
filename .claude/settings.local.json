@@ -19,7 +19,8 @@
       "Bash(find:*)",
       "Bash(npm run build:*)",
       "Bash(ls:*)",
-      "Bash(xargs ls:*)"
+      "Bash(xargs ls:*)",
+      "Bash(cd /Users/simantparida/Desktop/Vibe\\\\ Coding/Woorkshop && npm run type-check:*)"
     ],
     "deny": [],
     "ask": []

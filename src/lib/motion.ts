@@ -19,17 +19,17 @@ import type { Variants } from 'framer-motion';
 
 /**
  * Duration constants (in seconds)
- * Use MEDIUM (300ms) as default for most transitions
+ * Slower durations create a more alive, smooth feel
  */
 export const DURATION = {
-  FAST: 0.2,    // 200ms - Quick responses
-  MEDIUM: 0.3,  // 300ms - Most transitions
-  SLOW: 0.4,    // 400ms - Emphasis
+  FAST: 0.5,    // 500ms - Quick transitions
+  MEDIUM: 0.7,  // 700ms - Most transitions
+  SLOW: 0.9,    // 900ms - Emphasis
 } as const;
 
 /**
- * Calm easing curve - smooth, elegant deceleration
- * cubic-bezier(0.22, 1, 0.36, 1)
+ * Calm easing curve - smooth, alive motion
+ * cubic-bezier(0.22, 1, 0.36, 1) - gentle acceleration with smooth deceleration
  */
 export const CALM_EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -45,12 +45,12 @@ export const MOVEMENT = {
 
 /**
  * Hero section animation sequence timing
- * Sequential delays for narrative hierarchy
+ * Sequential delays for narrative hierarchy with breathing room
  */
 export const HERO_SEQUENCE = {
-  HEADLINE: 0,    // First: immediate
-  SUBTEXT: 0.15,  // Second: 150ms after headline
-  CTA: 0.3,       // Third: 300ms after headline (150ms after subtext)
+  HEADLINE: 0,     // First: immediate
+  SUBTEXT: 0.4,    // Second: 400ms after headline starts
+  CTA: 0.9,        // Third: 900ms after headline starts
 } as const;
 
 // ============================================================================
