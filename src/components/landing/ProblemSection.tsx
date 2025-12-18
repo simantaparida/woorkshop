@@ -85,24 +85,25 @@ export function ProblemSection() {
           </motion.div>
 
           {/* Headline */}
-          <div className="mb-6">
-            <motion.h2
+          <div className="mb-8">
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
-              className="text-4xl md:text-5xl font-bold text-gray-900 text-center leading-tight"
+              className="text-center space-y-4"
             >
-              It's not a roadmap problem.
-              <br />
-              <motion.span
+              <h2 className="text-[1.5rem] font-bold text-gray-900 leading-tight">
+                It's not a roadmap problem.
+              </h2>
+              <motion.h2
                 initial={{ opacity: 0 }}
                 animate={showSecondLine ? { opacity: 1 } : { opacity: 0 }}
                 transition={{ duration: 0.5 }}
-                className="font-extrabold"
+                className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight"
               >
                 It's a politics problem.
-              </motion.span>
-            </motion.h2>
+              </motion.h2>
+            </motion.div>
           </div>
 
           {/* Subhead */}
@@ -110,7 +111,7 @@ export function ProblemSection() {
             initial={{ opacity: 0 }}
             animate={showSecondLine ? { opacity: 1 } : { opacity: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto"
+            className="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto"
           >
             Most teams don't lack ideas. They lack a way to surface them fairly.
           </motion.p>
