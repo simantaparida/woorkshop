@@ -10,7 +10,7 @@ import { recognitionContent } from '@/data/recognition-content';
 // ============================================================================
 
 const TRANSITION_OVERLAP = 0.3; // 30% overlap for smooth transitions
-const SCROLL_HEIGHT_PER_SENTENCE = 80; // vh per sentence
+const SCROLL_HEIGHT_PER_SENTENCE = 40; // vh per sentence
 
 // ============================================================================
 // MAIN COMPONENT
@@ -26,7 +26,7 @@ export function RecognitionSection() {
   // Track scroll progress through this section
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ['start start', 'end start'],
+    offset: ['start center', 'end center'],
   });
 
   // Handle reduced motion preference
@@ -50,7 +50,10 @@ export function RecognitionSection() {
     <div
       ref={containerRef}
       className="relative bg-gray-50"
-      style={{ height: `${totalSentences * SCROLL_HEIGHT_PER_SENTENCE}vh` }}
+      style={{
+        height: `${totalSentences * SCROLL_HEIGHT_PER_SENTENCE}vh`,
+        paddingTop: '50vh'
+      }}
     >
       {/* Sticky container - vertically centered, pinned while page scrolls underneath */}
       <div className="sticky top-1/2 -translate-y-1/2 left-0 right-0 py-12">
