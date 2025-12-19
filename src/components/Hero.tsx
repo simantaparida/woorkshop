@@ -30,12 +30,12 @@ export function Hero() {
     <section className="relative bg-white min-h-screen overflow-hidden z-20 flex items-center">
       {/* Responsive container: progressive padding with max-width constraint */}
       <div className="mx-auto px-8 sm:px-10 md:px-12 lg:px-16 xl:px-20 max-w-[1400px] w-full py-20">
-        <div className="grid lg:grid-cols-[1fr_1.5fr] gap-8 sm:gap-12 lg:gap-20 items-center justify-items-center lg:justify-items-start">
+        <div className="grid lg:grid-cols-[1fr_1.5fr] gap-4 sm:gap-8 lg:gap-20 items-center justify-items-center lg:justify-items-start">
           {/* Left Column - Text Content */}
-          <div className="space-y-3 text-center lg:text-left w-full">
+          <div className="space-y-2 sm:space-y-3 text-center lg:text-left w-full lg:order-1 order-2">
             {/* Toggle Switch */}
             <div className="flex justify-center lg:justify-start mb-6">
-              <div className="bg-white/90 backdrop-blur-sm rounded-full px-4 py-3 shadow-lg flex items-center gap-3">
+              <div className="bg-white/90 backdrop-blur-sm rounded-full px-4 py-3 flex items-center gap-3">
                 <span className={`text-sm font-medium transition-colors ${!showAfter ? 'text-gray-900' : 'text-gray-500'}`}>
                   Before
                 </span>
@@ -46,7 +46,7 @@ export function Hero() {
                   aria-label={showAfter ? "Show before image" : "Show after image"}
                 >
                   <span
-                    className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-300 shadow-md"
+                    className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-300"
                     style={{ transform: showAfter ? 'translateX(24px)' : 'translateX(0)' }}
                   />
                 </button>
@@ -63,7 +63,9 @@ export function Hero() {
               animate="visible"
               className="text-[32px] sm:text-[38px] lg:text-[44px] font-bold text-gray-900 leading-[1.2] tracking-tight max-w-[90%] sm:max-w-full mx-auto lg:mx-0"
             >
-              Make better decisions together.
+              {showAfter
+                ? "Make better decisions together."
+                : "Tired of groupthink in meetings?"}
             </motion.h1>
 
             {/* Step 2: Subtext - Slide up slightly after headline */}
@@ -74,7 +76,9 @@ export function Hero() {
               transition={{ delay: HERO_SEQUENCE.SUBTEXT }}
             >
               <p className="text-base sm:text-lg lg:text-xl text-gray-700 leading-relaxed max-w-[90%] sm:max-w-full mx-auto lg:mx-0">
-                Where every voice matters and groupthink disappears.
+                {showAfter
+                  ? "Where every voice matters and groupthink disappears."
+                  : "One person speaks confidently. Everyone else nods. Sound familiar?"}
               </p>
             </motion.div>
 
@@ -120,7 +124,7 @@ export function Hero() {
               delay: HERO_SEQUENCE.SUBTEXT,
               ease: CALM_EASE
             }}
-            className="relative w-full mt-12 lg:mt-0"
+            className="relative w-full lg:order-2 order-1"
             role="img"
             aria-label="Team meeting illustration showing collaborative decision-making"
           >
