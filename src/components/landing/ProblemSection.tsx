@@ -120,7 +120,7 @@ export function ProblemSection() {
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
-          className="grid md:grid-cols-3 gap-8 mb-16 items-stretch"
+          className="grid md:grid-cols-3 gap-8 items-stretch"
         >
           {problems.map((problem, index) => (
             <motion.div
@@ -155,28 +155,6 @@ export function ProblemSection() {
               </div>
             </motion.div>
           ))}
-        </motion.div>
-
-        {/* Pullquote */}
-        <motion.div
-          variants={itemVariants}
-          initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
-          className="max-w-3xl mx-auto"
-        >
-          <div className="relative py-12">
-            {/* Left border accent */}
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-red-500 to-red-600 rounded-full" />
-
-            <div className="pl-12">
-              <blockquote className="text-xl md:text-2xl font-medium text-white italic leading-relaxed mb-6">
-                "I'm tired of pretending sticky notes are a methodology."
-              </blockquote>
-              <p className="text-sm text-gray-400">
-                — Product Manager, Series B Startup
-              </p>
-            </div>
-          </div>
         </motion.div>
       </div>
     </section>

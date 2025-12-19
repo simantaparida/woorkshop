@@ -84,9 +84,9 @@ export function HowItWorks() {
               className="relative"
             >
               {/* Step Card */}
-              <div className="relative bg-white rounded-lg p-6 border-2 border-gray-800 hover:border-gray-900 hover:shadow-md transition-all duration-300 h-full">
+              <div className="relative bg-white rounded-lg p-6 border-2 border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-300 h-full">
                 {/* Step Number */}
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gray-900 text-white text-lg font-bold mb-4">
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-600 text-lg font-bold mb-4">
                   {step.number}
                 </div>
 
