@@ -57,8 +57,11 @@ export function Pricing() {
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
             Free while we figure this out
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-3">
             Full access during public review. Early users get locked-in benefits when we launch pricing.
+          </p>
+          <p className="text-sm text-gray-600">
+            Questions? <a href="mailto:simantaparidaux@gmail.com" className="text-blue-600 hover:text-blue-700 hover:underline font-medium">simantaparidaux@gmail.com</a>
           </p>
         </motion.div>
 
@@ -108,22 +111,6 @@ export function Pricing() {
               </span>
             </Link>
           </div>
-        </motion.div>
-
-        {/* Why Free */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="max-w-2xl mx-auto mt-12 text-center"
-        >
-          <h3 className="text-lg font-bold text-gray-900 mb-2">Why is this free?</h3>
-          <p className="text-gray-600 text-sm leading-relaxed mb-3">
-            We're validating product-market fit. If this doesn't solve your team's prioritization problem, we want to know now—not after we've charged you.
-          </p>
-          <p className="text-gray-600 text-sm">
-            Questions? <a href="mailto:hello@woorkshop.app" className="text-blue-600 hover:text-blue-700 hover:underline font-medium">hello@woorkshop.app</a>
-          </p>
         </motion.div>
       </div>
     </section>

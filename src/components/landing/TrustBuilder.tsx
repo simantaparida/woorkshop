@@ -142,7 +142,9 @@ export function TrustBuilder() {
               ))}
             </div>
             <a
-              href="mailto:hello@woorkshop.app"
+              href="https://forms.gle/SUSxNsiB8V7qWQTn9"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline"
             >
               Share your feedback →
@@ -159,7 +161,7 @@ export function TrustBuilder() {
         >
           <p className="text-sm text-gray-600">
             Want to see what's next?{' '}
-            <a href="mailto:hello@woorkshop.app?subject=Roadmap%20Access" className="text-blue-600 hover:text-blue-700 hover:underline font-medium">
+            <a href="mailto:simantaparidaux@gmail.com?subject=Roadmap%20Access" className="text-blue-600 hover:text-blue-700 hover:underline font-medium">
               Request roadmap access
             </a>
           </p>

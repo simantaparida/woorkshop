@@ -157,7 +157,7 @@ export default function HomePage() {
               <h4 className="text-white font-semibold mb-3 text-sm">Company</h4>
               <ul className="space-y-2">
                 <li>
-                  <a href="mailto:hello@uxworks.app" className="text-sm text-gray-400 hover:text-white transition-colors">
+                  <a href="mailto:simantaparidaux@gmail.com" className="text-sm text-gray-400 hover:text-white transition-colors">
                     Contact
                   </a>
                 </li>
@@ -197,7 +197,7 @@ export default function HomePage() {
                   </svg>
                 </a>
                 <a
-                  href="mailto:hello@uxworks.app"
+                  href="mailto:simantaparidaux@gmail.com"
                   className="w-10 h-10 rounded-lg bg-gray-800 hover:bg-blue-600 flex items-center justify-center transition-all duration-200 hover:scale-110 group"
                   aria-label="Email"
                 >
