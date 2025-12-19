@@ -110,9 +110,17 @@ export default function HomePage() {
               variant="secondary"
               size="lg"
               onClick={() => router.push(ROUTES.LOGIN)}
-              className="!bg-blue-600 !text-white hover:!bg-blue-700 hover:shadow-md transition-all duration-200 !border-0 font-bold px-8 py-4 text-lg"
+              className="group !bg-blue-600 !text-white hover:!bg-blue-700 hover:shadow-md transition-all duration-200 !border-0 font-bold px-8 py-4 text-lg inline-flex items-center gap-2"
             >
               Start Free Session
+              <svg
+                className="w-5 h-5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+              </svg>
             </Button>
           </motion.div>
         </div>

@@ -2,7 +2,6 @@
 
 import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
-import { Clock } from 'lucide-react';
 import { useRef } from 'react';
 import { ROUTES } from '@/lib/constants';
 import {
@@ -32,7 +31,7 @@ export function Hero() {
             variants={getMotionVariants(fadeInDrift(MOVEMENT.DRIFT), reducedMotion)}
             initial="hidden"
             animate="visible"
-            className="text-5xl md:text-7xl font-extrabold text-gray-900 leading-[1.05] tracking-tight"
+            className="text-4xl md:text-6xl font-extrabold text-gray-900 leading-[1.05] tracking-tight"
           >
             Stop letting the loudest voice win your roadmap.
           </motion.h1>
@@ -48,10 +47,6 @@ export function Hero() {
             <p className="text-xl md:text-2xl text-gray-700 leading-relaxed">
               Woorkshop helps teams think together—not argue louder.
             </p>
-            <div className="space-y-2 text-lg text-gray-600">
-              <p>Turn opinions into structured input.</p>
-              <p>Turn meetings into decisions.</p>
-            </div>
           </motion.div>
 
           {/* Step 3: CTA - Appears while subtext finishing, with scroll micro-lift */}
@@ -66,16 +61,20 @@ export function Hero() {
             <Link
               href={ROUTES.LOGIN}
               className="group relative inline-flex items-center gap-3 px-8 py-4 bg-blue-600 text-white text-lg font-bold rounded-lg transition-all duration-300 ease-out hover:bg-blue-700 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
-              aria-label="Start a session in 10 minutes"
+              aria-label="Start a session"
             >
-              {/* Timer icon: hidden by default, gently fades in on hover */}
-              <Clock
-                className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                aria-hidden="true"
-              />
               <span className="flex items-center gap-2">
                 Start a session
-                <span className="text-base font-normal text-blue-100">(10 minutes)</span>
+                {/* Right arrow icon: hidden by default, slides in on hover */}
+                <svg
+                  className="w-5 h-5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                </svg>
               </span>
             </Link>
           </motion.div>
