@@ -54,7 +54,7 @@ export function HowItWorks() {
 
   return (
     <section ref={ref} className="py-24 bg-gradient-to-b from-white to-gray-50">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-5xl mx-auto px-6">
         {/* Header */}
         <motion.div
           variants={containerVariants}
@@ -82,7 +82,7 @@ export function HowItWorks() {
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
-          className="grid md:grid-cols-3 gap-6 mb-12"
+          className="grid md:grid-cols-3 gap-5 mb-12 max-w-4xl mx-auto"
         >
           {steps.map((step, index) => (
             <motion.div
