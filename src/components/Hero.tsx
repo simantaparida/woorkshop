@@ -101,7 +101,7 @@ export function Hero() {
             aria-label="Team meeting illustration showing collaborative decision-making"
           >
             <Image
-              src="/images/new-hero-image.png"
+              src="/images/hero-illustration.png"
               alt="Team meeting illustration showing collaborative decision-making"
               width={1177}
               height={1024}
