@@ -8,29 +8,20 @@ const steps = [
   {
     number: '1',
     icon: FileText,
-    title: 'Add Your Options',
-    description: 'Paste features from your backlog or start from a template',
-    color: 'from-blue-500 to-blue-600',
-    bgColor: 'bg-blue-50',
-    iconColor: 'text-blue-600',
+    title: 'Add your options',
+    description: 'Problems, ideas, trade-offs — clearly framed.',
   },
   {
     number: '2',
     icon: Users,
-    title: 'Team Votes Simultaneously',
-    description: 'Share the link. Everyone votes at the same time',
-    color: 'from-accent-500 to-accent-600',
-    bgColor: 'bg-accent-50',
-    iconColor: 'text-accent-600',
+    title: 'Think individually',
+    description: 'Everyone responds. No influence. No pressure.',
   },
   {
     number: '3',
     icon: BarChart3,
-    title: 'Export & Execute',
-    description: 'Download CSV or import to Jira, Notion, or your roadmap tool',
-    color: 'from-clarity to-green-600',
-    bgColor: 'bg-green-50',
-    iconColor: 'text-clarity',
+    title: 'Reveal the signal',
+    description: 'The group sees what actually matters.',
   },
 ];
 
@@ -91,7 +82,7 @@ export function HowItWorks() {
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
-          className="grid md:grid-cols-3 gap-8 mb-16"
+          className="grid md:grid-cols-3 gap-6 mb-12"
         >
           {steps.map((step, index) => (
             <motion.div
@@ -99,25 +90,20 @@ export function HowItWorks() {
               variants={itemVariants}
               className="relative"
             >
-              {/* Connector Line (hidden on last item) */}
-              {index < steps.length - 1 && (
-                <div className="hidden md:block absolute top-16 left-1/2 w-full h-0.5 bg-gradient-to-r from-gray-300 to-gray-200 z-0" />
-              )}
-
               {/* Step Card */}
-              <div className="relative bg-white rounded-2xl p-8 border-2 border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 z-10">
+              <div className="relative bg-white rounded-lg p-6 border-2 border-gray-800 hover:border-gray-900 hover:shadow-md transition-all duration-300 h-full">
                 {/* Step Number */}
-                <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br ${step.color} text-white text-xl font-bold mb-6 shadow-lg`}>
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gray-900 text-white text-lg font-bold mb-4">
                   {step.number}
                 </div>
 
                 {/* Icon */}
-                <div className={`inline-flex items-center justify-center w-16 h-16 rounded-xl ${step.bgColor} mb-6`}>
-                  <step.icon className={`w-8 h-8 ${step.iconColor}`} />
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-lg bg-gray-100 mb-4">
+                  <step.icon className="w-7 h-7 text-gray-700" />
                 </div>
 
                 {/* Title */}
-                <h3 className="text-xl font-bold text-gray-900 mb-3">
+                <h3 className="text-lg font-bold text-gray-900 mb-2">
                   {step.title}
                 </h3>
 
@@ -130,28 +116,19 @@ export function HowItWorks() {
           ))}
         </motion.div>
 
-        {/* Time Callout */}
+        {/* Closing Section */}
         <motion.div
           variants={itemVariants}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
-          className="max-w-2xl mx-auto"
+          className="max-w-2xl mx-auto text-center"
         >
-          <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-10 text-center shadow-xl">
-            {/* Animated background decoration */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full blur-3xl animate-pulse"></div>
-            </div>
-
-            {/* Content */}
-            <div className="relative">
-              <div className="text-6xl md:text-7xl font-extrabold text-white mb-4 tracking-tight">
-                ⏱️ 10 minutes
-              </div>
-              <p className="text-xl text-blue-100 font-medium">
-                Average session length. Seriously.
-              </p>
-            </div>
+          <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+            That's it.
+          </p>
+          <div className="space-y-1">
+            <p className="text-lg text-gray-600">No facilitation theatre.</p>
+            <p className="text-lg text-gray-600">No endless follow-ups.</p>
           </div>
         </motion.div>
       </div>
