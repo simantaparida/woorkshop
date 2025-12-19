@@ -105,22 +105,14 @@ export default function HomePage() {
               Just click, share, and start prioritizing in 60 seconds.
             </p>
 
-            <div className="flex flex-col items-center gap-3">
-              <Button
-                variant="secondary"
-                size="lg"
-                onClick={() => router.push(ROUTES.LOGIN)}
-                className="!bg-blue-600 !text-white hover:!bg-blue-700 hover:shadow-md transition-all duration-200 !border-0 font-bold px-8 py-4 text-lg"
-              >
-                Start Free Session
-              </Button>
-              <a
-                href="#how-it-works"
-                className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
-              >
-                See how it works →
-              </a>
-            </div>
+            <Button
+              variant="secondary"
+              size="lg"
+              onClick={() => router.push(ROUTES.LOGIN)}
+              className="!bg-blue-600 !text-white hover:!bg-blue-700 hover:shadow-md transition-all duration-200 !border-0 font-bold px-8 py-4 text-lg"
+            >
+              Start Free Session
+            </Button>
           </motion.div>
         </div>
       </section>

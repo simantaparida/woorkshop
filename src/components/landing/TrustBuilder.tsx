@@ -94,77 +94,56 @@ export function TrustBuilder() {
           </motion.p>
         </motion.div>
 
-        {/* Live Metrics */}
+        {/* Combined Content Box */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
-          className="grid md:grid-cols-3 gap-8 mb-12"
-        >
-          {metrics.map((metric, index) => (
-            <motion.div
-              key={metric.label}
-              variants={itemVariants}
-              className="bg-white rounded-lg p-6 border border-gray-300 text-center"
-            >
-              <div className="text-4xl font-bold text-gray-900 mb-1">
-                {metric.value}
-              </div>
-              <div className="text-sm font-semibold text-gray-900 mb-1">
-                {metric.label}
-              </div>
-              <div className="text-xs text-gray-600">
-                {metric.subtext}
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Feedback Section */}
-        <motion.div
-          variants={itemVariants}
-          initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
-          className="max-w-3xl mx-auto mb-10"
+          className="max-w-4xl mx-auto"
         >
           <div className="bg-white rounded-lg p-8 border border-gray-200">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">
-              What people are saying
-            </h3>
-            <div className="space-y-4 mb-6">
-              {feedback.map((item, index) => (
-                <div key={index} className="flex items-start gap-3">
-                  <div className="text-blue-600 font-bold">•</div>
-                  <div className="text-gray-700 text-sm leading-relaxed">
-                    {item.text}
+            {/* KPIs in Top Row */}
+            <div className="grid grid-cols-3 gap-6 mb-8 pb-8 border-b border-gray-200">
+              {metrics.map((metric, index) => (
+                <div key={metric.label} className="text-center">
+                  <div className="text-3xl font-bold text-gray-900 mb-1">
+                    {metric.value}
+                  </div>
+                  <div className="text-sm font-semibold text-gray-900 mb-1">
+                    {metric.label}
+                  </div>
+                  <div className="text-xs text-gray-600">
+                    {metric.subtext}
                   </div>
                 </div>
               ))}
             </div>
-            <a
-              href="https://forms.gle/SUSxNsiB8V7qWQTn9"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline"
-            >
-              Share your feedback →
-            </a>
-          </div>
-        </motion.div>
 
-        {/* Roadmap */}
-        <motion.div
-          variants={itemVariants}
-          initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
-          className="text-center"
-        >
-          <p className="text-sm text-gray-600">
-            Want to see what's next?{' '}
-            <a href="mailto:simantaparidaux@gmail.com?subject=Roadmap%20Access" className="text-blue-600 hover:text-blue-700 hover:underline font-medium">
-              Request roadmap access
-            </a>
-          </p>
+            {/* Feedback Section Below */}
+            <div>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">
+                What people are saying
+              </h3>
+              <div className="space-y-4 mb-6">
+                {feedback.map((item, index) => (
+                  <div key={index} className="flex items-start gap-3">
+                    <div className="text-blue-600 font-bold">•</div>
+                    <div className="text-gray-700 text-sm leading-relaxed">
+                      {item.text}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <a
+                href="https://forms.gle/SUSxNsiB8V7qWQTn9"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline"
+              >
+                Share your feedback →
+              </a>
+            </div>
+          </div>
         </motion.div>
       </div>
     </section>

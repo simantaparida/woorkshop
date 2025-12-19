@@ -70,7 +70,7 @@ export function Pricing() {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="max-w-2xl mx-auto"
+          className="max-w-xl mx-auto"
         >
           <div className="bg-white rounded-lg p-8 border border-gray-200">
             {/* Price */}
