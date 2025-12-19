@@ -22,7 +22,8 @@
       "Bash(xargs ls:*)",
       "Bash(cd /Users/simantparida/Desktop/Vibe\\\\ Coding/Woorkshop && npm run type-check:*)",
       "Bash(git config --list)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(head:*)"
     ],
     "deny": [],
     "ask": []
