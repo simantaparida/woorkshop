@@ -53,7 +53,7 @@ export function HowItWorks() {
   };
 
   return (
-    <section ref={ref} className="py-24 bg-gradient-to-b from-white to-gray-50">
+    <section ref={ref} className="py-24 bg-gradient-to-b from-blue-50 to-blue-100">
       <div className="max-w-5xl mx-auto px-6">
         {/* Header */}
         <motion.div
@@ -88,11 +88,6 @@ export function HowItWorks() {
                 {/* Step Number */}
                 <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-600 text-lg font-bold mb-4">
                   {step.number}
-                </div>
-
-                {/* Icon */}
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-lg bg-gray-100 mb-4">
-                  <step.icon className="w-7 h-7 text-gray-700" />
                 </div>
 
                 {/* Title */}

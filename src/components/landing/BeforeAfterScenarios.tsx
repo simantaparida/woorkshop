@@ -149,11 +149,10 @@ export function BeforeAfterScenarios() {
                   onClick={() => setSelectedIndex(index)}
                   className={`px-5 py-4 text-sm font-semibold transition-all duration-300 ${
                     selectedIndex === index
-                      ? 'bg-gray-900 text-white'
+                      ? 'bg-blue-100 text-blue-600'
                       : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
                   }`}
                 >
-                  <span className="mr-2">{scenario.emoji}</span>
                   {scenario.title}
                 </motion.button>
               ))}
