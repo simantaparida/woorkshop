@@ -27,9 +27,9 @@ export function Hero() {
 
   return (
     <section className="relative bg-white pt-32 pb-32 overflow-hidden z-20">
-      {/* Responsive container: 180px padding on desktop, proper padding on mobile */}
-      <div className="mx-auto px-8 sm:px-10 md:px-16 lg:px-[180px]">
-        <div className="grid lg:grid-cols-[40%_60%] gap-12 lg:gap-20 items-center">
+      {/* Responsive container: progressive padding with max-width constraint */}
+      <div className="mx-auto px-8 sm:px-10 md:px-12 lg:px-16 xl:px-20 max-w-[1400px]">
+        <div className="grid lg:grid-cols-[1fr_1.5fr] gap-8 sm:gap-12 lg:gap-20 items-start lg:items-center">
           {/* Left Column - Text Content */}
           <div className="space-y-8 lg:space-y-10">
             {/* Step 1: Headline - Fade in with gentle upward drift (4px) over 600ms */}
@@ -96,8 +96,9 @@ export function Hero() {
               delay: HERO_SEQUENCE.SUBTEXT,
               ease: CALM_EASE
             }}
-            className="relative w-full lg:w-[140%] lg:-mr-[20%] mt-12 lg:mt-0 px-4 sm:px-0"
-            aria-label="Hero illustration"
+            className="relative w-full mt-12 lg:mt-0"
+            role="img"
+            aria-label="Team meeting illustration showing collaborative decision-making"
           >
             <Image
               src="/images/new-hero-image.png"
@@ -105,16 +106,18 @@ export function Hero() {
               width={1536}
               height={1024}
               priority
-              className="w-full h-auto rounded-xl"
+              quality={85}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 60vw"
+              className="w-full h-auto rounded-xl object-cover"
             />
           </motion.div>
         </div>
       </div>
 
-      {/* Refined background decoration */}
+      {/* Refined background decoration - responsive sizing */}
       <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-0 w-[500px] h-[500px] bg-gradient-to-br from-blue-50 to-blue-100 rounded-full blur-3xl opacity-30" />
-        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-gradient-to-tl from-purple-50 to-pink-50 rounded-full blur-3xl opacity-25" />
+        <div className="absolute top-20 -left-20 w-[280px] sm:w-[400px] md:w-[500px] h-[280px] sm:h-[400px] md:h-[500px] bg-gradient-to-br from-blue-50 to-blue-100 rounded-full blur-3xl opacity-30" />
+        <div className="absolute -bottom-20 -right-20 w-[320px] sm:w-[450px] md:w-[600px] h-[320px] sm:h-[450px] md:h-[600px] bg-gradient-to-tl from-purple-50 to-pink-50 rounded-full blur-3xl opacity-25" />
       </div>
     </section>
   );
