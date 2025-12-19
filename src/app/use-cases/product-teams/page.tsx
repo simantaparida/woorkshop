@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Navbar } from '@/components/Navbar';
 import { ROUTES, APP_NAME } from '@/lib/constants';
@@ -341,7 +342,7 @@ export default function ProductTeamsPage() {
                   </svg>
                 </a>
                 <a
-                  href="mailto:hello@uxworks.app"
+                  href="mailto:simantaparidaux@gmail.com"
                   className="w-10 h-10 rounded-lg bg-gray-800 hover:bg-purple-600 flex items-center justify-center transition-all duration-200 hover:scale-110 group"
                   aria-label="Email"
                 >
@@ -428,7 +429,7 @@ export default function ProductTeamsPage() {
                   </a>
                 </li>
                 <li>
-                  <a href="mailto:hello@uxworks.app" className="text-sm text-gray-400 hover:text-white transition-colors inline-flex items-center group">
+                  <a href="mailto:simantaparidaux@gmail.com" className="text-sm text-gray-400 hover:text-white transition-colors inline-flex items-center group">
                     <span className="group-hover:translate-x-0.5 transition-transform">Contact</span>
                   </a>
                 </li>
@@ -449,9 +450,8 @@ export default function ProductTeamsPage() {
               </p>
 
               <div className="flex items-center gap-6">
-                <a href="#" className="text-sm text-gray-500 hover:text-white transition-colors">Privacy Policy</a>
-                <a href="#" className="text-sm text-gray-500 hover:text-white transition-colors">Terms of Service</a>
-                <a href="#" className="text-sm text-gray-500 hover:text-white transition-colors">Cookie Policy</a>
+                <Link href="/privacy" className="text-sm text-gray-500 hover:text-white transition-colors">Privacy Policy</Link>
+                <Link href="/terms" className="text-sm text-gray-500 hover:text-white transition-colors">Terms of Service</Link>
               </div>
             </div>
           </div>

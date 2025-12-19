@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Navbar } from '@/components/Navbar';
@@ -154,10 +155,14 @@ export default function HomePage() {
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">Privacy</a>
+                  <Link href="/privacy" className="text-sm text-gray-400 hover:text-white transition-colors">
+                    Privacy Policy
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">Terms</a>
+                  <Link href="/terms" className="text-sm text-gray-400 hover:text-white transition-colors">
+                    Terms of Service
+                  </Link>
                 </li>
               </ul>
             </div>
