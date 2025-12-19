@@ -88,7 +88,7 @@ export default function HomePage() {
 
       {/* Final CTA Section */}
       <section className="py-20 bg-white border-t border-gray-200">
-        <div className="max-w-3xl mx-auto px-6 text-center">
+        <div className="max-w-4xl mx-auto px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -96,21 +96,31 @@ export default function HomePage() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Start now. Free forever.
+              Walk in with data. Walk out with alignment.
             </h2>
 
-            <p className="text-lg text-gray-600 mb-8">
-              No signup. No credit card. Just start.
+            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+              No signup. No credit card. No demo request.
+              <br />
+              Just click, share, and start prioritizing in 60 seconds.
             </p>
 
-            <Button
-              variant="secondary"
-              size="lg"
-              onClick={() => router.push(ROUTES.LOGIN)}
-              className="!bg-gray-900 !text-white hover:!bg-gray-800 hover:shadow-md transition-all duration-200 !border-0 font-bold px-8 py-4 text-lg"
-            >
-              Start Free Session
-            </Button>
+            <div className="flex flex-col items-center gap-3">
+              <Button
+                variant="secondary"
+                size="lg"
+                onClick={() => router.push(ROUTES.LOGIN)}
+                className="!bg-gray-900 !text-white hover:!bg-gray-800 hover:shadow-md transition-all duration-200 !border-0 font-bold px-8 py-4 text-lg"
+              >
+                Start Free Session
+              </Button>
+              <a
+                href="#how-it-works"
+                className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                See how it works →
+              </a>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -119,18 +129,18 @@ export default function HomePage() {
       <footer className="bg-gray-900 text-gray-400">
         <div className="max-w-6xl mx-auto px-6 py-12">
           {/* Main Footer Content */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             {/* Brand Section */}
-            <div>
+            <div className="md:col-span-2">
               <h3 className="font-comfortaa text-xl font-bold text-white mb-3 tracking-[0.1em]">woorkshop</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                Turn debates into decisions.
+              <p className="text-gray-400 text-sm leading-relaxed max-w-xs">
+                Turn team debates into clear priorities. Free during public review.
               </p>
             </div>
 
-            {/* Quick Links */}
+            {/* Product Links */}
             <div>
-              <h4 className="text-white font-semibold mb-3 text-sm">Links</h4>
+              <h4 className="text-white font-semibold mb-3 text-sm">Product</h4>
               <ul className="space-y-2">
                 <li>
                   <button onClick={handleStartGame} className="text-sm text-gray-400 hover:text-white transition-colors">
@@ -138,22 +148,27 @@ export default function HomePage() {
                   </button>
                 </li>
                 <li>
-                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-400 hover:text-white transition-colors">
-                    GitHub
+                  <a href="#features" className="text-sm text-gray-400 hover:text-white transition-colors">
+                    Features
                   </a>
                 </li>
                 <li>
-                  <a href="mailto:hello@uxworks.app" className="text-sm text-gray-400 hover:text-white transition-colors">
-                    Contact
+                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-400 hover:text-white transition-colors">
+                    GitHub
                   </a>
                 </li>
               </ul>
             </div>
 
-            {/* Legal */}
+            {/* Company */}
             <div>
-              <h4 className="text-white font-semibold mb-3 text-sm">Legal</h4>
+              <h4 className="text-white font-semibold mb-3 text-sm">Company</h4>
               <ul className="space-y-2">
+                <li>
+                  <a href="mailto:hello@uxworks.app" className="text-sm text-gray-400 hover:text-white transition-colors">
+                    Contact
+                  </a>
+                </li>
                 <li>
                   <a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">Privacy</a>
                 </li>

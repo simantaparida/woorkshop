@@ -72,7 +72,7 @@ export function TrustBuilder() {
 
   return (
     <section ref={ref} className="py-16 bg-gray-50">
-      <div className="max-w-4xl mx-auto px-6">
+      <div className="max-w-5xl mx-auto px-6">
         {/* Header */}
         <motion.div
           variants={containerVariants}
@@ -82,36 +82,75 @@ export function TrustBuilder() {
         >
           <motion.h2
             variants={itemVariants}
-            className="text-2xl md:text-3xl font-bold text-gray-900"
+            className="text-3xl md:text-4xl font-bold text-gray-900 mb-3"
           >
             Building in public
           </motion.h2>
+          <motion.p
+            variants={itemVariants}
+            className="text-gray-600"
+          >
+            Real usage data. Unfiltered feedback. Help us get it right.
+          </motion.p>
         </motion.div>
 
-        {/* Live Metrics - Horizontal */}
+        {/* Live Metrics */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
-          className="flex flex-col md:flex-row justify-center items-center gap-12 mb-10"
+          className="grid md:grid-cols-3 gap-8 mb-12"
         >
           {metrics.map((metric, index) => (
             <motion.div
               key={metric.label}
               variants={itemVariants}
-              className="text-center"
+              className="bg-white rounded-lg p-6 border border-gray-300 text-center"
             >
               <div className="text-4xl font-bold text-gray-900 mb-1">
                 {metric.value}
               </div>
-              <div className="text-sm text-gray-600">
+              <div className="text-sm font-semibold text-gray-900 mb-1">
                 {metric.label}
+              </div>
+              <div className="text-xs text-gray-600">
+                {metric.subtext}
               </div>
             </motion.div>
           ))}
         </motion.div>
 
-        {/* Contact */}
+        {/* Feedback Section */}
+        <motion.div
+          variants={itemVariants}
+          initial="hidden"
+          animate={isInView ? 'visible' : 'hidden'}
+          className="max-w-3xl mx-auto mb-10"
+        >
+          <div className="bg-white rounded-lg p-8 border-2 border-gray-800">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">
+              What people are saying
+            </h3>
+            <div className="space-y-4 mb-6">
+              {feedback.map((item, index) => (
+                <div key={index} className="flex items-start gap-3">
+                  <div className="text-gray-900 font-bold">•</div>
+                  <div className="text-gray-700 text-sm leading-relaxed">
+                    {item.text}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <a
+              href="mailto:hello@woorkshop.app"
+              className="text-sm font-semibold text-gray-900 hover:underline"
+            >
+              Share your feedback →
+            </a>
+          </div>
+        </motion.div>
+
+        {/* Roadmap */}
         <motion.div
           variants={itemVariants}
           initial="hidden"
@@ -119,9 +158,9 @@ export function TrustBuilder() {
           className="text-center"
         >
           <p className="text-sm text-gray-600">
-            Have feedback?{' '}
-            <a href="mailto:hello@woorkshop.app" className="text-gray-900 hover:underline font-medium">
-              hello@woorkshop.app
+            Want to see what's next?{' '}
+            <a href="mailto:hello@woorkshop.app?subject=Roadmap%20Access" className="text-gray-900 hover:underline font-medium">
+              Request roadmap access
             </a>
           </p>
         </motion.div>

@@ -46,30 +46,48 @@ export function Pricing() {
 
   return (
     <section ref={ref} className="py-16 bg-white">
-      <div className="max-w-4xl mx-auto px-6">
+      <div className="max-w-5xl mx-auto px-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-10"
+          className="text-center mb-12"
         >
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            Free. No catch.
+            Free while we figure this out
           </h2>
-          <p className="text-lg text-gray-600">
-            Use it while we build. Early users get benefits when we launch.
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Full access during public review. Early users get locked-in benefits when we launch pricing.
           </p>
         </motion.div>
 
-        {/* Simplified Pricing Card */}
+        {/* Pricing Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="max-w-2xl mx-auto"
+          className="max-w-3xl mx-auto"
         >
           <div className="bg-white rounded-lg p-8 border-2 border-gray-800">
+            {/* Price */}
+            <div className="text-center mb-6">
+              <span className="text-5xl font-bold text-gray-900">$0</span>
+              <p className="text-gray-600 mt-2">Full access. No credit card. No bait-and-switch.</p>
+            </div>
+
+            {/* Features */}
+            <ul className="space-y-3 mb-8">
+              {plan.features.map((feature, idx) => (
+                <li key={idx} className="flex items-start gap-3 text-gray-700">
+                  <svg className="w-5 h-5 flex-shrink-0 mt-0.5 text-gray-900" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-sm">{feature}</span>
+                </li>
+              ))}
+            </ul>
+
             {/* CTA */}
             <Link
               href={plan.ctaLink || '#'}
@@ -89,12 +107,23 @@ export function Pricing() {
                 </svg>
               </span>
             </Link>
-
-            {/* Footer Note */}
-            <p className="text-sm text-gray-600 text-center mt-6">
-              No credit card. No bait-and-switch.
-            </p>
           </div>
+        </motion.div>
+
+        {/* Why Free */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="max-w-2xl mx-auto mt-12 text-center"
+        >
+          <h3 className="text-lg font-bold text-gray-900 mb-2">Why is this free?</h3>
+          <p className="text-gray-600 text-sm leading-relaxed mb-3">
+            We're validating product-market fit. If this doesn't solve your team's prioritization problem, we want to know now—not after we've charged you.
+          </p>
+          <p className="text-gray-600 text-sm">
+            Questions? <a href="mailto:hello@woorkshop.app" className="text-gray-900 hover:underline font-medium">hello@woorkshop.app</a>
+          </p>
         </motion.div>
       </div>
     </section>
