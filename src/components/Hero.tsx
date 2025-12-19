@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRef } from 'react';
 import { ROUTES } from '@/lib/constants';
 import {
@@ -10,6 +11,8 @@ import {
   delayedFade,
   HERO_SEQUENCE,
   MOVEMENT,
+  DURATION,
+  CALM_EASE,
   useReducedMotion,
   getMotionVariants,
 } from '@/lib/motion';
@@ -86,14 +89,22 @@ export function Hero() {
 
           {/* Right Column - Image */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: reducedMotion ? 0 : 20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            transition={{
+              duration: DURATION.MEDIUM,
+              delay: HERO_SEQUENCE.SUBTEXT,
+              ease: CALM_EASE
+            }}
             className="relative w-full lg:w-[140%] lg:-mr-[20%] mt-12 lg:mt-0 px-4 sm:px-0"
+            aria-label="Hero illustration"
           >
-            <img
-              src="/images/hero-image-1.png"
+            <Image
+              src="/images/new-hero-image.png"
               alt="Team meeting illustration showing collaborative decision-making"
+              width={1536}
+              height={1024}
+              priority
               className="w-full h-auto rounded-xl"
             />
           </motion.div>
