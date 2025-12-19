@@ -202,10 +202,17 @@ export default function HomePage() {
           </div>
 
           {/* Bottom Bar */}
-          <div className="border-t border-gray-800 pt-8">
-            <p className="text-sm text-gray-500 text-center">
+          <div className="border-t border-gray-800 pt-8 pb-4">
+            <p className="text-sm text-gray-500 text-center mb-12">
               © {new Date().getFullYear()} Woorkshop. All rights reserved.
             </p>
+
+            {/* Large Woorkshop Logo */}
+            <div className="w-full overflow-hidden">
+              <h2 className="text-[120px] md:text-[180px] lg:text-[240px] font-bold text-gray-800/20 text-center leading-none tracking-tight select-none">
+                WOORKSHOP
+              </h2>
+            </div>
           </div>
         </div>
       </footer>

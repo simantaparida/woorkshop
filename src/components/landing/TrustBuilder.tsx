@@ -103,16 +103,16 @@ export function TrustBuilder() {
         >
           <div className="bg-white rounded-lg p-8 border border-gray-200">
             {/* KPIs in Top Row */}
-            <div className="grid grid-cols-3 gap-6 mb-8 pb-8 border-b border-gray-200">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 pb-8 border-b border-gray-200">
               {metrics.map((metric, index) => (
                 <div key={metric.label} className="text-center">
-                  <div className="text-3xl font-bold text-gray-900 mb-1">
+                  <div className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
                     {metric.value}
                   </div>
-                  <div className="text-sm font-semibold text-gray-900 mb-1">
+                  <div className="text-xs md:text-sm font-semibold text-gray-900 mb-1">
                     {metric.label}
                   </div>
-                  <div className="text-xs text-gray-600">
+                  <div className="text-[10px] md:text-xs text-gray-600">
                     {metric.subtext}
                   </div>
                 </div>

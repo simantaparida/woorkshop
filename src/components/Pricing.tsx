@@ -58,7 +58,7 @@ export function Pricing() {
             Free while we figure this out
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-3">
-            Full access during public review. Early users get locked-in benefits when we launch pricing.
+            We're validating product-market fit. If this doesn't solve your team's prioritization problem, we want to know now—not after we've charged you.
           </p>
           <p className="text-sm text-gray-600">
             Questions? <a href="mailto:simantaparidaux@gmail.com" className="text-blue-600 hover:text-blue-700 hover:underline font-medium">simantaparidaux@gmail.com</a>
