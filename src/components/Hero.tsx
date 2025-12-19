@@ -33,7 +33,7 @@ export function Hero() {
             animate="visible"
             className="text-4xl md:text-6xl font-extrabold text-gray-900 leading-[1.05] tracking-tight"
           >
-            Stop letting the loudest voice win your roadmap.
+            Decision-making for teams, without the politics.
           </motion.h1>
 
           {/* Step 2: Subtext - Slide up slightly after headline */}
@@ -45,7 +45,7 @@ export function Hero() {
             className="space-y-4 max-w-3xl mx-auto"
           >
             <p className="text-xl md:text-2xl text-gray-700 leading-relaxed">
-              Woorkshop helps teams think together—not argue louder.
+              Woorkshop helps teams think together... not argue louder.
             </p>
           </motion.div>
 

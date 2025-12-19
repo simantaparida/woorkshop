@@ -11,9 +11,9 @@ const comfortaa = Comfortaa({
   variable: '--font-comfortaa',
 });
 
-const siteUrl = 'https://uxworks.app';
-const siteTitle = 'UX Works — Decide what to build next, in 10 minutes';
-const siteDescription = 'UX Works is a lightweight prioritization workshop for product & UX teams. Create a session, invite your team, and get aligned in 10 minutes — no signup required.';
+const siteUrl = 'https://woorkshop.simantaparida.com';
+const siteTitle = 'Woorkshop — Decide what to build next, in 10 minutes';
+const siteDescription = 'Woorkshop is a lightweight prioritization workshop for product & UX teams. Create a session, invite your team, and get aligned in 10 minutes — no signup required.';
 
 export const viewport: Viewport = {
   width: 'device-width',
