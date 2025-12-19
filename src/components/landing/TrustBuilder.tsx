@@ -127,14 +127,14 @@ export function TrustBuilder() {
           animate={isInView ? 'visible' : 'hidden'}
           className="max-w-3xl mx-auto mb-10"
         >
-          <div className="bg-white rounded-lg p-8 border-2 border-gray-800">
+          <div className="bg-white rounded-lg p-8 border border-gray-200">
             <h3 className="text-lg font-bold text-gray-900 mb-4">
               What people are saying
             </h3>
             <div className="space-y-4 mb-6">
               {feedback.map((item, index) => (
                 <div key={index} className="flex items-start gap-3">
-                  <div className="text-gray-900 font-bold">•</div>
+                  <div className="text-blue-600 font-bold">•</div>
                   <div className="text-gray-700 text-sm leading-relaxed">
                     {item.text}
                   </div>
@@ -143,7 +143,7 @@ export function TrustBuilder() {
             </div>
             <a
               href="mailto:hello@woorkshop.app"
-              className="text-sm font-semibold text-gray-900 hover:underline"
+              className="text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline"
             >
               Share your feedback →
             </a>
@@ -159,7 +159,7 @@ export function TrustBuilder() {
         >
           <p className="text-sm text-gray-600">
             Want to see what's next?{' '}
-            <a href="mailto:hello@woorkshop.app?subject=Roadmap%20Access" className="text-gray-900 hover:underline font-medium">
+            <a href="mailto:hello@woorkshop.app?subject=Roadmap%20Access" className="text-blue-600 hover:text-blue-700 hover:underline font-medium">
               Request roadmap access
             </a>
           </p>

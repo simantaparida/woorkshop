@@ -67,9 +67,9 @@ export function Pricing() {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="max-w-3xl mx-auto"
+          className="max-w-2xl mx-auto"
         >
-          <div className="bg-white rounded-lg p-8 border-2 border-gray-800">
+          <div className="bg-white rounded-lg p-8 border border-gray-200">
             {/* Price */}
             <div className="text-center mb-6">
               <span className="text-5xl font-bold text-gray-900">$0</span>
@@ -80,7 +80,7 @@ export function Pricing() {
             <ul className="space-y-3 mb-8">
               {plan.features.map((feature, idx) => (
                 <li key={idx} className="flex items-start gap-3 text-gray-700">
-                  <svg className="w-5 h-5 flex-shrink-0 mt-0.5 text-gray-900" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-5 h-5 flex-shrink-0 mt-0.5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
                   <span className="text-sm">{feature}</span>
@@ -93,7 +93,7 @@ export function Pricing() {
               href={plan.ctaLink || '#'}
               onClick={() => handleCTAClick(plan.name.toLowerCase())}
               aria-label={`${plan.ctaText}`}
-              className="w-full group relative inline-flex items-center justify-center gap-2 px-8 py-4 bg-gray-900 text-white text-lg font-bold rounded-lg transition-all duration-300 ease-out hover:bg-gray-800 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2"
+              className="w-full group relative inline-flex items-center justify-center gap-2 px-8 py-4 bg-blue-600 text-white text-lg font-bold rounded-lg transition-all duration-300 ease-out hover:bg-blue-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
             >
               <span className="relative flex items-center gap-2">
                 {plan.ctaText}
@@ -122,7 +122,7 @@ export function Pricing() {
             We're validating product-market fit. If this doesn't solve your team's prioritization problem, we want to know now—not after we've charged you.
           </p>
           <p className="text-gray-600 text-sm">
-            Questions? <a href="mailto:hello@woorkshop.app" className="text-gray-900 hover:underline font-medium">hello@woorkshop.app</a>
+            Questions? <a href="mailto:hello@woorkshop.app" className="text-blue-600 hover:text-blue-700 hover:underline font-medium">hello@woorkshop.app</a>
           </p>
         </motion.div>
       </div>
