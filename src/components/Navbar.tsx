@@ -68,16 +68,6 @@ const resourcesItems: DropdownItem[] = [
     )
   },
   {
-    label: 'Blog',
-    href: '/blog',
-    description: 'Tips and best practices',
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-      </svg>
-    )
-  },
-  {
     label: 'Templates',
     href: '/templates',
     description: 'Ready-to-use session templates',
@@ -228,26 +218,12 @@ export function Navbar() {
             </div>
 
             {/* Pricing */}
-            <Link
-              href="/pricing"
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 ${pathname === '/pricing'
-                ? 'text-blue-600 bg-blue-50'
-                : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                }`}
+            <a
+              href="/#pricing"
+              className="px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50"
             >
               Pricing
-            </Link>
-
-            {/* Blog */}
-            <Link
-              href="/blog"
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 ${pathname === '/blog'
-                ? 'text-blue-600 bg-blue-50'
-                : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                }`}
-            >
-              Blog
-            </Link>
+            </a>
           </div>
 
           {/* Right: CTA + Mobile Menu Button */}
@@ -393,28 +369,13 @@ export function Navbar() {
               </div>
 
               {/* Pricing */}
-              <Link
-                href="/pricing"
-                className={`block px-4 py-3 text-sm font-medium rounded-lg transition-colors ${pathname === '/pricing'
-                  ? 'text-blue-600 bg-blue-50'
-                  : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                  }`}
+              <a
+                href="/#pricing"
+                className="block px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 hover:text-blue-600 hover:bg-gray-50"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Pricing
-              </Link>
-
-              {/* Blog */}
-              <Link
-                href="/blog"
-                className={`block px-4 py-3 text-sm font-medium rounded-lg transition-colors ${pathname === '/blog'
-                  ? 'text-blue-600 bg-blue-50'
-                  : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                  }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Blog
-              </Link>
+              </a>
             </div>
           </motion.div>
         )}

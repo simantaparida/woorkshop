@@ -45,7 +45,7 @@ export function Pricing() {
   };
 
   return (
-    <section ref={ref} className="py-16 bg-white">
+    <section id="pricing" ref={ref} className="py-16 bg-white">
       <div className="max-w-5xl mx-auto px-6">
         {/* Header */}
         <motion.div
