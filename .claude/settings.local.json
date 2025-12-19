@@ -20,7 +20,9 @@
       "Bash(npm run build:*)",
       "Bash(ls:*)",
       "Bash(xargs ls:*)",
-      "Bash(cd /Users/simantparida/Desktop/Vibe\\\\ Coding/Woorkshop && npm run type-check:*)"
+      "Bash(cd /Users/simantparida/Desktop/Vibe\\\\ Coding/Woorkshop && npm run type-check:*)",
+      "Bash(git config --list)",
+      "Bash(cd:*)"
     ],
     "deny": [],
     "ask": []

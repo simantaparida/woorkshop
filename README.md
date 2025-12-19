@@ -1,8 +1,8 @@
 # UX Works - Feature Prioritization Game
 
-[![CI](https://github.com/YOUR_USERNAME/YOUR_REPO/workflows/CI/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO/actions/workflows/ci.yml)
-[![E2E Tests](https://github.com/YOUR_USERNAME/YOUR_REPO/workflows/E2E%20Tests/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO/actions/workflows/e2e-tests.yml)
-[![Deploy](https://github.com/YOUR_USERNAME/YOUR_REPO/workflows/Deploy%20to%20Vercel/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO/actions/workflows/deploy.yml)
+[![CI](https://github.com/simantaparida/ux-play/workflows/CI/badge.svg)](https://github.com/simantaparida/ux-play/actions/workflows/ci.yml)
+[![E2E Tests](https://github.com/simantaparida/ux-play/workflows/E2E%20Tests/badge.svg)](https://github.com/simantaparida/ux-play/actions/workflows/e2e-tests.yml)
+[![Deploy](https://github.com/simantaparida/ux-play/workflows/Deploy%20to%20Vercel/badge.svg)](https://github.com/simantaparida/ux-play/actions/workflows/deploy.yml)
 
 A realtime, multiplayer feature prioritization tool for product and UX teams.
 
@@ -138,7 +138,12 @@ Supabase Realtime channels broadcast:
 
 Comprehensive documentation is available:
 
+### Getting Started
+- **[GITHUB_SETUP.md](GITHUB_SETUP.md)** - 📋 **Start Here!** Complete guide to Git Flow, branch protection, and CI/CD setup
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - 🤝 How to contribute to this project
 - **[DEPLOYMENT.md](DEPLOYMENT.md)** - Complete deployment guide for Vercel with GitHub Actions
+
+### CI/CD & Development
 - **[GITHUB_ACTIONS.md](GITHUB_ACTIONS.md)** - CI/CD workflows documentation
 - **[SECURITY_AUDIT.md](SECURITY_AUDIT.md)** - Security analysis and recommendations
 - **[CLEANUP_SUMMARY.md](CLEANUP_SUMMARY.md)** - Codebase cleanup summary
@@ -240,7 +245,23 @@ npm run build
 
 ## Contributing
 
-This is an MVP. Contributions welcome after initial release.
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on:
+
+- Development workflow and Git Flow branching strategy
+- Code style guidelines and best practices
+- Testing requirements
+- Pull request process
+
+### Quick Start for Contributors
+
+1. Fork the repository
+2. Create a feature branch from `develop`: `git checkout -b feature/your-feature`
+3. Make your changes and add tests
+4. Ensure all tests pass: `npm run test && npm run test:e2e`
+5. Submit a PR to `develop` branch
+6. Wait for review and CI checks to pass
+
+See [GITHUB_SETUP.md](GITHUB_SETUP.md) for detailed Git Flow workflow and branch protection setup.
 
 ## License
 

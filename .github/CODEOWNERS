@@ -1,0 +1,34 @@
+# Code Owners for UX Works
+#
+# These owners will be automatically requested for review when someone
+# opens a pull request that modifies code in a given path.
+#
+# More info: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Global owners - will be requested for all PRs
+* @simantaparida
+
+# GitHub Actions workflows - require review for CI/CD changes
+/.github/workflows/ @simantaparida
+
+# Deployment and infrastructure
+/vercel.json @simantaparida
+/next.config.js @simantaparida
+/.env.local.example @simantaparida
+
+# Database and Supabase
+/supabase/ @simantaparida
+
+# Documentation - can add technical writers here
+# *.md @simantaparida @technical-writer
+
+# Frontend Components
+# /src/components/ @simantaparida @frontend-team
+
+# API Routes
+# /src/app/api/ @simantaparida @backend-team
+
+# Testing
+# /e2e/ @simantaparida @qa-team
+# vitest.config.ts @simantaparida @qa-team
+# playwright.config.ts @simantaparida @qa-team
