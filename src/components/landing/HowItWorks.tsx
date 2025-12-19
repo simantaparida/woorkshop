@@ -9,19 +9,19 @@ const steps = [
     number: '1',
     icon: FileText,
     title: 'Add your options',
-    description: 'Problems, ideas, trade-offs — clearly framed.',
+    description: 'Problems, ideas, trade-offs.',
   },
   {
     number: '2',
     icon: Users,
     title: 'Think individually',
-    description: 'Everyone responds. No influence. No pressure.',
+    description: 'No influence. No pressure.',
   },
   {
     number: '3',
     icon: BarChart3,
     title: 'Reveal the signal',
-    description: 'The group sees what actually matters.',
+    description: 'See what matters.',
   },
 ];
 
@@ -60,20 +60,13 @@ export function HowItWorks() {
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
-          className="text-center mb-16"
+          className="text-center mb-12"
         >
-          <motion.div variants={itemVariants}>
-            <span className="inline-block px-3 py-1 text-xs font-semibold text-blue-700 bg-blue-50 rounded-full border border-blue-200 mb-6">
-              Dead Simple
-            </span>
-          </motion.div>
           <motion.h2
             variants={itemVariants}
-            className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-6"
+            className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight"
           >
-            Three steps. Ten minutes.
-            <br />
-            One clear decision.
+            Three steps. One decision.
           </motion.h2>
         </motion.div>
 
@@ -123,13 +116,9 @@ export function HowItWorks() {
           animate={isInView ? 'visible' : 'hidden'}
           className="max-w-2xl mx-auto text-center"
         >
-          <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-            That's it.
+          <p className="text-xl text-gray-600">
+            That's it. No theatre. No follow-ups.
           </p>
-          <div className="space-y-1">
-            <p className="text-lg text-gray-600">No facilitation theatre.</p>
-            <p className="text-lg text-gray-600">No endless follow-ups.</p>
-          </div>
         </motion.div>
       </div>
     </section>
