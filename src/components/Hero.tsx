@@ -103,7 +103,7 @@ export function Hero() {
             <Image
               src="/images/new-hero-image.png"
               alt="Team meeting illustration showing collaborative decision-making"
-              width={1536}
+              width={1177}
               height={1024}
               priority
               quality={85}
