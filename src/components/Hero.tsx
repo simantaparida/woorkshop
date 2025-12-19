@@ -24,59 +24,76 @@ export function Hero() {
 
   return (
     <section className="relative bg-white pt-32 pb-24 overflow-hidden z-20">
-      <div className="max-w-5xl mx-auto px-6">
-        <div className="text-center space-y-8">
-          {/* Step 1: Headline - Fade in with gentle upward drift (4px) over 600ms */}
-          <motion.h1
-            variants={getMotionVariants(fadeInDrift(MOVEMENT.DRIFT), reducedMotion)}
-            initial="hidden"
-            animate="visible"
-            className="text-4xl md:text-6xl font-extrabold text-gray-900 leading-[1.05] tracking-tight"
-          >
-            Decision-making for teams, without the politics.
-          </motion.h1>
-
-          {/* Step 2: Subtext - Slide up slightly after headline */}
-          <motion.div
-            variants={getMotionVariants(slideUp(MOVEMENT.SUBTLE), reducedMotion)}
-            initial="hidden"
-            animate="visible"
-            transition={{ delay: HERO_SEQUENCE.SUBTEXT }}
-            className="space-y-4 max-w-3xl mx-auto"
-          >
-            <p className="text-xl md:text-2xl text-gray-700 leading-relaxed">
-              Woorkshop helps teams think together... not argue louder.
-            </p>
-          </motion.div>
-
-          {/* Step 3: CTA - Appears while subtext finishing, with scroll micro-lift */}
-          <motion.div
-            ref={ctaRef}
-            variants={getMotionVariants(delayedFade(HERO_SEQUENCE.CTA), reducedMotion)}
-            initial="hidden"
-            animate="visible"
-            style={{ y: reducedMotion ? 0 : ctaY }}
-            className="pt-2"
-          >
-            <Link
-              href={ROUTES.LOGIN}
-              className="group relative inline-flex items-center gap-3 px-8 py-4 bg-blue-600 text-white text-lg font-bold rounded-lg transition-all duration-300 ease-out hover:bg-blue-700 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
-              aria-label="Start a session"
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Left Column - Text Content */}
+          <div className="space-y-6">
+            {/* Step 1: Headline - Fade in with gentle upward drift (4px) over 600ms */}
+            <motion.h1
+              variants={getMotionVariants(fadeInDrift(MOVEMENT.DRIFT), reducedMotion)}
+              initial="hidden"
+              animate="visible"
+              className="text-3xl md:text-5xl font-extrabold text-gray-900 leading-[1.1] tracking-tight"
             >
-              <span className="flex items-center gap-2">
-                Start a session
-                {/* Right arrow icon: hidden by default, slides in on hover */}
-                <svg
-                  className="w-5 h-5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-                </svg>
-              </span>
-            </Link>
+              Stop letting the loudest voices dominate your decisions.
+            </motion.h1>
+
+            {/* Step 2: Subtext - Slide up slightly after headline */}
+            <motion.div
+              variants={getMotionVariants(slideUp(MOVEMENT.SUBTLE), reducedMotion)}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: HERO_SEQUENCE.SUBTEXT }}
+              className="space-y-4"
+            >
+              <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
+                Woorkshop helps teams think together... not argue louder.
+              </p>
+            </motion.div>
+
+            {/* Step 3: CTA - Appears while subtext finishing, with scroll micro-lift */}
+            <motion.div
+              ref={ctaRef}
+              variants={getMotionVariants(delayedFade(HERO_SEQUENCE.CTA), reducedMotion)}
+              initial="hidden"
+              animate="visible"
+              style={{ y: reducedMotion ? 0 : ctaY }}
+              className="pt-2"
+            >
+              <Link
+                href={ROUTES.LOGIN}
+                className="group relative inline-flex items-center gap-3 px-8 py-4 bg-blue-600 text-white text-lg font-bold rounded-lg transition-all duration-300 ease-out hover:bg-blue-700 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+                aria-label="Start a session"
+              >
+                <span className="flex items-center gap-2">
+                  Start a session
+                  {/* Right arrow icon: hidden by default, slides in on hover */}
+                  <svg
+                    className="w-5 h-5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                  </svg>
+                </span>
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* Right Column - Image */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="relative"
+          >
+            <img
+              src="/images/hero-image.png"
+              alt="Team meeting illustration showing the problem of decision-making dynamics"
+              className="w-full h-auto rounded-lg"
+            />
           </motion.div>
         </div>
       </div>
