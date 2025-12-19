@@ -33,29 +33,6 @@ export function Hero() {
         <div className="grid lg:grid-cols-[1fr_1.5fr] gap-4 sm:gap-8 lg:gap-20 items-center justify-items-center lg:justify-items-start">
           {/* Left Column - Text Content */}
           <div className="space-y-2 sm:space-y-3 text-center lg:text-left w-full lg:order-1 order-2">
-            {/* Toggle Switch */}
-            <div className="flex justify-center lg:justify-start mb-6">
-              <div className="bg-white/90 backdrop-blur-sm rounded-full px-4 py-3 flex items-center gap-3">
-                <span className={`text-sm font-medium transition-colors ${!showAfter ? 'text-gray-900' : 'text-gray-500'}`}>
-                  Before
-                </span>
-                <button
-                  onClick={() => setShowAfter(!showAfter)}
-                  className="relative w-12 h-6 bg-gray-300 rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
-                  style={{ backgroundColor: showAfter ? '#2563eb' : '#d1d5db' }}
-                  aria-label={showAfter ? "Show before image" : "Show after image"}
-                >
-                  <span
-                    className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-300"
-                    style={{ transform: showAfter ? 'translateX(24px)' : 'translateX(0)' }}
-                  />
-                </button>
-                <span className={`text-sm font-medium transition-colors ${showAfter ? 'text-gray-900' : 'text-gray-500'}`}>
-                  After
-                </span>
-              </div>
-            </div>
-
             {/* Step 1: Headline - Fade in with gentle upward drift (4px) over 600ms */}
             <motion.h1
               variants={getMotionVariants(fadeInDrift(MOVEMENT.DRIFT), reducedMotion)}
@@ -81,6 +58,29 @@ export function Hero() {
                   : "One person speaks confidently. Everyone else nods. Sound familiar?"}
               </p>
             </motion.div>
+
+            {/* Toggle Switch */}
+            <div className="flex justify-center lg:justify-start pt-4">
+              <div className="bg-white/90 backdrop-blur-sm rounded-full px-4 py-3 flex items-center gap-3">
+                <span className={`text-sm font-medium transition-colors ${!showAfter ? 'text-gray-900' : 'text-gray-500'}`}>
+                  Before
+                </span>
+                <button
+                  onClick={() => setShowAfter(!showAfter)}
+                  className="relative w-12 h-6 bg-gray-300 rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+                  style={{ backgroundColor: showAfter ? '#2563eb' : '#d1d5db' }}
+                  aria-label={showAfter ? "Show before image" : "Show after image"}
+                >
+                  <span
+                    className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-300"
+                    style={{ transform: showAfter ? 'translateX(24px)' : 'translateX(0)' }}
+                  />
+                </button>
+                <span className={`text-sm font-medium transition-colors ${showAfter ? 'text-gray-900' : 'text-gray-500'}`}>
+                  After
+                </span>
+              </div>
+            </div>
 
             {/* Step 3: CTA - Appears while subtext finishing, with scroll micro-lift */}
             <motion.div
