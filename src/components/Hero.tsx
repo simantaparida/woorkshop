@@ -33,7 +33,7 @@ export function Hero() {
               variants={getMotionVariants(fadeInDrift(MOVEMENT.DRIFT), reducedMotion)}
               initial="hidden"
               animate="visible"
-              className="text-3xl md:text-5xl font-extrabold text-gray-900 leading-[1.1] tracking-tight"
+              className="text-[32px] font-bold text-gray-900 leading-[1.2] tracking-tight"
             >
               Stop letting the loudest voices dominate your decisions.
             </motion.h1>
@@ -46,7 +46,7 @@ export function Hero() {
               transition={{ delay: HERO_SEQUENCE.SUBTEXT }}
               className="space-y-4"
             >
-              <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
+              <p className="text-base font-medium text-gray-700 leading-relaxed">
                 Woorkshop helps teams think together... not argue louder.
               </p>
             </motion.div>
@@ -87,7 +87,7 @@ export function Hero() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="relative lg:scale-110"
+            className="relative w-[140%] -mr-[20%]"
           >
             <img
               src="/images/hero-image.png"
