@@ -38,6 +38,9 @@ async function createProblemFramingSession(
   // Wait for redirect to join page
   await page.waitForURL(/\/tools\/problem-framing\/.*\/join/, { timeout: 15000 });
 
+  // Wait for the join page content to actually load (not just URL change)
+  await page.waitForSelector('h1, h2, button:has-text("Join")', { timeout: 10000 });
+
   // Extract session ID from URL
   const url = page.url();
   const match = url.match(/\/problem-framing\/([^\/]+)/);

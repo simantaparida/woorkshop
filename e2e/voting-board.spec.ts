@@ -387,10 +387,10 @@ test.describe('Voting Board - Edge Cases', () => {
 
   test('should handle session with many features (10 features)', async ({ page }) => {
     await page.goto('/voting-board/new');
-    await page.waitForSelector('input[placeholder*="Q1 Feature"]');
+    await page.waitForSelector('input[placeholder*="Feature Prioritization"]');
 
     // Fill session name
-    await page.fill('input[placeholder*="Q1 Feature"]', 'Many Features Test');
+    await page.fill('input[placeholder*="Feature Prioritization"]', 'Many Features Test');
 
     // Add 10 features
     for (let i = 0; i < 10; i++) {
@@ -399,7 +399,7 @@ test.describe('Voting Board - Edge Cases', () => {
         await page.waitForTimeout(200);
       }
 
-      const featureInputs = await page.locator('input[placeholder*="feature"]').all();
+      const featureInputs = await page.locator('input[placeholder*="Feature title"]').all();
       await featureInputs[i].fill(`Feature ${i + 1}`);
     }
 

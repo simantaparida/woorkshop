@@ -25,7 +25,8 @@
       "Bash(cd:*)",
       "Bash(head:*)",
       "Bash(git config:*)",
-      "Bash(npx supabase:*)"
+      "Bash(npx supabase:*)",
+      "Bash(CI=true npx playwright test:*)"
     ],
     "deny": [],
     "ask": []

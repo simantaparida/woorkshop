@@ -21,21 +21,20 @@ export default function NewProblemFramingPage() {
     facilitatorName: string;
     attachments: Attachment[];
   }) {
+    // Check authentication - only authenticated users can create sessions
+    if (!user) {
+      toast.error('Please log in to create a session', {
+        description: 'You need an account to create problem framing sessions.',
+      });
+      router.push(`/auth/login?redirect=${encodeURIComponent('/tools/problem-framing/new')}`);
+      return;
+    }
+
     setLoading(true);
 
     try {
-      // Get or create participant ID
-      // For authenticated users, use their user.id to ensure consistency
-      // For anonymous users, use a UUID stored in localStorage
-      let participantId: string;
-
-      if (user?.id) {
-        // Authenticated user - use their user ID
-        participantId = user.id;
-      } else {
-        // Anonymous user - get or create UUID
-        participantId = localStorage.getItem('pf_participant_id') || crypto.randomUUID();
-      }
+      // Use authenticated user's ID
+      const participantId = user.id;
 
       // Always store to ensure sync
       localStorage.setItem('pf_participant_id', participantId);
@@ -67,9 +66,9 @@ export default function NewProblemFramingPage() {
       // Store session ID
       localStorage.setItem('pf_current_session_id', sessionId);
 
-      // Small delay to ensure database transaction is committed
+      // Delay to ensure database transaction is committed and replicated
       // before navigating (prevents race condition with auto-add facilitator)
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       // Navigate to join page
       router.push(`/tools/problem-framing/${sessionId}/join`);
