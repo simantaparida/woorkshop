@@ -60,15 +60,15 @@ export default function PricingPage() {
 
               <div className="relative">
                 <div className="text-center mb-8">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Free Forever</h2>
-                  <p className="text-gray-600 text-sm">Everything you need to align your team</p>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Free While We Figure This Out</h2>
+                  <p className="text-gray-600 text-sm">We're validating product-market fit</p>
                 </div>
 
                 <div className="text-center mb-8">
                   <div className="flex items-start justify-center gap-1">
                     <span className="text-5xl font-bold text-gray-900">$0</span>
                   </div>
-                  <p className="text-gray-500 text-sm mt-2">No credit card required</p>
+                  <p className="text-gray-500 text-sm mt-2">If this doesn't solve your team's prioritization problem,<br />we want to know now—not after we've charged you.</p>
                 </div>
 
                 <ul className="space-y-4 mb-8">
@@ -147,9 +147,9 @@ export default function PricingPage() {
             className="space-y-6"
           >
             <div className="bg-white rounded-xl p-6 border border-gray-200">
-              <h3 className="font-semibold text-gray-900 mb-2">Is Woorkshop really free?</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">Why is it free right now?</h3>
               <p className="text-gray-600 text-sm">
-                Yes, completely free. No credit card required, no hidden fees, no time limits. We believe better decisions shouldn't cost money.
+                We're validating product-market fit. If Woorkshop doesn't solve your team's prioritization problem, we want to know now—not after we've charged you. Your feedback shapes what we build next.
               </p>
             </div>
 
@@ -168,9 +168,9 @@ export default function PricingPage() {
             </div>
 
             <div className="bg-white rounded-xl p-6 border border-gray-200">
-              <h3 className="font-semibold text-gray-900 mb-2">Will you ever charge for Woorkshop?</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">Will you charge for this later?</h3>
               <p className="text-gray-600 text-sm">
-                The core features will always be free. If we add premium features in the future, they'll be optional—not required.
+                Maybe. Once we've validated that teams actually find this useful, we might introduce paid features. But you'll know well in advance, and the core functionality will remain accessible.
               </p>
             </div>
           </motion.div>
