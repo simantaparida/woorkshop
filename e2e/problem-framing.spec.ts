@@ -15,14 +15,14 @@ async function createProblemFramingSession(
   await page.goto('/tools/problem-framing/new');
 
   // Wait for form to load
-  await page.waitForSelector('input[placeholder*="topic"], input[name="title"]', { timeout: 10000 });
+  await page.waitForSelector('input[id="title"]', { timeout: 10000 });
 
   // Fill in session details
-  const titleInput = await page.locator('input[placeholder*="topic"], input[name="title"]').first();
+  const titleInput = page.locator('input[id="title"]');
   await titleInput.fill(title);
 
   // Fill facilitator name
-  const nameInput = await page.locator('input[placeholder*="name"], input[name="facilitatorName"]').first();
+  const nameInput = page.locator('input[id="name"]');
   await nameInput.fill(facilitatorName);
 
   // Add optional description if field exists
@@ -56,10 +56,10 @@ async function joinProblemFramingSession(
   await page.goto(`/tools/problem-framing/${sessionId}/join`);
 
   // Wait for join form
-  await page.waitForSelector('input[placeholder*="name"]', { timeout: 10000 });
+  await page.waitForSelector('input[id="name"]', { timeout: 10000 });
 
   // Enter participant name
-  await page.fill('input[placeholder*="name"]', participantName);
+  await page.fill('input[id="name"]', participantName);
 
   // Click join button
   await page.click('button:has-text("Join")');
