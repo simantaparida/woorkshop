@@ -15,6 +15,7 @@ export const SESSION_STATUS = {
 export const ROUTES = {
   HOME: '/',
   FEATURES: '/features',
+  PRICING: '/pricing',
   CREATE: '/voting-board/new', // Default creation route
 
   // Workshops

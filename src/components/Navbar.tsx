@@ -98,15 +98,6 @@ export function Navbar() {
   const dropdownTimeoutRef = useRef<NodeJS.Timeout>();
   const navRef = useRef<HTMLDivElement>(null);
 
-  const handlePricingClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    const pricingSection = document.getElementById('pricing');
-    if (pricingSection) {
-      pricingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-    setIsMobileMenuOpen(false);
-  };
-
   // Detect scroll for border
   useEffect(() => {
     const handleScroll = () => {
@@ -239,13 +230,15 @@ export function Navbar() {
             </div>
 
             {/* Pricing */}
-            <a
-              href="/#pricing"
-              onClick={handlePricingClick}
-              className="px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+            <Link
+              href={ROUTES.PRICING}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 ${pathname === '/pricing'
+                ? 'text-blue-600 bg-blue-50'
+                : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                }`}
             >
               Pricing
-            </a>
+            </Link>
           </div>
 
           {/* Right: CTA + Mobile Menu Button */}
@@ -443,16 +436,20 @@ export function Navbar() {
                   </div>
 
                   {/* Pricing */}
-                  <a
-                    href="/#pricing"
-                    onClick={(e) => {
-                      handlePricingClick(e);
+                  <Link
+                    href={ROUTES.PRICING}
+                    className={`block px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+                      pathname === '/pricing'
+                        ? 'text-blue-600 bg-blue-50'
+                        : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                    }`}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
                       setActiveDropdown(null);
                     }}
-                    className="block px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 hover:text-blue-600 hover:bg-gray-50"
                   >
                     Pricing
-                  </a>
+                  </Link>
                 </div>
               </div>
 
