@@ -21,25 +21,14 @@ export default function NewProblemFramingPage() {
     facilitatorName: string;
     attachments: Attachment[];
   }) {
-    // Check authentication - only authenticated users can create sessions
-    if (!user) {
-      toast.error('Please log in to create a session', {
-        description: 'You need an account to create problem framing sessions.',
-      });
-      router.push(`/auth/login?redirect=${encodeURIComponent('/tools/problem-framing/new')}`);
-      return;
-    }
-
     setLoading(true);
 
     try {
-      // Use authenticated user's ID
-      const participantId = user.id;
+      // Use authenticated user ID if available, otherwise generate anonymous ID
+      const participantId = user?.id || `anonymous_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
-      // Always store to ensure sync
+      // Store to localStorage for session continuity
       localStorage.setItem('pf_participant_id', participantId);
-
-      // Save name to localStorage
       localStorage.setItem('pf_participant_name', data.facilitatorName);
 
       // Create session via API
