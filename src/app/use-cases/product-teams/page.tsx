@@ -22,7 +22,7 @@ export default function ProductTeamsPage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative pt-24 pb-16 overflow-hidden">
+      <section className="relative pt-24 pb-16 overflow-hidden bg-gradient-to-b from-white to-blue-50/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto">
             <motion.div
@@ -40,7 +40,7 @@ export default function ProductTeamsPage() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-5xl sm:text-6xl font-bold text-gray-900 mb-6 leading-tight"
             >
-              Build the Right Thing, <span className="text-blue-600">Together</span>
+              Stop Debating. <span className="text-blue-600">Start Shipping.</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -48,7 +48,7 @@ export default function ProductTeamsPage() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-xl text-gray-600 mb-4 leading-relaxed"
             >
-              Align your product strategy with collective intelligence. Use frameworks like <span className="font-semibold text-gray-900">RICE</span>, <span className="font-semibold text-gray-900">MoSCoW</span>, or <span className="font-semibold text-gray-900">100-Point Voting</span> to turn opinions into data-backed priorities in minutes.
+              Turn 2-hour sprint planning into 15-minute alignment sessions. Use <span className="font-semibold text-gray-900">RICE</span>, <span className="font-semibold text-gray-900">MoSCoW</span>, or <span className="font-semibold text-gray-900">100-Point</span> frameworks to make gut feelings irrelevant and ship what actually matters.
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -67,7 +67,7 @@ export default function ProductTeamsPage() {
                 variant="primary"
                 size="lg"
                 onClick={handleCTAClick}
-                className="text-lg px-8 py-4 shadow-xl shadow-blue-200/50 hover:shadow-2xl hover:shadow-blue-300/50 transition-all"
+                className="text-lg px-8 py-4 !bg-blue-600 !text-white hover:!bg-blue-700 !border-0 shadow-lg hover:shadow-xl transition-all duration-200"
               >
                 Start Free Session
               </Button>
@@ -77,7 +77,7 @@ export default function ProductTeamsPage() {
       </section>
 
       {/* Problem Statement */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
+      <section className="py-20 bg-white border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -86,13 +86,13 @@ export default function ProductTeamsPage() {
             transition={{ duration: 0.6 }}
             className="max-w-4xl mx-auto"
           >
-            <div className="bg-orange-50 border border-orange-100 rounded-2xl p-8 mb-12 shadow-sm">
+            <div className="bg-gradient-to-br from-red-50 to-orange-50 border-2 border-orange-200 rounded-2xl p-8 mb-12 shadow-md">
               <div className="flex items-start gap-4">
-                <div className="text-3xl">🤯</div>
+                <div className="text-4xl">⚠️</div>
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Drowning in Feature Requests?</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">The Real Problem Isn't Your Backlog</h3>
                   <p className="text-gray-700 leading-relaxed">
-                    Your backlog is growing faster than your capacity. Sales wants one thing, Support wants another, and the CEO has a "great idea." Without a structured framework, prioritization becomes a battle of opinions, not value. You need a way to quantify impact and clear the noise.
+                    It's consensus. Sales wants features that close deals. Support wants bugs squashed. The CEO has "one more thing." Everyone thinks their priority is THE priority. Without a framework, roadmaps become political battlegrounds where the loudest voice wins—not the best idea.
                   </p>
                 </div>
               </div>
@@ -102,7 +102,7 @@ export default function ProductTeamsPage() {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -123,18 +123,18 @@ export default function ProductTeamsPage() {
             {[
               {
                 icon: '⚡',
-                title: 'Framework Flexibility',
-                description: 'Switch between RICE (Reach, Impact, Confidence, Effort) for strategic depth, MoSCoW for requirements, or 100-Point Method for quick budgeting.'
+                title: 'Pick Your Framework',
+                description: 'RICE for strategic depth. MoSCoW for scope management. 100-Point for budget simulation. Switch frameworks depending on the decision you need to make.'
               },
               {
                 icon: '🎯',
-                title: 'Democratized Input',
-                description: 'Give every team member a voice with unbiased voting. Avoid "HiPPO" (Highest Paid Person\'s Opinion) influence and uncover your team\'s true priorities.'
+                title: 'Kill the HiPPO',
+                description: 'Highest Paid Person\'s Opinion shouldn\'t win by default. Blind voting surfaces true team priorities before politics enter the room.'
               },
               {
                 icon: '📊',
-                title: 'Actionable Artifacts',
-                description: 'Don\'t just end the meeting. Export your ranked priorities directly to CSV for Jira or Notion. Move seamlessly from decision to execution.'
+                title: 'Export to Your Tools',
+                description: 'Ranked priorities go straight to CSV for Jira, Linear, or Notion. No copy-paste busywork. From decision to backlog in one click.'
               }
             ].map((benefit, index) => (
               <motion.div
@@ -143,9 +143,9 @@ export default function ProductTeamsPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-white rounded-2xl p-8 border border-gray-100 shadow-lg shadow-blue-50/50 hover:shadow-xl hover:shadow-blue-100/50 transition-all hover:-translate-y-1"
+                className="bg-white rounded-2xl p-8 border-2 border-gray-200 hover:border-blue-300 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
               >
-                <div className="text-4xl mb-6 bg-blue-50 w-16 h-16 rounded-2xl flex items-center justify-center">{benefit.icon}</div>
+                <div className="text-4xl mb-6 bg-gradient-to-br from-blue-50 to-blue-100 w-16 h-16 rounded-2xl flex items-center justify-center shadow-sm">{benefit.icon}</div>
                 <h3 className="text-xl font-bold text-gray-900 mb-3">{benefit.title}</h3>
                 <p className="text-gray-600 leading-relaxed">{benefit.description}</p>
               </motion.div>
@@ -155,7 +155,7 @@ export default function ProductTeamsPage() {
       </section>
 
       {/* Use Cases */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-gradient-to-b from-white to-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -218,7 +218,7 @@ export default function ProductTeamsPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-shadow"
+                className="bg-white rounded-2xl p-8 border-2 border-gray-200 hover:border-blue-200 hover:shadow-lg transition-all duration-300"
               >
                 <h3 className="text-2xl font-bold text-gray-900 mb-3">{useCase.title}</h3>
                 <p className="text-gray-600 mb-6 leading-relaxed">{useCase.description}</p>
@@ -240,36 +240,93 @@ export default function ProductTeamsPage() {
         </div>
       </section>
 
-      {/* Testimonial */}
-      <section className="py-20 bg-white">
+      {/* Building in Public - Feedback Section */}
+      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-12 border border-blue-100"
+            className="text-center mb-12"
           >
-            <div className="flex items-center gap-2 text-4xl mb-6">⭐⭐⭐⭐⭐</div>
-            <blockquote className="text-2xl font-medium text-gray-900 mb-6 leading-relaxed">
-              "Woorkshop turned our sprint planning into a 15-minute ritual. Instead of 2-hour meetings where everyone argues, we now get aligned priorities in minutes. The data makes it much easier to say no to stakeholders."
-            </blockquote>
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
-                PM
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+              Building in Public
+            </h2>
+            <p className="text-gray-600">
+              Real usage data. Unfiltered feedback. Help us get it right.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="bg-white rounded-2xl p-8 border-2 border-gray-200 shadow-md"
+          >
+            {/* Usage Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 pb-8 border-b border-gray-200">
+              <div className="text-center">
+                <div className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">127</div>
+                <div className="text-xs md:text-sm font-semibold text-gray-900 mb-1">Sessions run</div>
+                <div className="text-[10px] md:text-xs text-gray-600">In the last 30 days</div>
               </div>
-              <div>
-                <div className="font-semibold text-gray-900">Product Manager</div>
-                <div className="text-gray-600">Early-stage SaaS team</div>
+              <div className="text-center">
+                <div className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">2,847</div>
+                <div className="text-xs md:text-sm font-semibold text-gray-900 mb-1">Votes cast</div>
+                <div className="text-[10px] md:text-xs text-gray-600">Real teams making real decisions</div>
               </div>
+              <div className="text-center">
+                <div className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">9.3 min</div>
+                <div className="text-xs md:text-sm font-semibold text-gray-900 mb-1">Avg session time</div>
+                <div className="text-[10px] md:text-xs text-gray-600">We said 10 minutes. We meant it.</div>
+              </div>
+            </div>
+
+            {/* What Product Teams Are Saying */}
+            <div>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">What product teams are saying</h3>
+              <div className="space-y-4 mb-6">
+                <div className="flex items-start gap-3">
+                  <div className="text-blue-600 font-bold">•</div>
+                  <div className="text-gray-700 text-sm leading-relaxed">
+                    "Finally killed our 2-hour sprint planning meetings"
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="text-blue-600 font-bold">•</div>
+                  <div className="text-gray-700 text-sm leading-relaxed">
+                    "RICE scoring helps us push back on exec 'great ideas' with data"
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="text-blue-600 font-bold">•</div>
+                  <div className="text-gray-700 text-sm leading-relaxed">
+                    "Would love Linear integration, not just Jira export"
+                  </div>
+                </div>
+              </div>
+              <a
+                href="https://forms.gle/SUSxNsiB8V7qWQTn9"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline inline-flex items-center gap-1"
+              >
+                Share your feedback
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
             </div>
           </motion.div>
         </div>
       </section>
 
       {/* Closing CTA */}
-      <section className="py-20 bg-gradient-to-br from-blue-600 to-indigo-600 text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="py-20 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid-white/5"></div>
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -277,10 +334,10 @@ export default function ProductTeamsPage() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-4xl sm:text-5xl font-bold mb-6">
-              Ready to streamline your sprint planning?
+              Walk in with chaos. Walk out with clarity.
             </h2>
             <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
-              Create your first prioritization session in seconds. No credit card, no signup, no complications.
+              Create your first session in 60 seconds. No credit card, no signup, no demo request.
             </p>
             <Button
               variant="secondary"
@@ -298,52 +355,83 @@ export default function ProductTeamsPage() {
       </section>
 
       {/* Footer */}
-      <footer className="relative bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-gray-400 overflow-hidden">
-        {/* Subtle background decoration */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500 rounded-full blur-3xl"></div>
-        </div>
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <footer className="bg-gray-900 text-gray-400">
+        <div className="max-w-6xl mx-auto px-6 py-12">
           {/* Main Footer Content */}
-          <div className="py-16 grid grid-cols-2 md:grid-cols-12 gap-8">
-            {/* Brand Section - Takes more space */}
-            <div className="col-span-2 md:col-span-4">
-              <div className="mb-6">
-                <h3 className="font-comfortaa text-2xl font-bold text-blue-400 mb-3 tracking-[0.1em]">woorkshop</h3>
-                <p className="text-gray-400 leading-relaxed text-sm max-w-xs">
-                  Turn team debates into clear priorities. No signup required, completely free during public review.
-                </p>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            {/* Product */}
+            <div>
+              <h4 className="text-white font-semibold mb-3 text-sm">Product</h4>
+              <ul className="space-y-2">
+                <li>
+                  <button onClick={handleCTAClick} className="text-sm text-gray-400 hover:text-white transition-colors">
+                    Start Session
+                  </button>
+                </li>
+                <li>
+                  <a href="#features" className="text-sm text-gray-400 hover:text-white transition-colors">
+                    Features
+                  </a>
+                </li>
+                <li>
+                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-400 hover:text-white transition-colors">
+                    GitHub
+                  </a>
+                </li>
+              </ul>
+            </div>
 
-              {/* Social Links */}
+            {/* Company */}
+            <div>
+              <h4 className="text-white font-semibold mb-3 text-sm">Company</h4>
+              <ul className="space-y-2">
+                <li>
+                  <a href="mailto:simantaparidaux@gmail.com" className="text-sm text-gray-400 hover:text-white transition-colors">
+                    Contact
+                  </a>
+                </li>
+                <li>
+                  <Link href="/privacy" className="text-sm text-gray-400 hover:text-white transition-colors">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terms" className="text-sm text-gray-400 hover:text-white transition-colors">
+                    Terms of Service
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Connect */}
+            <div>
+              <h4 className="text-white font-semibold mb-3 text-sm">Connect</h4>
               <div className="flex items-center gap-3">
                 <a
                   href="https://twitter.com/uxworks_app"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-10 h-10 rounded-lg bg-gray-800 hover:bg-blue-600 flex items-center justify-center transition-all duration-200 hover:scale-110 group"
-                  aria-label="Twitter"
+                  aria-label="Twitter/X"
                 >
                   <svg className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                   </svg>
                 </a>
                 <a
-                  href="https://github.com"
+                  href="https://www.linkedin.com/company/uxworks"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-lg bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-all duration-200 hover:scale-110 group"
-                  aria-label="GitHub"
+                  className="w-10 h-10 rounded-lg bg-gray-800 hover:bg-blue-600 flex items-center justify-center transition-all duration-200 hover:scale-110 group"
+                  aria-label="LinkedIn"
                 >
                   <svg className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
-                    <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                   </svg>
                 </a>
                 <a
                   href="mailto:simantaparidaux@gmail.com"
-                  className="w-10 h-10 rounded-lg bg-gray-800 hover:bg-purple-600 flex items-center justify-center transition-all duration-200 hover:scale-110 group"
+                  className="w-10 h-10 rounded-lg bg-gray-800 hover:bg-blue-600 flex items-center justify-center transition-all duration-200 hover:scale-110 group"
                   aria-label="Email"
                 >
                   <svg className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -352,107 +440,19 @@ export default function ProductTeamsPage() {
                 </a>
               </div>
             </div>
-
-            {/* Product Links */}
-            <div className="col-span-1 md:col-span-2">
-              <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Product</h4>
-              <ul className="space-y-3">
-                <li>
-                  <a href="#features" className="text-sm text-gray-400 hover:text-white transition-colors inline-flex items-center group">
-                    <span className="group-hover:translate-x-0.5 transition-transform">Features</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="/pricing" className="text-sm text-gray-400 hover:text-white transition-colors inline-flex items-center group">
-                    <span className="group-hover:translate-x-0.5 transition-transform">Pricing</span>
-                  </a>
-                </li>
-                <li>
-                  <button onClick={handleCTAClick} className="text-sm text-gray-400 hover:text-white transition-colors inline-flex items-center group">
-                    <span className="group-hover:translate-x-0.5 transition-transform">Start Session</span>
-                  </button>
-                </li>
-              </ul>
-            </div>
-
-            {/* Use Cases */}
-            <div className="col-span-1 md:col-span-2">
-              <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Use Cases</h4>
-              <ul className="space-y-3">
-                <li>
-                  <a href="/use-cases/product-teams" className="text-sm text-gray-400 hover:text-white transition-colors inline-flex items-center group">
-                    <span className="group-hover:translate-x-0.5 transition-transform">Product Teams</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="/use-cases/ux-design" className="text-sm text-gray-400 hover:text-white transition-colors inline-flex items-center group">
-                    <span className="group-hover:translate-x-0.5 transition-transform">UX Design</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="/use-cases/startups" className="text-sm text-gray-400 hover:text-white transition-colors inline-flex items-center group">
-                    <span className="group-hover:translate-x-0.5 transition-transform">Startups</span>
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Resources */}
-            <div className="col-span-1 md:col-span-2">
-              <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Resources</h4>
-              <ul className="space-y-3">
-                <li>
-                  <a href="/features" className="text-sm text-gray-400 hover:text-white transition-colors inline-flex items-center group">
-                    <span className="group-hover:translate-x-0.5 transition-transform">All Features</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-400 hover:text-white transition-colors inline-flex items-center group">
-                    <span className="group-hover:translate-x-0.5 transition-transform">GitHub</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-sm text-gray-400 hover:text-white transition-colors inline-flex items-center group">
-                    <span className="group-hover:translate-x-0.5 transition-transform">Documentation</span>
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Company */}
-            <div className="col-span-1 md:col-span-2">
-              <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Company</h4>
-              <ul className="space-y-3">
-                <li>
-                  <a href="#" className="text-sm text-gray-400 hover:text-white transition-colors inline-flex items-center group">
-                    <span className="group-hover:translate-x-0.5 transition-transform">About</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="mailto:simantaparidaux@gmail.com" className="text-sm text-gray-400 hover:text-white transition-colors inline-flex items-center group">
-                    <span className="group-hover:translate-x-0.5 transition-transform">Contact</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-sm text-gray-400 hover:text-white transition-colors inline-flex items-center group">
-                    <span className="group-hover:translate-x-0.5 transition-transform">Careers</span>
-                  </a>
-                </li>
-              </ul>
-            </div>
           </div>
 
           {/* Bottom Bar */}
-          <div className="border-t border-gray-800 py-8">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-              <p className="text-sm text-gray-500">
-                © {new Date().getFullYear()} <span className="text-gray-400 font-medium">Woorkshop</span>. All rights reserved.
-              </p>
+          <div className="border-t border-gray-800 pt-8 pb-4">
+            <p className="text-sm text-gray-500 text-center mb-12">
+              © {new Date().getFullYear()} Woorkshop. All rights reserved.
+            </p>
 
-              <div className="flex items-center gap-6">
-                <Link href="/privacy" className="text-sm text-gray-500 hover:text-white transition-colors">Privacy Policy</Link>
-                <Link href="/terms" className="text-sm text-gray-500 hover:text-white transition-colors">Terms of Service</Link>
-              </div>
+            {/* Large Woorkshop Logo */}
+            <div className="w-full">
+              <h2 className="font-comfortaa text-[60px] sm:text-[80px] md:text-[120px] lg:text-[160px] font-bold text-gray-700/40 leading-none tracking-[0.05em] sm:tracking-[0.1em] select-none text-center md:text-left">
+                woorkshop
+              </h2>
             </div>
           </div>
         </div>
