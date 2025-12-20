@@ -18,25 +18,25 @@ const tools: Tool[] = [
     title: 'From Opinions to Data',
     description: '"Feature A scores 85/100. Feature B scores 42. Ship A first." Turn subjective debates into objective numbers.',
     icon: Vote,
-    image: '/images/tool-1.png',
+    image: '/images/tool-1.jpg',
   },
   {
     title: 'Force Real Trade-offs',
     description: 'When everyone gets 100 points total, priorities get real. No more "everything is high priority."',
     icon: Users,
-    image: '/images/tool-2.png',
+    image: '/images/tool-2.jpg',
   },
   {
     title: 'Democratize Decision-Making',
     description: 'Everyone votes simultaneously. No anchoring bias. No loud voices dominating. Just data.',
     icon: Grid2x2,
-    image: '/images/tool-3.png',
+    image: '/images/tool-3.jpg',
   },
   {
     title: 'Don\'t End at a Decision',
     description: 'Export to CSV. Import to Jira. Move forward. From session to shipped in minutes.',
     icon: Download,
-    image: '/images/tool-4.png',
+    image: '/images/tool-4.jpg',
   },
 ];
 
