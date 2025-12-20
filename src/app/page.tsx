@@ -221,8 +221,8 @@ export default function HomePage() {
             </p>
 
             {/* Large Woorkshop Logo */}
-            <div className="w-full overflow-hidden">
-              <h2 className="font-comfortaa text-[80px] md:text-[120px] lg:text-[160px] font-bold text-gray-700/40 leading-none tracking-[0.1em] select-none">
+            <div className="w-full">
+              <h2 className="font-comfortaa text-[60px] sm:text-[80px] md:text-[120px] lg:text-[160px] font-bold text-gray-700/40 leading-none tracking-[0.05em] sm:tracking-[0.1em] select-none text-center md:text-left">
                 woorkshop
               </h2>
             </div>
