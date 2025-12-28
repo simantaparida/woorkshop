@@ -190,10 +190,21 @@ jobs:
     steps:
       - name: Check all jobs status
         run: |
-          if [[ ("${{ needs.lint.result }}" == "success" || "${{ needs.lint.result }}" == "failure") &&
-                "${{ needs.unit-tests.result }}" == "success" &&
-                "${{ needs.build.result }}" == "success" &&
-                "${{ needs.security.result }}" == "success" ]]; then
+          # ESLint can fail due to compatibility issues (continue-on-error: true)
+          LINT_OK=$([[ "${{ needs.lint.result }}" == "success" || "${{ needs.lint.result }}" == "failure" ]] && echo "true" || echo "false")
+
+          # Other jobs must succeed (cancelled means this run was superseded by a newer one)
+          TESTS_OK=$([[ "${{ needs.unit-tests.result }}" == "success" ]] && echo "true" || echo "false")
+          BUILD_OK=$([[ "${{ needs.build.result }}" == "success" ]] && echo "true" || echo "false")
+          SECURITY_OK=$([[ "${{ needs.security.result }}" == "success" ]] && echo "true" || echo "false")
+
+          echo "Job Results:"
+          echo "  Lint: ${{ needs.lint.result }} (OK: $LINT_OK)"
+          echo "  Unit Tests: ${{ needs.unit-tests.result }} (OK: $TESTS_OK)"
+          echo "  Build: ${{ needs.build.result }} (OK: $BUILD_OK)"
+          echo "  Security: ${{ needs.security.result }} (OK: $SECURITY_OK)"
+
+          if [[ "$LINT_OK" == "true" && "$TESTS_OK" == "true" && "$BUILD_OK" == "true" && "$SECURITY_OK" == "true" ]]; then
             echo "✅ All CI checks passed!"
             echo "## ✅ All Checks Passed" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
@@ -209,5 +220,11 @@ jobs:
             echo "- Unit Tests: ${{ needs.unit-tests.result }}" >> $GITHUB_STEP_SUMMARY
             echo "- Build: ${{ needs.build.result }}" >> $GITHUB_STEP_SUMMARY
             echo "- Security: ${{ needs.security.result }}" >> $GITHUB_STEP_SUMMARY
+
+            if [[ "${{ needs.unit-tests.result }}" == "cancelled" || "${{ needs.build.result }}" == "cancelled" || "${{ needs.security.result }}" == "cancelled" ]]; then
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "ℹ️ Some jobs were cancelled - this run was likely superseded by a newer commit." >> $GITHUB_STEP_SUMMARY
+              echo "Check the latest workflow run for current status." >> $GITHUB_STEP_SUMMARY
+            fi
             exit 1
           fi
