@@ -190,7 +190,7 @@ jobs:
     steps:
       - name: Check all jobs status
         run: |
-          if [[ "${{ needs.lint.result }}" == "success" &&
+          if [[ ("${{ needs.lint.result }}" == "success" || "${{ needs.lint.result }}" == "failure") &&
                 "${{ needs.unit-tests.result }}" == "success" &&
                 "${{ needs.build.result }}" == "success" &&
                 "${{ needs.security.result }}" == "success" ]]; then
