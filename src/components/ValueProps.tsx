@@ -4,11 +4,13 @@ import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 import { Vote, Users, Grid2x2, Download } from 'lucide-react';
+import Image from 'next/image';
 
 interface Tool {
   title: string;
   description: string;
   icon: typeof Vote;
+  image: string;
 }
 
 const tools: Tool[] = [
@@ -16,21 +18,25 @@ const tools: Tool[] = [
     title: 'From Opinions to Data',
     description: '"Feature A scores 85/100. Feature B scores 42. Ship A first." Turn subjective debates into objective numbers.',
     icon: Vote,
+    image: '/images/tool-1.jpg',
   },
   {
     title: 'Force Real Trade-offs',
     description: 'When everyone gets 100 points total, priorities get real. No more "everything is high priority."',
     icon: Users,
+    image: '/images/tool-2.jpg',
   },
   {
     title: 'Democratize Decision-Making',
     description: 'Everyone votes simultaneously. No anchoring bias. No loud voices dominating. Just data.',
     icon: Grid2x2,
+    image: '/images/tool-3.jpg',
   },
   {
     title: 'Don\'t End at a Decision',
     description: 'Export to CSV. Import to Jira. Move forward. From session to shipped in minutes.',
     icon: Download,
+    image: '/images/tool-4.jpg',
   },
 ];
 
@@ -131,7 +137,7 @@ export function ValueProps() {
               <motion.div
                 key={tool.title}
                 variants={itemVariants}
-                onClick={() => setSelectedTool(selectedTool === index ? null : index)}
+                onClick={() => setSelectedTool(index)}
                 className="flex items-start gap-3 group cursor-pointer"
               >
                 {/* Circle Icon */}
@@ -162,13 +168,15 @@ export function ValueProps() {
             className="lg:sticky lg:top-24"
           >
             {selectedTool !== null ? (
-              <div className="w-full aspect-[4/3] bg-gray-100 rounded-2xl border-2 border-gray-200 flex flex-col items-center justify-center text-gray-400 p-8">
-                {(() => {
-                  const SelectedIcon = tools[selectedTool].icon;
-                  return <SelectedIcon className="w-16 h-16 mb-4 text-gray-300" />;
-                })()}
-                <span className="font-medium text-sm text-center">{tools[selectedTool].title} UI Preview</span>
-                <span className="text-xs mt-2 text-gray-400">Width: 100%, Aspect Ratio: 4/3</span>
+              <div className="w-full bg-gray-50 rounded-2xl border-2 border-gray-200 overflow-hidden">
+                <Image
+                  src={tools[selectedTool].image}
+                  alt={`${tools[selectedTool].title} preview`}
+                  width={800}
+                  height={600}
+                  quality={90}
+                  className="w-full h-auto"
+                />
               </div>
             ) : (
               <div className="w-full aspect-[4/3] bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400">

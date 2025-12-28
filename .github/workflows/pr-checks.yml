@@ -2,7 +2,12 @@ name: PR Quality Checks
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, synchronize, reopened, ready_for_review, edited]
+
+permissions:
+  issues: write
+  pull-requests: write
+  contents: read
 
 jobs:
   pr-metadata:

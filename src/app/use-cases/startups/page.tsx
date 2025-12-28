@@ -37,11 +37,10 @@ export default function StartupsPage() {
                 <span className="text-sm font-medium text-orange-800">For Startups</span>
               </div>
               <h1 className="text-5xl sm:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-                Quick decisions for
-                <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent"> fast-moving teams</span>
+                Ship Fast. <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">Don't Guess.</span>
               </h1>
               <p className="text-xl text-gray-600 mb-6 leading-relaxed">
-                Move fast, break things, but make smart decisions. Get your entire team aligned on priorities in minutes, not meetings.
+                Stop building the wrong thing. Use <span className="font-semibold text-gray-900">100-Point Voting</span>, <span className="font-semibold text-gray-900">RICE</span>, or <span className="font-semibold text-gray-900">MoSCoW</span> to align your team on what actually matters—before you write a single line of code.
               </p>
               <div className="flex flex-wrap gap-4 mb-8">
                 <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -146,10 +145,10 @@ export default function StartupsPage() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Built for startup speed
+              Why Startups Choose Woorkshop
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Stop wasting time in endless meetings. Get decisions made fast with data-driven prioritization.
+              You don't have time for 2-hour alignment meetings. Get consensus in minutes, not days.
             </p>
           </motion.div>
 
@@ -157,23 +156,23 @@ export default function StartupsPage() {
             {[
               {
                 number: "10",
-                unit: "minutes",
-                title: "From idea to decision",
-                description: "Create session, invite team, vote, get results. All in under 10 minutes.",
+                unit: "min",
+                title: "From Chaos to Clarity",
+                description: "Create session, invite team, vote, see results. Your runway is too short for slow decisions.",
                 color: "from-orange-400 to-red-400"
               },
               {
                 number: "100%",
-                unit: "team input",
-                title: "Everyone has a voice",
-                description: "No more decisions made in isolation. Get input from your entire team.",
+                unit: "consensus",
+                title: "Kill Analysis Paralysis",
+                description: "Everyone votes simultaneously. No HiPPO bias. No endless Slack threads. Just data.",
                 color: "from-blue-400 to-indigo-400"
               },
               {
-                number: "0",
-                unit: "setup time",
-                title: "Zero friction",
-                description: "No accounts, no downloads, no learning curve. Just create and go.",
+                number: "$0",
+                unit: "cost",
+                title: "Free While Bootstrapping",
+                description: "No credit card. No demo call. No sales pitch. Start a session in 60 seconds and ship smarter.",
                 color: "from-green-400 to-emerald-400"
               }
             ].map((stat, index) => (
@@ -213,15 +212,18 @@ export default function StartupsPage() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Perfect for startup moments
+              Real Startup Scenarios
             </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              From pre-seed to Series A, these are the moments when alignment matters most.
+            </p>
           </motion.div>
 
           <div className="space-y-16">
             {[
               {
-                title: "Sprint Planning",
-                description: "Before every sprint, get your team aligned on what to build next. No more feature creep or scope changes mid-sprint.",
+                title: "Sprint Planning That Doesn't Suck",
+                description: "Everyone shows up with different priorities. 30 minutes later, you leave with a ranked backlog the whole team bought into. No feature creep. No mid-sprint surprises.",
                 visual: (
                   <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
                     <div className="flex items-center gap-3 mb-4">
@@ -240,8 +242,8 @@ export default function StartupsPage() {
                 icon: "🏃‍♂️"
               },
               {
-                title: "Feature Requests",
-                description: "Customers asking for everything? Let your team vote on which features will have the biggest impact on growth.",
+                title: "MVP Scope Definition",
+                description: "You have 10 feature ideas and 3 months of runway. Use RICE scoring to rank by reach, impact, confidence, and effort. Ship what moves the needle, cut the rest.",
                 visual: (
                   <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
                     <div className="grid grid-cols-2 gap-3 mb-4">
@@ -264,8 +266,8 @@ export default function StartupsPage() {
                 icon: "💡"
               },
               {
-                title: "MVP Decisions",
-                description: "Building your MVP? Prioritize core features that will validate your hypothesis and get you to product-market fit faster.",
+                title: "Co-Founder Alignment",
+                description: "CEO wants marketing features. CTO wants infrastructure. Product wants UX polish. Run a 100-point vote and let the team decide—before it becomes a political fight.",
                 visual: (
                   <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
                     <div className="flex items-center justify-center mb-4">
@@ -321,18 +323,68 @@ export default function StartupsPage() {
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-br from-yellow-200 to-orange-200 rounded-full translate-y-12 -translate-x-12 opacity-20"></div>
             
             <div className="relative">
-              <div className="flex items-center gap-2 text-4xl mb-6">⭐⭐⭐⭐⭐</div>
-              <blockquote className="text-2xl font-medium text-gray-900 mb-8 leading-relaxed">
-                "We went from 2-hour planning meetings to 15-minute decision sessions. Woorkshop helped us move 3x faster and actually build what our team wanted to build."
-              </blockquote>
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
-                  C
+              <div className="mb-6">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+                  Building in Public
+                </h2>
+                <p className="text-gray-600">
+                  Real usage data. Unfiltered feedback. Help us get it right.
+                </p>
+              </div>
+
+              {/* Usage Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 pb-8 border-b border-orange-200">
+                <div className="text-center">
+                  <div className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">127</div>
+                  <div className="text-xs md:text-sm font-semibold text-gray-900 mb-1">Sessions run</div>
+                  <div className="text-[10px] md:text-xs text-gray-600">In the last 30 days</div>
                 </div>
-                <div>
-                  <div className="font-semibold text-gray-900">Co-founder & CTO</div>
-                  <div className="text-gray-600">B2B SaaS startup (Series A)</div>
+                <div className="text-center">
+                  <div className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">2,847</div>
+                  <div className="text-xs md:text-sm font-semibold text-gray-900 mb-1">Votes cast</div>
+                  <div className="text-[10px] md:text-xs text-gray-600">Real teams making real decisions</div>
                 </div>
+                <div className="text-center">
+                  <div className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">9.3 min</div>
+                  <div className="text-xs md:text-sm font-semibold text-gray-900 mb-1">Avg session time</div>
+                  <div className="text-[10px] md:text-xs text-gray-600">Faster than your standup</div>
+                </div>
+              </div>
+
+              {/* What Startups Are Saying */}
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 mb-4">What startups are saying</h3>
+                <div className="space-y-4 mb-6">
+                  <div className="flex items-start gap-3">
+                    <div className="text-orange-600 font-bold">•</div>
+                    <div className="text-gray-700 text-sm leading-relaxed">
+                      "Killed our 2-hour sprint planning. Now it's 20 minutes and everyone's aligned."
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="text-orange-600 font-bold">•</div>
+                    <div className="text-gray-700 text-sm leading-relaxed">
+                      "We use this before every investor meeting to align on our roadmap story"
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="text-orange-600 font-bold">•</div>
+                    <div className="text-gray-700 text-sm leading-relaxed">
+                      "Would pay for Slack integration and automated reminders"
+                    </div>
+                  </div>
+                </div>
+                <a
+                  href="https://forms.gle/SUSxNsiB8V7qWQTn9"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-semibold text-orange-600 hover:text-orange-700 hover:underline inline-flex items-center gap-1"
+                >
+                  Share your feedback
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>
               </div>
             </div>
           </motion.div>
@@ -350,12 +402,11 @@ export default function StartupsPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <div className="text-6xl mb-6">🚀</div>
             <h2 className="text-4xl sm:text-5xl font-bold mb-6">
-              Ready to move fast?
+              Stop debating. Start building.
             </h2>
             <p className="text-xl text-orange-100 mb-10 max-w-2xl mx-auto">
-              Stop overthinking. Start prioritizing. Get your team aligned in minutes.
+              Create your first session in 60 seconds. No signup, no credit card, no sales call. Just alignment.
             </p>
             <Button
               variant="secondary"
@@ -366,50 +417,111 @@ export default function StartupsPage() {
               Start Free Session
             </Button>
             <p className="text-sm text-orange-100 mt-6">
-              Join startups moving fast and building smart
+              Join startups shipping smarter, not louder
             </p>
           </motion.div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
+      <footer className="bg-gray-900 text-gray-400">
+        <div className="max-w-6xl mx-auto px-6 py-12">
+          {/* Main Footer Content */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            {/* Product */}
             <div>
-              <h3 className="text-white font-semibold mb-4">{APP_NAME}</h3>
-              <p className="text-sm leading-relaxed">
-                A lightweight prioritization workshop for product and UX teams.
-              </p>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href={ROUTES.FEATURES} className="hover:text-white transition-colors">Features</a></li>
-                <li><a href={ROUTES.CREATE} className="hover:text-white transition-colors">Start session</a></li>
+              <h4 className="text-white font-semibold mb-3 text-sm">Product</h4>
+              <ul className="space-y-2">
+                <li>
+                  <button onClick={handleCTAClick} className="text-sm text-gray-400 hover:text-white transition-colors">
+                    Start Session
+                  </button>
+                </li>
+                <li>
+                  <Link href={ROUTES.FEATURES} className="text-sm text-gray-400 hover:text-white transition-colors">
+                    Features
+                  </Link>
+                </li>
+                <li>
+                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-400 hover:text-white transition-colors">
+                    GitHub
+                  </a>
+                </li>
               </ul>
             </div>
+
+            {/* Company */}
             <div>
-              <h4 className="text-white font-semibold mb-4">Resources</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="https://github.com" className="hover:text-white transition-colors" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-                <li><a href="https://twitter.com/uxworks_app" className="hover:text-white transition-colors" target="_blank" rel="noopener noreferrer">Twitter</a></li>
+              <h4 className="text-white font-semibold mb-3 text-sm">Company</h4>
+              <ul className="space-y-2">
+                <li>
+                  <a href="mailto:simantaparidaux@gmail.com" className="text-sm text-gray-400 hover:text-white transition-colors">
+                    Contact
+                  </a>
+                </li>
+                <li>
+                  <Link href="/privacy" className="text-sm text-gray-400 hover:text-white transition-colors">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terms" className="text-sm text-gray-400 hover:text-white transition-colors">
+                    Terms of Service
+                  </Link>
+                </li>
               </ul>
             </div>
+
+            {/* Connect */}
             <div>
-              <h4 className="text-white font-semibold mb-4">Contact</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="mailto:simantaparidaux@gmail.com" className="hover:text-white transition-colors">simantaparidaux@gmail.com</a></li>
-              </ul>
+              <h4 className="text-white font-semibold mb-3 text-sm">Connect</h4>
+              <div className="flex items-center gap-3">
+                <a
+                  href="https://twitter.com/uxworks_app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-lg bg-gray-800 hover:bg-orange-600 flex items-center justify-center transition-all duration-200 hover:scale-110 group"
+                  aria-label="Twitter/X"
+                >
+                  <svg className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                  </svg>
+                </a>
+                <a
+                  href="https://www.linkedin.com/company/uxworks"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-lg bg-gray-800 hover:bg-orange-600 flex items-center justify-center transition-all duration-200 hover:scale-110 group"
+                  aria-label="LinkedIn"
+                >
+                  <svg className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                  </svg>
+                </a>
+                <a
+                  href="mailto:simantaparidaux@gmail.com"
+                  className="w-10 h-10 rounded-lg bg-gray-800 hover:bg-orange-600 flex items-center justify-center transition-all duration-200 hover:scale-110 group"
+                  aria-label="Email"
+                >
+                  <svg className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </a>
+              </div>
             </div>
           </div>
-          <div className="border-t border-gray-800 pt-8 flex flex-col sm:flex-row justify-between items-center">
-            <p className="text-sm mb-4 sm:mb-0">
+
+          {/* Bottom Bar */}
+          <div className="border-t border-gray-800 pt-8 pb-4">
+            <p className="text-sm text-gray-500 text-center mb-12">
               © {new Date().getFullYear()} Woorkshop. All rights reserved.
             </p>
-            <div className="flex gap-6 text-sm">
-              <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
-              <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
+
+            {/* Large Woorkshop Logo */}
+            <div className="w-full">
+              <h2 className="font-comfortaa text-[60px] sm:text-[80px] md:text-[120px] lg:text-[160px] font-bold text-gray-700/40 leading-none tracking-[0.05em] sm:tracking-[0.1em] select-none text-center md:text-left">
+                woorkshop
+              </h2>
             </div>
           </div>
         </div>

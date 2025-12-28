@@ -50,9 +50,18 @@ export default defineConfig({
 
   // Configure projects for major browsers
   projects: [
+    // Setup project - disabled for anonymous testing
+    // {
+    //   name: 'setup',
+    //   testMatch: /.*\.setup\.ts/,
+    // },
+
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        // Removed auth dependency - tests now run anonymously
+      },
     },
 
     {
@@ -78,9 +87,11 @@ export default defineConfig({
 
   // Run your local dev server before starting the tests
   webServer: {
-    command: 'npm run dev',
+    command: process.env.CI ? 'npm run build && npm run start -- -p 3001' : 'npm run dev -- -p 3001',
     url: 'http://localhost:3001',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
+    stdout: 'pipe',
+    stderr: 'pipe',
   },
 });

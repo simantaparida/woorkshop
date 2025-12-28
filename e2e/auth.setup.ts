@@ -10,39 +10,32 @@ import { test as setup, expect } from '@playwright/test';
 const authFile = 'playwright/.auth/user.json';
 
 setup('authenticate', async ({ page }) => {
-  // Navigate to login page
-  await page.goto('/login');
+  // Navigate to login page (correct route)
+  await page.goto('/auth/login');
 
-  // Check if we need to authenticate
-  // If your app allows anonymous sessions, you might skip this
-  const needsAuth = await page.locator('input[type="email"], input[type="password"]').count() > 0;
+  // Wait for page to load
+  await page.waitForSelector('input[type="email"]', { timeout: 10000 });
 
-  if (needsAuth) {
-    console.log('Authentication required - please configure test user credentials');
+  // Get test credentials from environment or use defaults
+  const testEmail = process.env.TEST_USER_EMAIL || 'test@example.com';
+  const testPassword = process.env.TEST_USER_PASSWORD || 'testpassword123';
 
-    // For now, we'll use environment variables for test credentials
-    const testEmail = process.env.TEST_USER_EMAIL || 'test@example.com';
-    const testPassword = process.env.TEST_USER_PASSWORD || 'testpassword123';
+  console.log(`Logging in with: ${testEmail}`);
 
-    // Try to log in
-    const emailInput = page.locator('input[type="email"]').first();
-    const passwordInput = page.locator('input[type="password"]').first();
+  // Fill in credentials
+  await page.fill('input[type="email"]', testEmail);
+  await page.fill('input[type="password"]', testPassword);
 
-    if (await emailInput.count() > 0) {
-      await emailInput.fill(testEmail);
-      await passwordInput.fill(testPassword);
+  // Submit login form
+  await page.click('button[type="submit"]');
 
-      // Submit login
-      await page.click('button[type="submit"], button:has-text("Login"), button:has-text("Sign in")');
+  // Wait for successful redirect after login
+  // The app redirects to /home or /tools after successful auth
+  await page.waitForURL(/\/(home|tools|dashboard|profile)/, { timeout: 15000 });
 
-      // Wait for redirect
-      await page.waitForURL(/\/(tools|home|dashboard)/, { timeout: 10000 }).catch(() => {
-        console.log('Note: Authentication may not be required for basic testing');
-      });
-    }
-  }
+  console.log('Login successful, saving authentication state');
 
-  // Save authenticated state
+  // Save authenticated state to file for reuse in tests
   await page.context().storageState({ path: authFile });
 
   console.log('Authentication setup complete');

@@ -98,15 +98,6 @@ export function Navbar() {
   const dropdownTimeoutRef = useRef<NodeJS.Timeout>();
   const navRef = useRef<HTMLDivElement>(null);
 
-  const handlePricingClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    const pricingSection = document.getElementById('pricing');
-    if (pricingSection) {
-      pricingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-    setIsMobileMenuOpen(false);
-  };
-
   // Detect scroll for border
   useEffect(() => {
     const handleScroll = () => {
@@ -127,6 +118,18 @@ export function Navbar() {
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
   }, []);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -227,13 +230,15 @@ export function Navbar() {
             </div>
 
             {/* Pricing */}
-            <a
-              href="/#pricing"
-              onClick={handlePricingClick}
-              className="px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+            <Link
+              href={ROUTES.PRICING}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 ${pathname === '/pricing'
+                ? 'text-blue-600 bg-blue-50'
+                : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                }`}
             >
               Pricing
-            </a>
+            </Link>
           </div>
 
           {/* Right: CTA + Mobile Menu Button */}
@@ -310,84 +315,162 @@ export function Navbar() {
         )}
       </AnimatePresence>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="lg:hidden border-t border-gray-200 bg-white overflow-hidden"
-          >
-            <div className="px-4 py-4 space-y-1">
-              {/* Features */}
-              <Link
-                href={ROUTES.FEATURES}
-                className={`block px-4 py-3 text-sm font-medium rounded-lg transition-colors ${pathname === '/features'
-                  ? 'text-blue-600 bg-blue-50'
-                  : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                  }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Features
-              </Link>
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/50 z-[60] lg:hidden"
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                setActiveDropdown(null);
+              }}
+              aria-hidden="true"
+            />
 
-              {/* Use Cases - Collapsible */}
-              <div>
-                <button
-                  onClick={() => toggleDropdown('useCases')}
-                  className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors"
-                  aria-expanded={activeDropdown === 'useCases'}
+            {/* Mobile Menu Panel */}
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'tween', duration: 0.3, ease: 'easeInOut' }}
+              className="fixed right-0 top-0 bottom-0 w-80 max-w-[85vw] bg-white shadow-2xl z-[70] flex flex-col lg:hidden"
+            >
+              {/* Mobile Menu Header */}
+              <div className="flex items-center justify-between h-[72px] px-4 border-b border-gray-200">
+                <Link
+                  href="/"
+                  className="flex items-center focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 rounded-lg"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setActiveDropdown(null);
+                  }}
+                  aria-label="Woorkshop home"
                 >
-                  Use Cases
-                  <svg
-                    className={`w-4 h-4 transition-transform ${activeDropdown === 'useCases' ? 'rotate-180' : ''
-                      }`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <span className="font-comfortaa text-xl font-bold text-blue-600 tracking-[0.1em]">
+                    woorkshop
+                  </span>
+                </Link>
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setActiveDropdown(null);
+                  }}
+                  className="p-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+                  aria-label="Close mobile menu"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
-                <AnimatePresence>
-                  {activeDropdown === 'useCases' && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="ml-4 mt-1 space-y-1 overflow-hidden"
-                    >
-                      {useCasesItems.map((item) => (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors"
-                          onClick={() => {
-                            setIsMobileMenuOpen(false);
-                            setActiveDropdown(null);
-                          }}
-                        >
-                          <div className="text-blue-600">{item.icon}</div>
-                          {item.label}
-                        </Link>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </div>
 
-              {/* Pricing */}
-              <a
-                href="/#pricing"
-                onClick={handlePricingClick}
-                className="block px-4 py-3 text-sm font-medium rounded-lg transition-colors text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-              >
-                Pricing
-              </a>
-            </div>
-          </motion.div>
+              {/* Scrollable Menu Content */}
+              <div className="flex-1 overflow-y-auto px-4 py-4">
+                <div className="space-y-1">
+                  {/* Features */}
+                  <Link
+                    href={ROUTES.FEATURES}
+                    className={`block px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+                      pathname === '/features'
+                        ? 'text-blue-600 bg-blue-50'
+                        : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                    }`}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setActiveDropdown(null);
+                    }}
+                  >
+                    Features
+                  </Link>
+
+                  {/* Use Cases - Collapsible */}
+                  <div>
+                    <button
+                      onClick={() => toggleDropdown('useCases')}
+                      className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors"
+                      aria-expanded={activeDropdown === 'useCases'}
+                    >
+                      Use Cases
+                      <svg
+                        className={`w-4 h-4 transition-transform ${
+                          activeDropdown === 'useCases' ? 'rotate-180' : ''
+                        }`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    <AnimatePresence>
+                      {activeDropdown === 'useCases' && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="ml-4 mt-1 space-y-1 overflow-hidden"
+                        >
+                          {useCasesItems.map((item) => (
+                            <Link
+                              key={item.href}
+                              href={item.href}
+                              className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors"
+                              onClick={() => {
+                                setIsMobileMenuOpen(false);
+                                setActiveDropdown(null);
+                              }}
+                            >
+                              <div className="text-blue-600">{item.icon}</div>
+                              {item.label}
+                            </Link>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Pricing */}
+                  <Link
+                    href={ROUTES.PRICING}
+                    className={`block px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+                      pathname === '/pricing'
+                        ? 'text-blue-600 bg-blue-50'
+                        : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                    }`}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setActiveDropdown(null);
+                    }}
+                  >
+                    Pricing
+                  </Link>
+                </div>
+              </div>
+
+              {/* Mobile CTA - Bottom */}
+              <div className="p-4 border-t border-gray-200">
+                <Link
+                  href={ROUTES.LOGIN}
+                  className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 shadow-sm"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setActiveDropdown(null);
+                  }}
+                >
+                  Start Free Session
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </nav>

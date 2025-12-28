@@ -29,23 +29,30 @@ export async function middleware(request: NextRequest) {
   // RATE LIMITING
   // ==========================================================
 
-  // Apply strict rate limiting to auth endpoints
-  if (pathname.startsWith('/auth/') || pathname.startsWith('/api/auth/')) {
-    const clientId = getClientIdentifier(request);
-    const rateLimitResult = rateLimiters.auth(clientId);
+  // Skip rate limiting in CI/test environments to prevent test failures
+  // Rate limiting is important for production but causes issues in CI where
+  // all tests run from a single IP and can easily exceed limits
+  const skipRateLimiting = process.env.CI === 'true' || process.env.NODE_ENV === 'test';
 
-    if (!rateLimitResult.success) {
-      return createRateLimitResponse(rateLimitResult, { limit: 5, window: 60000 });
+  if (!skipRateLimiting) {
+    // Apply strict rate limiting to auth endpoints
+    if (pathname.startsWith('/auth/') || pathname.startsWith('/api/auth/')) {
+      const clientId = getClientIdentifier(request);
+      const rateLimitResult = rateLimiters.auth(clientId);
+
+      if (!rateLimitResult.success) {
+        return createRateLimitResponse(rateLimitResult, { limit: 5, window: 60000 });
+      }
     }
-  }
 
-  // Apply moderate rate limiting to API endpoints
-  if (pathname.startsWith('/api/')) {
-    const clientId = getClientIdentifier(request);
-    const rateLimitResult = rateLimiters.api(clientId);
+    // Apply moderate rate limiting to API endpoints
+    if (pathname.startsWith('/api/')) {
+      const clientId = getClientIdentifier(request);
+      const rateLimitResult = rateLimiters.api(clientId);
 
-    if (!rateLimitResult.success) {
-      return createRateLimitResponse(rateLimitResult, { limit: 100, window: 60000 });
+      if (!rateLimitResult.success) {
+        return createRateLimitResponse(rateLimitResult, { limit: 100, window: 60000 });
+      }
     }
   }
 

@@ -5,15 +5,15 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Navbar } from '@/components/Navbar';
-import { ROUTES, APP_NAME } from '@/lib/constants';
+import { ROUTES } from '@/lib/constants';
 import { useAnalytics } from '@/lib/hooks/useAnalytics';
 
-export default function ProductTeamsPage() {
+export default function AgenciesPage() {
   const router = useRouter();
   const { trackEvent } = useAnalytics();
 
   const handleCTAClick = () => {
-    trackEvent('product_teams_cta_clicked');
+    trackEvent('agencies_page_cta_clicked');
     router.push(ROUTES.CREATE);
   };
 
@@ -22,17 +22,17 @@ export default function ProductTeamsPage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative pt-24 pb-16 overflow-hidden bg-gradient-to-b from-white to-blue-50/30">
+      <section className="relative pt-24 pb-16 overflow-hidden bg-gradient-to-b from-white to-purple-50/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-100 mb-6"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-50 border border-purple-100 mb-6"
             >
-              <span className="text-2xl">🚀</span>
-              <span className="text-sm font-medium text-blue-700">For High-Velocity Product Teams</span>
+              <span className="text-2xl">🎨</span>
+              <span className="text-sm font-medium text-purple-700">For Agencies & Consultancies</span>
             </motion.div>
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -40,7 +40,7 @@ export default function ProductTeamsPage() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-5xl sm:text-6xl font-bold text-gray-900 mb-6 leading-tight"
             >
-              Stop Debating. <span className="text-blue-600">Start Shipping.</span>
+              Run Client Workshops That <span className="text-purple-600">Actually Work.</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -48,7 +48,7 @@ export default function ProductTeamsPage() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-xl text-gray-600 mb-4 leading-relaxed"
             >
-              Turn 2-hour sprint planning into 15-minute alignment sessions. Use <span className="font-semibold text-gray-900">RICE</span>, <span className="font-semibold text-gray-900">MoSCoW</span>, or <span className="font-semibold text-gray-900">100-Point</span> frameworks to make gut feelings irrelevant and ship what actually matters.
+              Turn messy stakeholder sessions into structured decisions. Use proven frameworks like <span className="font-semibold text-gray-900">RICE</span>, <span className="font-semibold text-gray-900">MoSCoW</span>, or <span className="font-semibold text-gray-900">100-Point Voting</span> to align clients fast and deliver prioritization workshops that justify your retainer.
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -56,7 +56,7 @@ export default function ProductTeamsPage() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="text-sm text-gray-500 mb-8"
             >
-              Real-time Collaboration · No Signup Required · Export to Jira/CSV
+              Real-time Collaboration · Client-Ready Reports · Export to CSV
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -67,9 +67,9 @@ export default function ProductTeamsPage() {
                 variant="primary"
                 size="lg"
                 onClick={handleCTAClick}
-                className="text-lg px-8 py-4 !bg-blue-600 !text-white hover:!bg-blue-700 !border-0 shadow-lg hover:shadow-xl transition-all duration-200"
+                className="text-lg px-8 py-4 !bg-purple-600 !text-white hover:!bg-purple-700 !border-0 shadow-lg hover:shadow-xl transition-all duration-200"
               >
-                Start Free Session
+                Start Free Workshop
               </Button>
             </motion.div>
           </div>
@@ -90,9 +90,9 @@ export default function ProductTeamsPage() {
               <div className="flex items-start gap-4">
                 <div className="text-4xl">⚠️</div>
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">The Real Problem Isn't Your Backlog</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Client Workshops Shouldn't Feel Like Hostage Negotiations</h3>
                   <p className="text-gray-700 leading-relaxed">
-                    It's consensus. Sales wants features that close deals. Support wants bugs squashed. The CEO has "one more thing." Everyone thinks their priority is THE priority. Without a framework, roadmaps become political battlegrounds where the loudest voice wins—not the best idea.
+                    You block off 2 hours. Stakeholders argue in circles. The CEO overrules everyone. The CMO checks email. You leave with vague "alignment" and no clear next steps. Then you spend another 3 hours writing a summary deck to justify what just happened. There's a better way.
                   </p>
                 </div>
               </div>
@@ -111,30 +111,30 @@ export default function ProductTeamsPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Stop Guessing, Start Scoring
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+              Why Agencies Choose Woorkshop
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Choose the right tool for the job. Whether it's a quick vote or a detailed scoring session, Woorkshop aligns your team in real-time.
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Stop improvising. Use battle-tested frameworks that make you look like the strategic partner you are.
             </p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                icon: '⚡',
-                title: 'Pick Your Framework',
-                description: 'RICE for strategic depth. MoSCoW for scope management. 100-Point for budget simulation. Switch frameworks depending on the decision you need to make.'
+                icon: '🎯',
+                title: 'Make Clients Feel Heard',
+                description: 'Blind voting means every stakeholder\'s opinion counts equally. The intern and the CEO get the same vote. Data settles disputes, not politics.'
               },
               {
-                icon: '🎯',
-                title: 'Kill the HiPPO',
-                description: 'Highest Paid Person\'s Opinion shouldn\'t win by default. Blind voting surfaces true team priorities before politics enter the room.'
+                icon: '⚡',
+                title: 'Run Efficient Workshops',
+                description: 'Stop burning billable hours on circular debates. Structured frameworks turn 2-hour meetings into 20-minute alignment sessions with clear outcomes.'
               },
               {
                 icon: '📊',
-                title: 'Export to Your Tools',
-                description: 'Ranked priorities go straight to CSV for Jira, Linear, or Notion. No copy-paste busywork. From decision to backlog in one click.'
+                title: 'Deliver Credible Reports',
+                description: 'Export ranked priorities with voting data. Show clients exactly how decisions were made. No more "trust us" handwaving—just transparent, defensible results.'
               }
             ].map((benefit, index) => (
               <motion.div
@@ -143,9 +143,9 @@ export default function ProductTeamsPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-white rounded-2xl p-8 border-2 border-gray-200 hover:border-blue-300 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
+                className="bg-white rounded-2xl p-8 border-2 border-gray-200 hover:border-purple-300 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
               >
-                <div className="text-4xl mb-6 bg-gradient-to-br from-blue-50 to-blue-100 w-16 h-16 rounded-2xl flex items-center justify-center shadow-sm">{benefit.icon}</div>
+                <div className="text-4xl mb-6 bg-gradient-to-br from-purple-50 to-purple-100 w-16 h-16 rounded-2xl flex items-center justify-center shadow-sm">{benefit.icon}</div>
                 <h3 className="text-xl font-bold text-gray-900 mb-3">{benefit.title}</h3>
                 <p className="text-gray-600 leading-relaxed">{benefit.description}</p>
               </motion.div>
@@ -164,51 +164,54 @@ export default function ProductTeamsPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Built for the Product Lifecycle
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+              Real Agency Scenarios
             </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              From discovery to delivery, Woorkshop helps you facilitate client workshops that close deals and move projects forward.
+            </p>
           </motion.div>
 
           <div className="grid md:grid-cols-2 gap-8">
             {[
               {
-                title: 'Problem Framing',
-                description: 'Before jumping to solutions, make sure you are solving the right problem. Use our problem framing templates to align on the "Why" before the "What".',
+                title: 'Discovery Workshop Kickoffs',
+                description: 'Start new client engagements with a structured prioritization session. Align stakeholders on scope, define MVP features, and set clear expectations—all before you write a single line of code or design a single screen.',
                 checklist: [
-                  'Define the core user problem',
-                  'Identify success metrics',
-                  'Align on scope constraints',
-                  'Generate hypothesis before features'
+                  'Facilitate anonymous idea submission to surface all perspectives',
+                  'Use 100-Point Voting to force trade-offs on scope',
+                  'Export prioritized feature list as project roadmap',
+                  'Show clients data-backed decisions, not gut feelings'
                 ]
               },
               {
-                title: 'Quarterly Roadmapping',
-                description: 'Use the RICE framework to robustly score major initiatives. Balance Reach, Impact, and Confidence against Effort to ensure you are placing the right bets.',
+                title: 'Scope Creep Management',
+                description: 'Client wants to add "just one more thing"? Run a quick MoSCoW session. Show them what moves to "Won\'t Have" if the new feature becomes a "Must Have." Let the framework deliver the bad news.',
                 checklist: [
-                  'Import quarterly initiatives',
-                  'Team estimates Effort scores',
-                  'PMs define Reach & Impact',
-                  'Visualize the highest ROI items'
+                  'Categorize existing scope as Must/Should/Could/Won\'t',
+                  'Visualize impact of new requests on timeline',
+                  'Let stakeholders vote on trade-offs in real-time',
+                  'Export updated scope doc with client consensus baked in'
                 ]
               },
               {
-                title: 'Sprint Backlog Logic',
-                description: 'Have a overflow of "nice-to-haves"? Use the MoSCoW method (Must, Should, Could, Won\'t) to aggressively scope down your sprint to what truly matters.',
+                title: 'Quarterly Strategy Sessions',
+                description: 'Retainer clients need ongoing strategic input. Use RICE scoring to evaluate new initiatives against Reach, Impact, Confidence, and Effort. Show them which bets are worth taking—and which aren\'t.',
                 checklist: [
-                  'Categorize checklist items',
-                  'Negotiate scope with engineering',
-                  'Protect the "Must Haves"',
-                  'Defer the "Won\'t Haves" for later'
+                  'Score initiatives across 4 dimensions with stakeholder input',
+                  'Calculate priority scores automatically (no spreadsheet math)',
+                  'Rank initiatives by ROI potential, not who yelled loudest',
+                  'Export strategic roadmap directly to project management tools'
                 ]
               },
               {
-                title: 'Budget Allocation',
-                description: 'Use the 100-Point Method to simulate budget constraints. Give stakeholders 100 "dollars" to spend on features, revealing what they truly value when resources are limited.',
+                title: 'Stakeholder Alignment Workshops',
+                description: 'Multiple departments, conflicting priorities, limited budget. Run a collaborative voting session where everyone allocates points to what they value. Watch consensus emerge from chaos in 15 minutes.',
                 checklist: [
-                  'Allocate fixed currency to stakeholders',
-                  'Force trade-off decisions',
-                  'Identify "Dark Horse" favorites',
-                  'Reveal true value perception'
+                  'Give each stakeholder 100 budget points to allocate',
+                  'See aggregate priorities ranked by total votes',
+                  'Identify areas of consensus vs. disagreement instantly',
+                  'Walk out with a prioritized backlog everyone agreed to'
                 ]
               }
             ].map((useCase, index) => (
@@ -218,7 +221,7 @@ export default function ProductTeamsPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-white rounded-2xl p-8 border-2 border-gray-200 hover:border-blue-200 hover:shadow-lg transition-all duration-300"
+                className="bg-white rounded-2xl p-8 border-2 border-gray-200 hover:border-purple-200 hover:shadow-lg transition-all duration-300"
               >
                 <h3 className="text-2xl font-bold text-gray-900 mb-3">{useCase.title}</h3>
                 <p className="text-gray-600 mb-6 leading-relaxed">{useCase.description}</p>
@@ -227,10 +230,10 @@ export default function ProductTeamsPage() {
                     <li key={idx} className="flex items-start gap-3 text-gray-700">
                       <div className="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 text-green-600">
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
-                      <span>{item}</span>
+                      <span className="text-sm">{item}</span>
                     </li>
                   ))}
                 </ul>
@@ -280,30 +283,30 @@ export default function ProductTeamsPage() {
               <div className="text-center">
                 <div className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">9.3 min</div>
                 <div className="text-xs md:text-sm font-semibold text-gray-900 mb-1">Avg session time</div>
-                <div className="text-[10px] md:text-xs text-gray-600">We said 10 minutes. We meant it.</div>
+                <div className="text-[10px] md:text-xs text-gray-600">Fast enough to stay billable</div>
               </div>
             </div>
 
-            {/* What Product Teams Are Saying */}
+            {/* What Agencies Are Saying */}
             <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-4">What product teams are saying</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">What agencies are saying</h3>
               <div className="space-y-4 mb-6">
                 <div className="flex items-start gap-3">
-                  <div className="text-blue-600 font-bold">•</div>
+                  <div className="text-purple-600 font-bold">•</div>
                   <div className="text-gray-700 text-sm leading-relaxed">
-                    "Finally killed our 2-hour sprint planning meetings"
+                    "Clients love seeing their input turn into data. Makes us look way more strategic."
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="text-blue-600 font-bold">•</div>
+                  <div className="text-purple-600 font-bold">•</div>
                   <div className="text-gray-700 text-sm leading-relaxed">
-                    "RICE scoring helps us push back on exec 'great ideas' with data"
+                    "We use this in every discovery workshop now. Cuts alignment time in half."
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="text-blue-600 font-bold">•</div>
+                  <div className="text-purple-600 font-bold">•</div>
                   <div className="text-gray-700 text-sm leading-relaxed">
-                    "Would love Linear integration, not just Jira export"
+                    "Would pay for white-label reports and branded export options"
                   </div>
                 </div>
               </div>
@@ -311,7 +314,7 @@ export default function ProductTeamsPage() {
                 href="https://forms.gle/SUSxNsiB8V7qWQTn9"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm font-semibold text-blue-600 hover:text-blue-700 hover:underline inline-flex items-center gap-1"
+                className="text-sm font-semibold text-purple-600 hover:text-purple-700 hover:underline inline-flex items-center gap-1"
               >
                 Share your feedback
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -324,7 +327,7 @@ export default function ProductTeamsPage() {
       </section>
 
       {/* Closing CTA */}
-      <section className="py-20 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 text-white relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-700 text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-white/5"></div>
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
@@ -334,21 +337,21 @@ export default function ProductTeamsPage() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-4xl sm:text-5xl font-bold mb-6">
-              Walk in with chaos. Walk out with clarity.
+              Stop winging it. Start facilitating.
             </h2>
-            <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
-              Create your first session in 60 seconds. No credit card, no signup, no demo request.
+            <p className="text-xl text-purple-100 mb-10 max-w-2xl mx-auto">
+              Run your first client workshop in 60 seconds. No signup, no credit card, no learning curve.
             </p>
             <Button
               variant="secondary"
               size="lg"
               onClick={handleCTAClick}
-              className="text-lg px-10 py-4 bg-white text-blue-600 hover:bg-gray-50 shadow-lg hover:shadow-xl"
+              className="text-lg px-10 py-4 bg-white text-purple-600 hover:bg-gray-50 shadow-lg hover:shadow-xl"
             >
-              Start Free Session
+              Start Free Workshop
             </Button>
-            <p className="text-sm text-blue-100 mt-6">
-              Join product teams making better decisions
+            <p className="text-sm text-purple-100 mt-6">
+              Join agencies running better client workshops
             </p>
           </motion.div>
         </div>
@@ -369,9 +372,9 @@ export default function ProductTeamsPage() {
                   </button>
                 </li>
                 <li>
-                  <a href="#features" className="text-sm text-gray-400 hover:text-white transition-colors">
+                  <Link href={ROUTES.FEATURES} className="text-sm text-gray-400 hover:text-white transition-colors">
                     Features
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-400 hover:text-white transition-colors">
@@ -411,7 +414,7 @@ export default function ProductTeamsPage() {
                   href="https://twitter.com/uxworks_app"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-lg bg-gray-800 hover:bg-blue-600 flex items-center justify-center transition-all duration-200 hover:scale-110 group"
+                  className="w-10 h-10 rounded-lg bg-gray-800 hover:bg-purple-600 flex items-center justify-center transition-all duration-200 hover:scale-110 group"
                   aria-label="Twitter/X"
                 >
                   <svg className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
@@ -422,7 +425,7 @@ export default function ProductTeamsPage() {
                   href="https://www.linkedin.com/company/uxworks"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-lg bg-gray-800 hover:bg-blue-600 flex items-center justify-center transition-all duration-200 hover:scale-110 group"
+                  className="w-10 h-10 rounded-lg bg-gray-800 hover:bg-purple-600 flex items-center justify-center transition-all duration-200 hover:scale-110 group"
                   aria-label="LinkedIn"
                 >
                   <svg className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
@@ -431,7 +434,7 @@ export default function ProductTeamsPage() {
                 </a>
                 <a
                   href="mailto:simantaparidaux@gmail.com"
-                  className="w-10 h-10 rounded-lg bg-gray-800 hover:bg-blue-600 flex items-center justify-center transition-all duration-200 hover:scale-110 group"
+                  className="w-10 h-10 rounded-lg bg-gray-800 hover:bg-purple-600 flex items-center justify-center transition-all duration-200 hover:scale-110 group"
                   aria-label="Email"
                 >
                   <svg className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">

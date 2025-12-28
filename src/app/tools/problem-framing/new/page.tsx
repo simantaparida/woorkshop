@@ -24,23 +24,11 @@ export default function NewProblemFramingPage() {
     setLoading(true);
 
     try {
-      // Get or create participant ID
-      // For authenticated users, use their user.id to ensure consistency
-      // For anonymous users, use a UUID stored in localStorage
-      let participantId: string;
+      // Use authenticated user ID if available, otherwise generate anonymous ID
+      const participantId = user?.id || `anonymous_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
-      if (user?.id) {
-        // Authenticated user - use their user ID
-        participantId = user.id;
-      } else {
-        // Anonymous user - get or create UUID
-        participantId = localStorage.getItem('pf_participant_id') || crypto.randomUUID();
-      }
-
-      // Always store to ensure sync
+      // Store to localStorage for session continuity
       localStorage.setItem('pf_participant_id', participantId);
-
-      // Save name to localStorage
       localStorage.setItem('pf_participant_name', data.facilitatorName);
 
       // Create session via API
@@ -67,9 +55,9 @@ export default function NewProblemFramingPage() {
       // Store session ID
       localStorage.setItem('pf_current_session_id', sessionId);
 
-      // Small delay to ensure database transaction is committed
+      // Delay to ensure database transaction is committed and replicated
       // before navigating (prevents race condition with auto-add facilitator)
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       // Navigate to join page
       router.push(`/tools/problem-framing/${sessionId}/join`);

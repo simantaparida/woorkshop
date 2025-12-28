@@ -11,10 +11,10 @@ async function createTestSession(page: Page, sessionName: string = 'Test Session
   await page.goto('/voting-board/new');
 
   // Wait for authentication check to complete
-  await page.waitForSelector('input[placeholder*="Q1 Feature"]', { timeout: 10000 });
+  await page.waitForSelector('input[placeholder*="Feature Prioritization"]', { timeout: 10000 });
 
   // Fill in session details
-  await page.fill('input[placeholder*="Q1 Feature"]', sessionName);
+  await page.fill('input[placeholder*="Feature Prioritization"]', sessionName);
 
   // Add test features
   const features = [
@@ -33,7 +33,7 @@ async function createTestSession(page: Page, sessionName: string = 'Test Session
     }
 
     // Fill feature title and description
-    const featureInputs = await page.locator('input[placeholder*="feature"]').all();
+    const featureInputs = await page.locator('input[placeholder*="Feature title"]').all();
     await featureInputs[i].fill(feature.title);
 
     const descriptionInputs = await page.locator('textarea[placeholder*="description"]').all();
@@ -62,10 +62,10 @@ async function joinSession(page: Page, sessionId: string, playerName: string) {
   await page.goto(`/session/${sessionId}/lobby`);
 
   // Wait for join form
-  await page.waitForSelector('input[placeholder*="name"]', { timeout: 10000 });
+  await page.waitForSelector('input[placeholder="Your name"]', { timeout: 10000 });
 
   // Enter player name
-  await page.fill('input[placeholder*="name"]', playerName);
+  await page.fill('input[placeholder="Your name"]', playerName);
 
   // Click join button
   await page.click('button:has-text("Join Session")');
@@ -387,10 +387,10 @@ test.describe('Voting Board - Edge Cases', () => {
 
   test('should handle session with many features (10 features)', async ({ page }) => {
     await page.goto('/voting-board/new');
-    await page.waitForSelector('input[placeholder*="Q1 Feature"]');
+    await page.waitForSelector('input[placeholder*="Feature Prioritization"]');
 
     // Fill session name
-    await page.fill('input[placeholder*="Q1 Feature"]', 'Many Features Test');
+    await page.fill('input[placeholder*="Feature Prioritization"]', 'Many Features Test');
 
     // Add 10 features
     for (let i = 0; i < 10; i++) {
@@ -399,7 +399,7 @@ test.describe('Voting Board - Edge Cases', () => {
         await page.waitForTimeout(200);
       }
 
-      const featureInputs = await page.locator('input[placeholder*="feature"]').all();
+      const featureInputs = await page.locator('input[placeholder*="Feature title"]').all();
       await featureInputs[i].fill(`Feature ${i + 1}`);
     }
 
