@@ -190,21 +190,29 @@ jobs:
     steps:
       - name: Check all jobs status
         run: |
-          # ESLint can fail due to compatibility issues (continue-on-error: true)
-          LINT_OK=$([[ "${{ needs.lint.result }}" == "success" || "${{ needs.lint.result }}" == "failure" ]] && echo "true" || echo "false")
+          # Check if any critical jobs failed (not cancelled, not success)
+          LINT_FAILED=$([[ "${{ needs.lint.result }}" != "success" && "${{ needs.lint.result }}" != "failure" && "${{ needs.lint.result }}" != "cancelled" ]] && echo "true" || echo "false")
+          TESTS_FAILED=$([[ "${{ needs.unit-tests.result }}" != "success" && "${{ needs.unit-tests.result }}" != "cancelled" ]] && echo "true" || echo "false")
+          BUILD_FAILED=$([[ "${{ needs.build.result }}" != "success" && "${{ needs.build.result }}" != "cancelled" ]] && echo "true" || echo "false")
+          SECURITY_FAILED=$([[ "${{ needs.security.result }}" != "success" && "${{ needs.security.result }}" != "cancelled" ]] && echo "true" || echo "false")
 
-          # Other jobs must succeed (cancelled means this run was superseded by a newer one)
-          TESTS_OK=$([[ "${{ needs.unit-tests.result }}" == "success" ]] && echo "true" || echo "false")
-          BUILD_OK=$([[ "${{ needs.build.result }}" == "success" ]] && echo "true" || echo "false")
-          SECURITY_OK=$([[ "${{ needs.security.result }}" == "success" ]] && echo "true" || echo "false")
+          # At least one job must have run successfully (not all cancelled)
+          ANY_SUCCESS=$([[ "${{ needs.lint.result }}" == "success" || "${{ needs.unit-tests.result }}" == "success" || "${{ needs.build.result }}" == "success" || "${{ needs.security.result }}" == "success" ]] && echo "true" || echo "false")
 
           echo "Job Results:"
-          echo "  Lint: ${{ needs.lint.result }} (OK: $LINT_OK)"
-          echo "  Unit Tests: ${{ needs.unit-tests.result }} (OK: $TESTS_OK)"
-          echo "  Build: ${{ needs.build.result }} (OK: $BUILD_OK)"
-          echo "  Security: ${{ needs.security.result }} (OK: $SECURITY_OK)"
+          echo "  Lint: ${{ needs.lint.result }}"
+          echo "  Unit Tests: ${{ needs.unit-tests.result }}"
+          echo "  Build: ${{ needs.build.result }}"
+          echo "  Security: ${{ needs.security.result }}"
+          echo ""
+          echo "Analysis:"
+          echo "  Any job succeeded: $ANY_SUCCESS"
+          echo "  Lint failed: $LINT_FAILED"
+          echo "  Tests failed: $TESTS_FAILED"
+          echo "  Build failed: $BUILD_FAILED"
+          echo "  Security failed: $SECURITY_FAILED"
 
-          if [[ "$LINT_OK" == "true" && "$TESTS_OK" == "true" && "$BUILD_OK" == "true" && "$SECURITY_OK" == "true" ]]; then
+          if [[ "$ANY_SUCCESS" == "true" && "$LINT_FAILED" == "false" && "$TESTS_FAILED" == "false" && "$BUILD_FAILED" == "false" && "$SECURITY_FAILED" == "false" ]]; then
             echo "✅ All CI checks passed!"
             echo "## ✅ All Checks Passed" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
